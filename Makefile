@@ -3,14 +3,14 @@
 #and may not be redistributed without written permission.
 
 #OBJS specifies which files to compile as part of the project
-OBJS = main.cpp
+OBJS = main.cpp diceroller.cpp
 
 #CC specifies which compiler we're using
 CC = g++
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -w suppresses all warnings
-COMPILER_FLAGS = -w
+COMPILER_FLAGS = -I.
 
 #LINKER_FLAGS specifies the libraries we're linking against
 LINKER_FLAGS = -lSDL2
