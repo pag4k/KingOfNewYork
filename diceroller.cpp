@@ -31,7 +31,13 @@ DiceResult DiceRoller::BeginRolling()
     }
     while (RollCount < RollNumber)
     {
-        std::cout << "### Roll number " << (RollCount + 1) << " out of " << (RollNumber) << " ###" << std::endl;
+        std::cout   << "### Roll number "
+                    << (RollCount + 1)
+                    << " out of "
+                    << (RollNumber)
+                    << " ###"
+                    << std::endl;
+
         for (int i = 0; i < DiceNumber; i++)
         {
             bool NewRoll = false;
@@ -40,18 +46,29 @@ DiceResult DiceRoller::BeginRolling()
                 NewRoll = true;
                 DiceResult.Dice[i] = RollDice(FACE_NUMBER);
             }
-            std::cout << (i + 1) << ": " << GetFaceName(DiceResult.Dice[i]) << (NewRoll ? " (new roll)" : " h") << std::endl;
+            std::cout   << (i + 1)
+                        << ": "
+                        << GetFaceName(DiceResult.Dice[i])
+                        << (NewRoll ? " (new roll)" : "")
+                        << std::endl;
         }
         RollCount++;
         if (RollCount >= RollNumber) {
             break;
         }
-        std::cout << "#############################" << std::endl;
-        std::cout << "Enter the number of the dice you want to reroll (press enter to end the rolling phase): ";
+        std::cout   << "#############################"
+                    << std::endl;
+        std::cout   << "Enter the numbers of the dice you want to reroll and"
+                    << "press enter."
+                    << std::endl;
+        std::cout   << "Ex.: \"123\" (all other characters will be ignored)." << std::endl;
+        std::cout << "Write nothing and press enter to end the rolling phase)." << std::endl;
+        std::cout << "> ";
         std::string input;
-        std::cin >> input;
+        std::getline(std::cin, input);
         if (input == "")
         {
+            std::cout << "Ending rolling phase..." << std::endl;
             break;
         }
         for (int i = 0; i < DiceNumber; i++)
@@ -62,8 +79,6 @@ DiceResult DiceRoller::BeginRolling()
             }
         }
     }
-
-    std::cin.get();
 
     PrintRollHistory();
 
