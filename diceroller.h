@@ -22,7 +22,7 @@ class DiceRoller
 {
 public:
     DiceRoller(int DiceNumber, int RollNumber);
-    ~DiceRoller();
+    ~DiceRoller() {};
 
     DiceResult BeginRolling();
     void PrintRollHistory();

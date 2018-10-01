@@ -1,0 +1,13 @@
+VERTEX
+Bronx
+Brooklyn
+Manhattan
+Queens
+StatenIsland
+
+EDGE
+Bronx:Brooklyn,Manhattan,Queens,StatenIsland,
+Brooklyn:Bronx,Manhattan,Queens,StatenIsland,
+Manhattan:Bronx,Brooklyn,Queens,StatenIsland,
+Queens:Bronx,Brooklyn,Manhattan,StatenIsland,
+StatenIsland:Bronx,Brooklyn,Manhattan,Queens,StatenIsland,
