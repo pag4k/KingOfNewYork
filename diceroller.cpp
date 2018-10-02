@@ -4,8 +4,9 @@
 #include <ctime>
 
 #include "diceroller.h"
+#include "common.h"
 
-DiceRoller::DiceRoller(int DiceNumber, int RollNumber)
+FDiceRoller::FDiceRoller(int DiceNumber, int RollNumber)
 {
     //Verify that both arguments are greater than zero.
     assert(DiceNumber > 0);
@@ -15,19 +16,19 @@ DiceRoller::DiceRoller(int DiceNumber, int RollNumber)
     this->DiceNumber = DiceNumber;
     this->RollNumber = RollNumber;
 
-    for (int i = 0; i < FACE_NUMBER; i++)
+    for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; i++)
     {
         RollHistory[i] = 0;
     }
 }
 
-DiceResult DiceRoller::BeginRolling()
+FDiceResult FDiceRoller::BeginRolling()
 {
     RollCount = 0;
-    DiceResult DiceResult;
+    FDiceResult DiceResult;
     for (int i = 0; i < DiceNumber; i++)
     {
-        DiceResult.Dice[i] = DiceFace::None;
+        DiceResult.Dice[i] = EDiceFace::None;
     }
     while (RollCount < RollNumber)
     {
@@ -41,10 +42,10 @@ DiceResult DiceRoller::BeginRolling()
         for (int i = 0; i < DiceNumber; i++)
         {
             bool NewRoll = false;
-            if (DiceResult.Dice[i] == DiceFace::None)
+            if (DiceResult.Dice[i] == EDiceFace::None)
             {
                 NewRoll = true;
-                DiceResult.Dice[i] = RollDice(FACE_NUMBER);
+                DiceResult.Dice[i] = RollDice(NUMBER_OF_FACES_ON_DICE);
             }
             std::cout   << (i + 1)
                         << ": "
@@ -75,7 +76,7 @@ DiceResult DiceRoller::BeginRolling()
         {
             if (input.find((char)(i+1+48)) != std::string::npos)
             {
-                DiceResult.Dice[i] = DiceFace::None;
+                DiceResult.Dice[i] = EDiceFace::None;
             }
         }
     }
@@ -85,48 +86,20 @@ DiceResult DiceRoller::BeginRolling()
     return DiceResult;
 }
 
-DiceFace DiceRoller::RollDice(int FaceNumber)
+EDiceFace FDiceRoller::RollDice(int FaceNumber)
 {
     assert(FaceNumber > 0);
     int Roll = std::rand() / ((RAND_MAX + 1u) / FaceNumber);
     assert(0 <= Roll && Roll <= FaceNumber - 1);
     RollHistory[Roll]++;
-    return DiceFace(Roll);
+    return EDiceFace(Roll);
 }
 
-std::string DiceRoller::GetFaceName(DiceFace Face)
-{
-    std::string FaceName = "";
-    switch(Face)
-    {
-    case DiceFace::Attack:
-        FaceName = "Attack";
-        break;
-    case DiceFace::Celebrity:
-        FaceName = "Celebrity";
-        break;
-    case DiceFace::Destruction:
-        FaceName = "Destruction";
-        break;
-    case DiceFace::Energy:
-        FaceName = "Energy";
-        break;
-    case DiceFace::Heal:
-        FaceName = "Heal";
-        break;
-    case DiceFace::Ouch:
-        FaceName = "Ouch";
-        break;
-    }
-    assert(FaceName != "");
-    return FaceName;
-}
-
-void DiceRoller::PrintRollHistory()
+void FDiceRoller::PrintRollHistory()
 {
     std::cout << "### Roll History ###" << std::endl;
-    for (int i = 0; i < FACE_NUMBER; i++)
+    for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; i++)
     {
-        std::cout << GetFaceName(DiceFace(i)) << ": " << RollHistory[i] << std::endl;
+        std::cout << GetFaceName(EDiceFace(i)) << ": " << RollHistory[i] << std::endl;
     }
 }

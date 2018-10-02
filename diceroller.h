@@ -1,35 +1,18 @@
 #include <string>
+#include "common.h"
 
-const int FACE_NUMBER = 6;
+struct FDiceResult;
 
-enum class DiceFace
-{
-    None = -1,
-    Attack = 0,
-    Celebrity = 1,
-    Destruction = 2,
-    Energy = 3,
-    Heal = 4,
-    Ouch = 5
-};
+class FDiceRoller {
+    public :
+        FDiceRoller(int DiceNumber, int RollNumber);
+    ~FDiceRoller(){};
 
-struct DiceResult
-{
-    DiceFace Dice[FACE_NUMBER];
-};
-
-class DiceRoller
-{
-public:
-    DiceRoller(int DiceNumber, int RollNumber);
-    ~DiceRoller() {};
-
-    DiceResult BeginRolling();
+    FDiceResult BeginRolling();
     void PrintRollHistory();
 
-private:
-    DiceFace RollDice(int FaceNumber);
-    std::string GetFaceName(DiceFace Face);
+    private :
+        EDiceFace RollDice(int FaceNumber);
 
     //The numberof dices.
     int DiceNumber;
@@ -38,8 +21,6 @@ private:
     //The number of rolls for the current turn.
     int RollCount;
 
-    int RollHistory[FACE_NUMBER];
-
-
+    int RollHistory[NUMBER_OF_FACES_ON_DICE];
 
 };

@@ -4,7 +4,7 @@
 
 #include "graph.h"
 
-Graph::Graph(std::string FileName)
+FGraph::FGraph(std::string FileName)
 {
     std::ifstream InputStream;
     InputStream.open(FileName);
@@ -29,7 +29,7 @@ Graph::Graph(std::string FileName)
                 }
                 else
                 {
-                    Vertex *NewVertex = new Vertex;
+                    FVertex *NewVertex = new FVertex;
                     NewVertex->Name = Text;
                     InsertVertex(NewVertex);
                 }
@@ -52,7 +52,7 @@ Graph::Graph(std::string FileName)
                 if (Position != std::string::npos)
                 {
                     std::string OriginName = Text.substr(0, Position);
-                    Vertex *OriginVertex = GetVertexWithName(OriginName);
+                    FVertex *OriginVertex = GetVertexWithName(OriginName);
                     if (OriginVertex)
                     {
                         std::string EdgeNames = Text.substr(Position+1);
@@ -64,10 +64,10 @@ Graph::Graph(std::string FileName)
                             {
                                 std::size_t Current = EdgeNames.find(',', Previous);
                                 std::string DestinationName = EdgeNames.substr(Previous, Current - Previous);
-                                Vertex *DestinationVertex = GetVertexWithName(DestinationName);
+                                FVertex *DestinationVertex = GetVertexWithName(DestinationName);
                                 if (DestinationVertex)
                                 {
-                                    Edge *NewEdge = new Edge;
+                                    FEdge *NewEdge = new FEdge;
                                     InsertEdge(OriginVertex, DestinationVertex, NewEdge);
                                 }
 
@@ -91,7 +91,7 @@ Graph::Graph(std::string FileName)
 
 }
 
-const Vertex *Graph::EndVertices(const Edge *CurrentEdge) const
+const FVertex *FGraph::EndVertices(const FEdge *CurrentEdge) const
 {
     //I don't know how to return that because I can only return a pointer to an array.
     //const std::vector<Edge> Array[] = { CurrentEdge->Origin, CurrentEdge->Destination }
@@ -100,7 +100,7 @@ const Vertex *Graph::EndVertices(const Edge *CurrentEdge) const
 }
 
 //NOTE: I'm using this to know if an edge as this vertex. This is not the role of this method.
-const Vertex *Graph::Opposite(const Vertex *CurrentVertex, const Edge *CurrentEdge) const
+const FVertex *FGraph::Opposite(const FVertex *CurrentVertex, const FEdge *CurrentEdge) const
 {
     if (CurrentVertex && CurrentEdge)
     {
@@ -124,7 +124,7 @@ const Vertex *Graph::Opposite(const Vertex *CurrentVertex, const Edge *CurrentEd
     }
 }
 
-bool Graph::AreAdjacent(const Vertex *VertexA, const Vertex *VertexB) const
+bool FGraph::AreAdjacent(const FVertex *VertexA, const FVertex *VertexB) const
 {
     if (VertexA && VertexB)
     {
@@ -134,7 +134,7 @@ bool Graph::AreAdjacent(const Vertex *VertexA, const Vertex *VertexB) const
             return false;
         }
 
-        for (const Edge *IncidentEdge: VertexA->IncidentEdgeVector)
+        for (const FEdge *IncidentEdge : VertexA->IncidentEdgeVector)
         {
             if (Opposite(VertexA, IncidentEdge))
             {
@@ -149,7 +149,7 @@ bool Graph::AreAdjacent(const Vertex *VertexA, const Vertex *VertexB) const
     }
 }
 
-void Graph::Replace(Vertex *OldVertex, Vertex *NewVertex)
+void FGraph::Replace(FVertex *OldVertex, FVertex *NewVertex)
 {
     if (OldVertex && NewVertex)
     {
@@ -157,7 +157,7 @@ void Graph::Replace(Vertex *OldVertex, Vertex *NewVertex)
     }
 }
 
-void Graph::Replace(Edge *OldEdge, Edge *NewEdge)
+void FGraph::Replace(FEdge *OldEdge, FEdge *NewEdge)
 {
     if (OldEdge && NewEdge)
     {
@@ -166,7 +166,7 @@ void Graph::Replace(Edge *OldEdge, Edge *NewEdge)
 }
 
 //This function assumes that the Vertex has no Edge.
-const Vertex *Graph::InsertVertex(Vertex *NewVertex)
+const FVertex *FGraph::InsertVertex(FVertex *NewVertex)
 {
     if (NewVertex)
     {
@@ -178,12 +178,12 @@ const Vertex *Graph::InsertVertex(Vertex *NewVertex)
 }
 
 //This function assumes that the Edge has no Vertex.
-const Edge *Graph::InsertEdge(Vertex *OriginVertex, Vertex *DestinationVertex, Edge *NewEdge)
+const FEdge *FGraph::InsertEdge(FVertex *OriginVertex, FVertex *DestinationVertex, FEdge *NewEdge)
 {
     if (OriginVertex && DestinationVertex && NewEdge)
     {
         EdgeVector.push_back(NewEdge);
-        Edge *CreatedEdge = EdgeVector.back();
+        FEdge *CreatedEdge = EdgeVector.back();
         CreatedEdge->Location = CreatedEdge;
         CreatedEdge->Origin = OriginVertex;
         CreatedEdge->Destination = DestinationVertex;
@@ -195,12 +195,12 @@ const Edge *Graph::InsertEdge(Vertex *OriginVertex, Vertex *DestinationVertex, E
     return nullptr;
 }
 
-const Vertex *Graph::RemoveVertex(Vertex *VertexToRemove)
+const FVertex *FGraph::RemoveVertex(FVertex *VertexToRemove)
 {
     if (VertexToRemove)
     {
         //Remove all pointers to that Vertex in the other Vertex IncidentEdgeVector.
-        for (Vertex * OtherVertex: VertexVector)
+        for (FVertex *OtherVertex : VertexVector)
         {
             if (AreAdjacent(VertexToRemove, OtherVertex))
             {
@@ -247,7 +247,7 @@ const Vertex *Graph::RemoveVertex(Vertex *VertexToRemove)
     return nullptr;
 }
 
-const Edge *Graph::RemoveEdge(Edge *EdgeToRemove)
+const FEdge *FGraph::RemoveEdge(FEdge *EdgeToRemove)
 {
     if (EdgeToRemove)
     {
@@ -292,24 +292,24 @@ const Edge *Graph::RemoveEdge(Edge *EdgeToRemove)
     return nullptr;
 }
 
-const std::vector<Vertex *> &Graph::Vertices() const
+const std::vector<FVertex *> &FGraph::Vertices() const
 {
     return VertexVector;
 }
 
-const std::vector<Edge *> &Graph::Edges() const
+const std::vector<FEdge *> &FGraph::Edges() const
 {
     return EdgeVector; 
 }
 
-const std::vector<Edge *> &Graph::IncidentEdges(const Vertex *CurrentVertex) const
+const std::vector<FEdge *> &FGraph::IncidentEdges(const FVertex *CurrentVertex) const
 {
     return CurrentVertex->IncidentEdgeVector;
 }
 
-Vertex *Graph::GetVertexWithName(std::string Name)
+FVertex *FGraph::GetVertexWithName(std::string Name)
 {
-    for (Vertex *Vertex: VertexVector)
+    for (FVertex *Vertex: VertexVector)
     {
         if (Vertex->Name == Name)
         {

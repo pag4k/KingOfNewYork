@@ -1,12 +1,16 @@
 #include <iostream>
+#include <string>
 
+#include "helper.h"
+#include "common.h"
 #include "diceroller.h"
 #include "graph.h"
-#include <string>
+#include "game.h"
 
 int main()
 {
-    while (true)
+    bool bIsRunning = true;
+    while (bIsRunning)
     {
         std::cout << std::endl
                   << "Write the number corresponding to what you want to test"
@@ -15,35 +19,71 @@ int main()
                   << std::endl
                   << "2. Test the dice roller."
                   << std::endl
+                  << "3. Create a game."
+                  << std::endl
                   << "0. Exit program."
                   << std::endl
                   << ">";
-        std::string Text;
-        std::getline(std::cin, Text);
-        if (Text == "1")
+        const int Input = InputSingleDigit();
+        switch (Input)
         {
-            std::cout << std::endl
-                      << "Enter the name of the file to use to generate the graph:"
-                      << std::endl
-                      << ">";
-            std::getline(std::cin, Text);
-            Graph *NewYorkGraph = new Graph(Text);
-            delete NewYorkGraph;
-        }
-        else if (Text == "2")
-        {
-            DiceRoller *CurrentDiceRoller = new DiceRoller(6, 3);
-            DiceResult DiceResult = CurrentDiceRoller->BeginRolling();
-            delete CurrentDiceRoller;
-        }
-        else if (Text == "0")
-        {
-            break;
-        }
-        else
-        {
-            std::cout << "Invalid input!"
-                      << std::endl;
+            case 0:
+            {
+                bIsRunning = false;
+                break;
+            }
+            case 1:
+            {
+                std::cout << std::endl
+                        << "Enter the name of the file to use to generate the graph:"
+                        << std::endl
+                        << ">";
+                const std::string FileName = InputString();
+                FGraph *NewYorkGraph = new FGraph(FileName);
+                delete NewYorkGraph;
+                break;
+            }
+            case 2:
+            {
+                FDiceRoller *CurrentDiceRoller = new FDiceRoller(NUMBER_OF_DICE, NUMBER_OF_ROLLS);
+                FDiceResult DiceResult = CurrentDiceRoller->BeginRolling();
+                delete CurrentDiceRoller;
+                break;
+            }
+            case 3:
+            {
+                std::cout   << std::endl
+                            << "Enter the number of player ("
+                            << MINIMUM_NUMBER_OF_PLAYERS
+                            << "-"
+                            << MAXIMUM_NUMBER_OF_PLAYERS
+                            << "):"
+                            << std::endl
+                            << ">";
+                const int NumberOfPlayer = InputSingleDigit();
+                if (MINIMUM_NUMBER_OF_PLAYERS <= NumberOfPlayer &&
+                    NumberOfPlayer <= MAXIMUM_NUMBER_OF_PLAYERS)
+                {
+                    FGame *Game = new FGame(NumberOfPlayer);
+                    delete Game;
+                }
+                else
+                {
+                    std::cout   << "Invalid number of player. It has to be between "
+                                << MINIMUM_NUMBER_OF_PLAYERS
+                                << " and "
+                                << MAXIMUM_NUMBER_OF_PLAYERS
+                                << ". Please try again."
+                                << std::endl;
+                }
+                break;
+            }
+            default:
+            {
+                std::cout << "Invalid input!"
+                        << std::endl;
+                break;
+            }
         }
     }
 

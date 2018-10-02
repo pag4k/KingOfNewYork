@@ -2,47 +2,47 @@
 #include <string>
 #include <iostream>
 
-struct Edge;
+struct FEdge;
 
-struct Vertex
+struct FVertex
 {
     std::string Name;
-    Vertex *Location;
-    std::vector<Edge *> IncidentEdgeVector;
+    FVertex *Location;
+    std::vector<FEdge *> IncidentEdgeVector;
 };
 
-struct Edge
+struct FEdge
 {
     std::string Name;
-    Edge *Location;
-    Vertex *Origin;
-    Vertex *Destination;
-    Vertex *IncidentOrigin;
-    Vertex *IncidentDestination;
+    FEdge *Location;
+    FVertex *Origin;
+    FVertex *Destination;
+    FVertex *IncidentOrigin;
+    FVertex *IncidentDestination;
 };
 
-class Graph
+class FGraph
 {
   public:
-    Graph(std::string FileName);
-    ~Graph() {}; //Must add desctructor!
+    FGraph(std::string FileName);
+    ~FGraph() {}; //Must add desctructor!
 
-    const Vertex *EndVertices(const Edge *CurrentEdge) const;
-    const Vertex *Opposite(const Vertex *CurrentVertex, const Edge *CurrentEdge) const;
-    bool AreAdjacent(const Vertex *VertexA, const Vertex *VertexB) const;
-    void Replace(Vertex *OldVertex, Vertex *NewVertex);
-    void Replace(Edge *OldEdge, Edge *NewEdge);
-    const Vertex *InsertVertex(Vertex *NewVertex);
-    const Edge *InsertEdge(Vertex *VertexA, Vertex *VertexB, Edge *NewEdge);
-    const Vertex *RemoveVertex(Vertex *CurrentVertex);
-    const Edge *RemoveEdge(Edge *CurrentEdge);
-    const std::vector<Vertex *> &Vertices() const;
-    const std::vector<Edge *> &Edges() const;
-    const std::vector<Edge *> &IncidentEdges(const Vertex *CurrentVertex) const;
+    const FVertex *EndVertices(const FEdge *CurrentEdge) const;
+    const FVertex *Opposite(const FVertex *CurrentVertex, const FEdge *CurrentEdge) const;
+    bool AreAdjacent(const FVertex *VertexA, const FVertex *VertexB) const;
+    void Replace(FVertex *OldVertex, FVertex *NewVertex);
+    void Replace(FEdge *OldEdge, FEdge *NewEdge);
+    const FVertex *InsertVertex(FVertex *NewVertex);
+    const FEdge *InsertEdge(FVertex *VertexA, FVertex *VertexB, FEdge *NewEdge);
+    const FVertex *RemoveVertex(FVertex *CurrentVertex);
+    const FEdge *RemoveEdge(FEdge *CurrentEdge);
+    const std::vector<FVertex *> &Vertices() const;
+    const std::vector<FEdge *> &Edges() const;
+    const std::vector<FEdge *> &IncidentEdges(const FVertex *CurrentVertex) const;
 
-    Vertex *GetVertexWithName(std::string Name);
+    FVertex *GetVertexWithName(std::string Name);
 
   private:
-    std::vector<Vertex *> VertexVector;
-    std::vector<Edge *> EdgeVector;
+    std::vector<FVertex *> VertexVector;
+    std::vector<FEdge *> EdgeVector;
 };
