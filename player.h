@@ -9,25 +9,38 @@ struct FVertex;
 class FPlayer
 {
 public:
-  FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[]);
-  ~FPlayer();
+    FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[]);
+    ~FPlayer();
 
-  void RollDice();
-  void ResolveDice();
-  void Move();
+    bool GetCelebrity() const { return bCelebrity; }
+    bool SetCelebrity(const bool bCelebrity) { this->bCelebrity = bCelebrity; }
 
-private:
-  void EnterPlayerName(std::vector<std::string> *PlayerNames);
-  void SelectMonster(bool AvailableMonsters[]);
+    void RollDice();
+    void ResolveDice();
+    void Move();
+    void BuyCards();
 
-  std::string PlayerName;
-  EMonsterName MonsterName;
-  FVertex *Position;
-  FDiceRoller DiceRoller;
-  FDiceResult CurrentDiceResult;
-  FTokenInventory TokenInventory;
-  std::vector<FCard> Cards;
-  int EnergyCubes;
-  int LifePoints;
-  int VictoryPoints;
+private :
+    void EnterPlayerName(std::vector<std::string> *PlayerNames);
+    void SelectMonster(bool AvailableMonsters[]);
+    bool ResolveAttack(const int NumberOfDice);
+    bool ResolveCelebrity(const int NumberOfDice);
+    bool ResolveDestruction(const int NumberOfDice);
+    bool ResolveEnergy(const int NumberOfDice);
+    bool ResolveHeal(const int NumberOfDice);
+    bool ResolveOuch(const int NumberOfDice);
+
+    std::string PlayerName;
+    EMonsterName MonsterName;
+    FVertex *Position;
+    FDiceRoller DiceRoller;
+    FDiceResult CurrentDiceResult;
+    FTokenInventory TokenInventory;
+    std::vector<FCard> Cards;
+    int EnergyCubes;
+    int LifePoints;
+    int VictoryPoints;
+    bool bCelebrity;
+    bool bStatueOfLiberty;
+
 };

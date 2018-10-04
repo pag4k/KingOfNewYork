@@ -21,9 +21,9 @@ public:
     FTileStack();
     void Shuffle();
     bool IsEmpty() const;
-    FTileStack Draw();
+    FTile *Draw();
 
 private:
     void GenerateFromFile(const std::string FileName);
-    std::vector<FTile> Tiles;
+    std::vector<FTile *> TileStack;
 };

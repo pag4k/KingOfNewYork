@@ -16,25 +16,24 @@ FCard::FCard(std::string Name, int EnergyCost, EHowToPlay HowToPlay, std::string
 FDeck::FDeck()
 {
     GenerateFromFile("cards.txt");
-    Shuffle();
 }
 
 bool FDeck::IsEmpty()
 {
-    return Cards.empty();
+    return Deck.empty();
 }
 
-FCard FDeck::Draw()
+FCard *FDeck::Draw()
 {
     assert(!IsEmpty());
-    FCard Card = Cards.back();
-    Cards.pop_back();
+    FCard *Card = Deck.back();
+    Deck.pop_back();
     return Card;
 }
 
 void FDeck::Shuffle()
 {
-    std::random_shuffle(Cards.begin(), Cards.end());
+    std::random_shuffle(Deck.begin(), Deck.end());
 }
 
 void FDeck::GenerateFromFile(std::string FileName)
@@ -62,13 +61,13 @@ void FDeck::GenerateFromFile(std::string FileName)
                 HowToPlay != EHowToPlay::None &&
                 Effect != "")
             {
-                Cards.push_back(FCard(Name, EnergyCost, HowToPlay, Effect));
+                Deck.push_back(new FCard(Name, EnergyCost, HowToPlay, Effect));
                 Name = Text.substr(5, Text.length() - 5);
                 EnergyCost = -1;
                 HowToPlay = EHowToPlay::None;
                 Effect = "";
             }
-            else if (Cards.empty())
+            else if (Deck.empty())
             {
                 Name = Text.substr(5, Text.length() - 5);
             }
@@ -119,7 +118,7 @@ void FDeck::GenerateFromFile(std::string FileName)
         HowToPlay != EHowToPlay::None &&
         Effect != "")
     {
-        Cards.push_back(FCard(Name, EnergyCost, HowToPlay, Effect));
+        Deck.push_back(new FCard(Name, EnergyCost, HowToPlay, Effect));
     }
 
     InputStream.close();

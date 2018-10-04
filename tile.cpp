@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <algorithm>
 #include "tile.h"
 
 FTile::FTile(ETileType TileType, int Durability, int Reward)
@@ -38,4 +39,32 @@ void FTile::Flip()
     }
     Reward = Durability;
     Durability++;
+}
+
+FTileStack::FTileStack()
+{
+    GenerateFromFile("tiles.txt");
+}
+
+void FTileStack::Shuffle()
+{
+    std::random_shuffle(TileStack.begin(), TileStack.end());
+}
+
+bool FTileStack::IsEmpty() const
+{
+    return (TileStack.empty());
+}
+
+FTile *FTileStack::Draw()
+{
+    assert(!IsEmpty());
+    FTile *Card = TileStack.back();
+    TileStack.pop_back();
+    return Card;
+}
+
+void FTileStack::GenerateFromFile(const std::string FileName)
+{
+
 }

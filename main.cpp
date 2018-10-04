@@ -85,11 +85,11 @@ int main()
                 FDeck Deck;
                 while (!Deck.IsEmpty())
                 {
-                    FCard Card = Deck.Draw();
-                    std::cout   << "Name: " << Card.GetName() << std::endl
-                                << "Energy Cost: " << Card.GetEnergyCost() << std::endl
-                                << "How to Play: " << GetHowToPlayString(Card.GetHowToPlay()) << std::endl
-                                << "Effect: " << Card.GetEffect() << std::endl;
+                    FCard *Card = Deck.Draw();
+                    std::cout   << "Name: " << Card->GetName() << std::endl
+                                << "Energy Cost: " << Card->GetEnergyCost() << std::endl
+                                << "How to Play: " << GetHowToPlayString(Card->GetHowToPlay()) << std::endl
+                                << "Effect: " << Card->GetEffect() << std::endl;
                 }
                 break;
             }

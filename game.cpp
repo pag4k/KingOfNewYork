@@ -1,7 +1,6 @@
 #include <assert.h>
 #include "game.h"
 #include "player.h"
-#include "common.h"
 
 FGame::FGame(int NumberOfPlayer)
 {
@@ -20,6 +19,10 @@ FGame::FGame(int NumberOfPlayer)
     {
         Players.push_back(new FPlayer(&PlayerNames, bAvailableMonsters));
     }
+
+    Superstar = nullptr;
+    StatusOfLiberty = nullptr;
+
 }
 
 FGame::~FGame()

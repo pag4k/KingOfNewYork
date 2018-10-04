@@ -23,9 +23,9 @@ public:
     FDeck();
     void Shuffle();
     bool IsEmpty();
-    FCard Draw();
+    FCard *Draw();
 
 private:
     void GenerateFromFile(std::string FileName);
-    std::vector<FCard> Cards;
+    std::vector<FCard *> Deck;
 };

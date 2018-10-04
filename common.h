@@ -23,6 +23,7 @@ enum class EMonsterName
 std::string GetMonsterNameString(EMonsterName MonsterName);
 
 const int NUMBER_OF_FACES_ON_DICE = 6;
+const int NUMBER_OF_DICE_FOR_CELEBRITY = 3;
 enum class EDiceFace
 {
     None = -1,
@@ -57,6 +58,7 @@ struct FTokenInventory
     int Token[NUMBER_OF_TOKENS];
 };
 
+const int MAXIMUM_AVAILABLE_CARDS = 3; 
 enum class EHowToPlay
 {
     None = -1,
@@ -81,6 +83,8 @@ enum class ETileType
 std::string GetTileTypeString(ETileType TileType);
 
 int const NUMBER_OF_MONSTER_RESOURCES = 3;
+int const MAXIMUM_LIFE_POINTS = 10;
+int const NUMBER_VICTORY_POINTS_TO_WIN = 20;
 enum class EMonsterResource
 {
     None = -1,

@@ -13,7 +13,7 @@ public :
 
 private :
     EDiceFace RollDice(int FaceNumber);
-
+    //TODO: ADD GREEN DICE!
     //The numberof dices.
     int DiceNumber;
     //The maximum number of rolls.
