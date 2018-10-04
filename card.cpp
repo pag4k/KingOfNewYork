@@ -15,12 +15,12 @@ FCard::FCard(std::string Name, int EnergyCost, EHowToPlay HowToPlay, std::string
 
 FDeck::FDeck()
 {
-    GenerateFromFile("cards.txt");
+
 }
 
-bool FDeck::IsEmpty()
+FDeck::FDeck(std::string FileName)
 {
-    return Deck.empty();
+    GenerateFromFile(FileName);
 }
 
 FCard *FDeck::Draw()
@@ -29,6 +29,17 @@ FCard *FDeck::Draw()
     FCard *Card = Deck.back();
     Deck.pop_back();
     return Card;
+}
+
+void FDeck::Print() const
+{
+    for (FCard *Card: Deck)
+    {
+        std::cout << "Name: " << Card->GetName() << std::endl
+                  << "Energy Cost: " << Card->GetEnergyCost() << std::endl
+                  << "How to Play: " << GetHowToPlayString(Card->GetHowToPlay()) << std::endl
+                  << "Effect: " << Card->GetEffect() << std::endl;
+    }
 }
 
 void FDeck::Shuffle()

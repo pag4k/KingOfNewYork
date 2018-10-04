@@ -37,14 +37,15 @@ enum class EDiceFace
 
 std::string GetDiceFaceString(EDiceFace Face);
 
-struct FDiceResult
-{
-    EDiceFace Dice[NUMBER_OF_FACES_ON_DICE];
-};
+// struct FDiceResult
+// {
+//     EDiceFace Dice[NUMBER_OF_FACES_ON_DICE];
+// };
 
-const int NUMBER_OF_TOKENS = 4;
-enum class ETokenType
-{
+const int STARTING_TOKENS = 13;
+const int NUMBER_OF_TOKEN_TYPE = 4;
+
+enum class ETokenType {
     //None = -1,
     Carapace = 0,
     Jinx = 1,
@@ -53,10 +54,10 @@ enum class ETokenType
 };
 std::string GetTokenTypeString(ETokenType TokenType);
 
-struct FTokenInventory
-{
-    int Token[NUMBER_OF_TOKENS];
-};
+// struct FTokenInventory
+// {
+//     int Token[NUMBER_OF_TOKEN_TYPE];
+// };
 
 const int MAXIMUM_AVAILABLE_CARDS = 3; 
 enum class EHowToPlay

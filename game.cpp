@@ -1,8 +1,7 @@
 #include <assert.h>
+#include <iostream>
 #include "game.h"
 #include "player.h"
-#include "tile.h"
-#include "card.h"
 
 FGame::FGame(int NumberOfPlayer)
 {
@@ -22,12 +21,16 @@ FGame::FGame(int NumberOfPlayer)
         Players.push_back(new FPlayer(&PlayerNames, bAvailableMonsters));
     }
 
-    Deck = new FDeck();
-    TileStack = new FTileStack();
+    Deck = FDeck("cards.txt");
+    TileStack = FTileStack("tiles.txt");
 
     Superstar = nullptr;
     StatusOfLiberty = nullptr;
 
+    for (int i = 0; i < NUMBER_OF_TOKEN_TYPE; ++i)
+    {
+        TokenInventory[i] = STARTING_TOKENS;
+    }
 }
 
 FGame::~FGame()
@@ -39,8 +42,50 @@ FGame::~FGame()
     Players.clear();
     Superstar = nullptr;
     StatusOfLiberty = nullptr;
-    delete Deck;
-    Deck = nullptr;
-    delete TileStack;
-    TileStack = nullptr;
+}
+
+void FGame::Print()
+{
+    std::cout << "Number of players: " << Number_of_Players << std::endl;
+    for (FPlayer *Player: Players)
+    {
+        std::cout << "\t-";
+        Player->PrintShort();
+    }
+    std::cout   << "Superstar: "
+                << (Superstar ?
+                    GetMonsterNameString(Superstar->GetMonsterName()) :
+                    "No one")
+                << std::endl;
+    std::cout << "Status of Liberty: "
+              << (StatusOfLiberty ?
+                  GetMonsterNameString(StatusOfLiberty->GetMonsterName()) :
+                  "No one")
+              << std::endl;
+
+    std::cout << "Number of cards in deck: " << Deck.Size() << std::endl;
+    std::cout << "Number of cards in discard deck: " << DiscardDeck.Size() << std::endl;
+    std::cout << "Number of tiles in tile stack: " << TileStack.Size() << std::endl;
+
+    std::cout << "Tokens left:" << std::endl;
+    for (int i = 0; i < NUMBER_OF_TOKEN_TYPE; ++i)
+    {
+        std::cout   << "\t-"
+                    << GetTokenTypeString(ETokenType(i))
+                    << ": "
+                    << TokenInventory[i]
+                    << std::endl;
+    }
+
+    std::cout << "Available cards:" << std::endl;
+    for (int i = 0; i < MAXIMUM_AVAILABLE_CARDS; ++i)
+    {
+        if (AvailableCards[i])
+        {
+            std::cout << "\t-"
+                      << AvailableCards[i]->GetName()
+                      << std::endl;
+        }
+        
+    }
 }

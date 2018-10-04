@@ -1,4 +1,4 @@
-Number:1
+Number:5
 TileType:High-Rise
 Durability:1
 Reward:1
@@ -14,17 +14,17 @@ Durability:3
 Reward:3
 
 Number:1
-TileType:Power plant
+TileType:Power Plant
 Durability:1
 Reward:1
 
 Number:1
-TileType:Power plant
+TileType:Power Plant
 Durability:2
 Reward:2
 
 Number:1
-TileType:Power plant
+TileType:Power Plant
 Durability:3
 Reward:3
 

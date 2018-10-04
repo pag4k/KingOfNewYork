@@ -10,7 +10,7 @@ FDiceRoller::FDiceRoller()
 {
     //Use current time as seed for the random generator.
     std::srand(std::time(nullptr));
-    this->DiceNumber = NUMBER_OF_DICE;
+    //this->DiceNumber = NUMBER_OF_DICE;
     this->RollNumber = NUMBER_OF_ROLLS;
 
     for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; i++)
@@ -19,13 +19,20 @@ FDiceRoller::FDiceRoller()
     }
 }
 
-FDiceResult FDiceRoller::BeginRolling()
+std::vector<EDiceFace> FDiceRoller::BeginRolling()
 {
+    return BeginRolling(NUMBER_OF_DICE);    
+}
+
+std::vector<EDiceFace> FDiceRoller::BeginRolling(int DiceNumber)
+{
+    assert(0 <= DiceNumber &&
+            DiceNumber <= NUMBER_OF_DICE);
     RollCount = 0;
-    FDiceResult DiceResult;
+    std::vector<EDiceFace> DiceResult;
     for (int i = 0; i < DiceNumber; i++)
     {
-        DiceResult.Dice[i] = EDiceFace::None;
+        DiceResult.push_back(EDiceFace::None);
     }
     while (RollCount < RollNumber)
     {
@@ -39,14 +46,14 @@ FDiceResult FDiceRoller::BeginRolling()
         for (int i = 0; i < DiceNumber; i++)
         {
             bool NewRoll = false;
-            if (DiceResult.Dice[i] == EDiceFace::None)
+            if (DiceResult[i] == EDiceFace::None)
             {
                 NewRoll = true;
-                DiceResult.Dice[i] = RollDice(NUMBER_OF_FACES_ON_DICE);
+                DiceResult[i] = RollDice(NUMBER_OF_FACES_ON_DICE);
             }
             std::cout << (i + 1)
                       << ": "
-                      << GetDiceFaceString(DiceResult.Dice[i])
+                      << GetDiceFaceString(DiceResult[i])
                       << (NewRoll ? " (new roll)" : "")
                       << std::endl;
         }
@@ -73,7 +80,7 @@ FDiceResult FDiceRoller::BeginRolling()
         {
             if (input.find((char)(i+1+48)) != std::string::npos)
             {
-                DiceResult.Dice[i] = EDiceFace::None;
+                DiceResult[i] = EDiceFace::None;
             }
         }
     }

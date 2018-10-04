@@ -49,7 +49,7 @@ int main()
             case 2:
             {
                 FDiceRoller CurrentDiceRoller;
-                FDiceResult DiceResult = CurrentDiceRoller.BeginRolling();
+                std::vector<EDiceFace> DiceResult = CurrentDiceRoller.BeginRolling();
                 break;
             }
             case 3:
@@ -67,6 +67,7 @@ int main()
                     NumberOfPlayer <= MAXIMUM_NUMBER_OF_PLAYERS)
                 {
                     FGame *Game = new FGame(NumberOfPlayer);
+                    Game->Print();
                     delete Game;
                 }
                 else
@@ -83,14 +84,7 @@ int main()
             case 4:
             {
                 FDeck Deck;
-                while (!Deck.IsEmpty())
-                {
-                    FCard *Card = Deck.Draw();
-                    std::cout   << "Name: " << Card->GetName() << std::endl
-                                << "Energy Cost: " << Card->GetEnergyCost() << std::endl
-                                << "How to Play: " << GetHowToPlayString(Card->GetHowToPlay()) << std::endl
-                                << "Effect: " << Card->GetEffect() << std::endl;
-                }
+                Deck.Print();
                 break;
             }
             default:

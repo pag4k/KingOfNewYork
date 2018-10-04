@@ -12,13 +12,21 @@ public:
     FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[]);
     ~FPlayer();
 
+    std::string GetPlayerName() const { return PlayerName; }
+    EMonsterName GetMonsterName() const { return MonsterName; }
     bool GetCelebrity() const { return bCelebrity; }
     bool SetCelebrity(const bool bCelebrity) { this->bCelebrity = bCelebrity; }
+
 
     void RollDice();
     void ResolveDice();
     void Move();
     void BuyCards();
+
+
+
+    void PrintShort();
+    void PrintLong();
 
 private :
     void EnterPlayerName(std::vector<std::string> *PlayerNames);
@@ -34,8 +42,8 @@ private :
     EMonsterName MonsterName;
     FVertex *Position;
     FDiceRoller *DiceRoller;
-    FDiceResult CurrentDiceResult;
-    FTokenInventory TokenInventory;
+    std::vector<EDiceFace> CurrentDiceResult;
+    int TokenInventory[NUMBER_OF_TOKEN_TYPE];
     std::vector<FCard *> Cards;
     int EnergyCubes;
     int LifePoints;

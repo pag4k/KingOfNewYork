@@ -1,3 +1,4 @@
+#include <vector>
 #include <string>
 #include "common.h"
 
@@ -8,14 +9,15 @@ public :
     FDiceRoller();
     ~FDiceRoller(){};
 
-    FDiceResult BeginRolling();
+    std::vector<EDiceFace> BeginRolling();
+    std::vector<EDiceFace> BeginRolling(int DiceNumber);
     void PrintRollHistory();
 
 private :
     EDiceFace RollDice(int FaceNumber);
     //TODO: ADD GREEN DICE!
     //The numberof dices.
-    int DiceNumber;
+    //int DiceNumber;
     //The maximum number of rolls.
     int RollNumber;
     //The number of rolls for the current turn.

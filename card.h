@@ -1,3 +1,6 @@
+#ifndef CARD_H
+#define CARD_H
+
 #include <string>
 #include <vector>
 #include "common.h"
@@ -21,11 +24,16 @@ public:
 class FDeck{
 public:
     FDeck();
+    FDeck(std::string FileName);
     void Shuffle();
-    bool IsEmpty();
+    int Size() const { return Deck.size(); };
+    bool IsEmpty() const { return Deck.empty(); };
     FCard *Draw();
+    void Print() const;
 
 private:
     void GenerateFromFile(std::string FileName);
     std::vector<FCard *> Deck;
 };
+
+#endif

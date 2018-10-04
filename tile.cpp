@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include "tile.h"
+#include "helper.h"
 
 FTile::FTile(ETileType TileType, int Durability, int Reward)
 {
@@ -45,17 +46,17 @@ void FTile::Flip()
 
 FTileStack::FTileStack()
 {
-    GenerateFromFile("tiles.txt");
+
+}
+
+FTileStack::FTileStack(std::string FileName)
+{
+    GenerateFromFile(FileName);
 }
 
 void FTileStack::Shuffle()
 {
     std::random_shuffle(TileStack.begin(), TileStack.end());
-}
-
-bool FTileStack::IsEmpty() const
-{
-    return (TileStack.empty());
 }
 
 FTile *FTileStack::Draw()
@@ -64,6 +65,16 @@ FTile *FTileStack::Draw()
     FTile *Card = TileStack.back();
     TileStack.pop_back();
     return Card;
+}
+
+void FTileStack::Print() const
+{
+    for (FTile *Tile : TileStack)
+    {
+        std::cout << "Type: " << GetTileTypeString(Tile->GetTileType()) << std::endl
+                  << "Durability: " << Tile->GetDurability() << std::endl
+                  << "Reward: " << Tile->GetReward() << std::endl;
+    }
 }
 
 void FTileStack::GenerateFromFile(const std::string FileName)
@@ -79,77 +90,86 @@ void FTileStack::GenerateFromFile(const std::string FileName)
     }
 
     std::string Text;
-    std::string Name = "";
-    // int EnergyCost = -1;
-    // EHowToPlay HowToPlay = EHowToPlay::None;
-    // std::string Effect = "";
-    // while (!std::getline(InputStream, Text).eof())
-    // {
-    //     if (Text.substr(0, 5) == "Name:")
-    //     {
-    //         if (Name != "" &&
-    //             EnergyCost != -1 &&
-    //             HowToPlay != EHowToPlay::None &&
-    //             Effect != "")
-    //         {
-    //             Deck.push_back(new FCard(Name, EnergyCost, HowToPlay, Effect));
-    //             Name = Text.substr(5, Text.length() - 5);
-    //             EnergyCost = -1;
-    //             HowToPlay = EHowToPlay::None;
-    //             Effect = "";
-    //         }
-    //         else if (Deck.empty())
-    //         {
-    //             Name = Text.substr(5, Text.length() - 5);
-    //         }
-    //         else
-    //         {
-    //             std::cout << "There was a problem creating card: "
-    //                       << Name
-    //                       << std::endl;
-    //         }
-    //     }
-    //     else if (Text.substr(0, 11) == "EnergyCost:")
-    //     {
-    //         EnergyCost = ParseIntFromChar(Text[11]);
-    //     }
-    //     else if (Text.substr(0, 10) == "HowToPlay:")
-    //     {
-    //         std::string temp = Text.substr(10, Text.length() - 10);
-    //         if (temp == GetHowToPlayString(EHowToPlay::Discard))
-    //         {
-    //             HowToPlay = EHowToPlay::Discard;
-    //         }
-    //         else if (temp == GetHowToPlayString(EHowToPlay::Keep))
-    //         {
-    //             HowToPlay = EHowToPlay::Keep;
-    //         }
-    //         else
-    //         {
-    //             HowToPlay = EHowToPlay::None;
-    //         }
-    //     }
-    //     else if (Text.substr(0, 7) == "Effect:")
-    //     {
-    //         Effect = Text.substr(7, Text.length() - 7);
-    //     }
-    //     else if (Text == "")
-    //     {
-    //         continue;
-    //     }
-    //     else
-    //     {
-    //         //INVALID
-    //     }
-    // }
+    int Number = -1;
+    ETileType TileType = ETileType::None;
+    int Durability = -1;
+    int Reward = -1;
+    while (!std::getline(InputStream, Text).eof())
+    {
+        if (Text.substr(0, 7) == "Number:")
+        {
+            if (Number != -1 &&
+                TileType != ETileType::None &&
+                Durability != -1 &&
+                Reward != -1)
+            {
+                for (int i = 0; i < Number; ++i)
+                {
+                    TileStack.push_back(new FTile(TileType, Durability, Reward));
+                }
+                Number = ParseIntFromChar(Text[7]);
+                TileType = ETileType::None;
+                Durability = -1;
+                Reward = -1;
+            }
+            else if (TileStack.empty())
+            {
+                Number = ParseIntFromChar(Text[7]);
+            }
+            else
+            {
+                std::cout << "There was a problem creating tile."
+                          << std::endl;
+            }
+        }
+        else if (Text.substr(0, 9) == "TileType:")
+        {
+            std::string temp = Text.substr(9, Text.length() - 9);
+            if (temp == GetTileTypeString(ETileType::HighRise))
+            {
+                TileType = ETileType::HighRise;
+            }
+            else if (temp == GetTileTypeString(ETileType::PowerPlant))
+            {
+                TileType = ETileType::PowerPlant;
+            }
+            else if (temp == GetTileTypeString(ETileType::Hospital))
+            {
+                TileType = ETileType::Hospital;
+            }
+            else
+            {
+                TileType = ETileType::None;
+            }
+        }
+        else if (Text.substr(0, 11) == "Durability:")
+        {
+            Durability = ParseIntFromChar(Text[11]);
+        }
+        else if (Text.substr(0, 7) == "Reward:")
+        {
+            Reward = ParseIntFromChar(Text[7]);
+        }
+        else if (Text == "")
+        {
+            continue;
+        }
+        else
+        {
+            //INVALID
+        }
+    }
 
-    // if (Name != "" &&
-    //     EnergyCost != -1 &&
-    //     HowToPlay != EHowToPlay::None &&
-    //     Effect != "")
-    // {
-    //     Deck.push_back(new FCard(Name, EnergyCost, HowToPlay, Effect));
-    // }
+    if (Number != -1 &&
+        TileType != ETileType::None &&
+        Durability != -1 &&
+        Reward != -1)
+    {
+        for (int i = 0; i < Number; ++i)
+        {
+            TileStack.push_back(new FTile(TileType, Durability, Reward));
+        }
+    }
 
     InputStream.close();
 }

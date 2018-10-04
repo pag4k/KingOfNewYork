@@ -17,20 +17,20 @@ FPlayer::FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[
 
     DiceRoller = new FDiceRoller();
 
-    for (int i = 0; i < NUMBER_OF_TOKENS; ++i)
+    for (int i = 0; i < NUMBER_OF_TOKEN_TYPE; ++i)
     {
-        TokenInventory.Token[i] = 0;
+        TokenInventory[i] = 0;
     }
 
     EnergyCubes = 0;
-    LifePoints = 10;
+    LifePoints = MAXIMUM_LIFE_POINTS;
     VictoryPoints = 0;
 
     bCelebrity = false;
     bStatueOfLiberty = false;
 
-    RollDice();
-    ResolveDice();
+    //RollDice();
+    //ResolveDice();
 }
 
 FPlayer::~FPlayer()
@@ -46,14 +46,15 @@ void FPlayer::RollDice()
 
 void FPlayer::ResolveDice()
 {
+    assert(!CurrentDiceResult.empty());
     int DiceSums[NUMBER_OF_FACES_ON_DICE];
     for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; ++i)
     {
         DiceSums[i] = 0;
     }
-    for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; ++i)
+    for (EDiceFace DiceFace: CurrentDiceResult)
     {
-        DiceSums[static_cast<int>(CurrentDiceResult.Dice[i])]++;
+        DiceSums[static_cast<int>(DiceFace)]++;
     }
 
     bool Done = false;
@@ -152,6 +153,18 @@ void FPlayer::Move()
 
 }
 
+void FPlayer::PrintShort()
+{
+    std::cout   << "Name: " << PlayerName
+                << " Monster: " << GetMonsterNameString(MonsterName)
+                << std::endl;
+
+}
+
+void FPlayer::PrintLong()
+{
+
+}
 
 void FPlayer::EnterPlayerName(std::vector<std::string> *PlayerNames)
 {
@@ -203,7 +216,7 @@ void FPlayer::SelectMonster(bool bAvailableMonsters[])
         }
         std::cout << ">";
         const int Input = InputSingleDigit();
-        if (1 <= Input && Input <= NUMBER_OF_MONSTERS && bAvailableMonsters[Input])
+        if (1 <= Input && Input <= NUMBER_OF_MONSTERS && bAvailableMonsters[Input-1])
         {
             MonsterName = static_cast<EMonsterName>(Input - 1);
             bAvailableMonsters[Input - 1] = false;

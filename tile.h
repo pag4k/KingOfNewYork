@@ -9,7 +9,10 @@ public:
     bool IsBuilding() const;
     EMonsterResource GetMonsterResource() const;
     void Flip();
-        //void Destroy();
+    ETileType GetTileType() const { return TileType; }
+    int GetDurability() const { return Durability; }
+    int GetReward() const { return Reward; }
+
 private :
     ETileType TileType;
     int Durability;
@@ -20,9 +23,12 @@ class FTileStack
 {
 public:
     FTileStack();
+    FTileStack(std::string FileName);
     void Shuffle();
-    bool IsEmpty() const;
+    int Size() const { return TileStack.size(); } 
+    bool IsEmpty() const { return TileStack.empty(); }
     FTile *Draw();
+    void Print() const;
 
 private:
     void GenerateFromFile(const std::string FileName);
