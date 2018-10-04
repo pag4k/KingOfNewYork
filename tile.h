@@ -10,7 +10,8 @@ public:
     EMonsterResource GetMonsterResource() const;
     void Flip();
         //void Destroy();
-private : ETileType TileType;
+private :
+    ETileType TileType;
     int Durability;
     int Reward;
 };

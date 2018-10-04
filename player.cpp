@@ -3,6 +3,8 @@
 
 #include "player.h"
 #include "helper.h"
+//#include "card.h"
+#include "diceroller.h"
 
 FPlayer::FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[])
 {
@@ -12,6 +14,8 @@ FPlayer::FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[
     SelectMonster(bAvailableMonsters);
 
     //NEED TO ADD POSITION
+
+    DiceRoller = new FDiceRoller();
 
     for (int i = 0; i < NUMBER_OF_TOKENS; ++i)
     {
@@ -37,7 +41,7 @@ FPlayer::~FPlayer()
 
 void FPlayer::RollDice()
 {
-    CurrentDiceResult = DiceRoller.BeginRolling();
+    CurrentDiceResult = DiceRoller->BeginRolling();
 }
 
 void FPlayer::ResolveDice()

@@ -1,6 +1,8 @@
 #include <assert.h>
 #include "game.h"
 #include "player.h"
+#include "tile.h"
+#include "card.h"
 
 FGame::FGame(int NumberOfPlayer)
 {
@@ -20,6 +22,9 @@ FGame::FGame(int NumberOfPlayer)
         Players.push_back(new FPlayer(&PlayerNames, bAvailableMonsters));
     }
 
+    Deck = new FDeck();
+    TileStack = new FTileStack();
+
     Superstar = nullptr;
     StatusOfLiberty = nullptr;
 
@@ -27,5 +32,15 @@ FGame::FGame(int NumberOfPlayer)
 
 FGame::~FGame()
 {
-
+    for (FPlayer *Player : Players)
+    {
+        delete Player;
+    }
+    Players.clear();
+    Superstar = nullptr;
+    StatusOfLiberty = nullptr;
+    delete Deck;
+    Deck = nullptr;
+    delete TileStack;
+    TileStack = nullptr;
 }

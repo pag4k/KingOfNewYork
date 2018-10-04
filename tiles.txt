@@ -1,0 +1,44 @@
+Number:1
+TileType:High-Rise
+Durability:1
+Reward:1
+
+Number:1
+TileType:High-Rise
+Durability:2
+Reward:2
+
+Number:1
+TileType:High-Rise
+Durability:3
+Reward:3
+
+Number:1
+TileType:Power plant
+Durability:1
+Reward:1
+
+Number:1
+TileType:Power plant
+Durability:2
+Reward:2
+
+Number:1
+TileType:Power plant
+Durability:3
+Reward:3
+
+Number:1
+TileType:Hospital
+Durability:1
+Reward:1
+
+Number:1
+TileType:Hospital
+Durability:2
+Reward:2
+
+Number:1
+TileType:Hospital
+Durability:3
+Reward:3
