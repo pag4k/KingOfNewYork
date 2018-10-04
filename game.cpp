@@ -7,9 +7,9 @@ FGame::FGame(int NumberOfPlayer)
 {
     std::vector<std::string> PlayerNames;
     bool bAvailableMonsters[NUMBER_OF_MONSTERS];
-    for (bool b: bAvailableMonsters)
+    for (int i = 0; i < NUMBER_OF_MONSTERS; ++i)
     {
-        b = true;
+        bAvailableMonsters[i] = true;
     }
 
     assert(MINIMUM_NUMBER_OF_PLAYERS <= NumberOfPlayer &&

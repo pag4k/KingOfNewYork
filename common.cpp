@@ -1,10 +1,10 @@
 #include <assert.h>
 #include "common.h"
 
-std::string GetFaceName(EDiceFace Face)
+std::string GetDiceFaceString(EDiceFace DiceFace)
 {
     std::string FaceName = "";
-    switch (Face)
+    switch (DiceFace)
     {
     case EDiceFace::Attack:
         FaceName = "Attack";
@@ -29,7 +29,7 @@ std::string GetFaceName(EDiceFace Face)
     return FaceName;
 }
 
-std::string GetMonsterName(EMonsterName MonsterName)
+std::string GetMonsterNameString(EMonsterName MonsterName)
 {
     std::string MonsterNameString = "";
     switch (MonsterName)
@@ -56,3 +56,88 @@ std::string GetMonsterName(EMonsterName MonsterName)
     assert(MonsterNameString != "");
     return MonsterNameString;
 }
+
+std::string GetTokenTypeString(ETokenType TokenType)
+{
+    std::string TokenTypeString = "";
+    switch (TokenType)
+    {
+    case ETokenType::Carapace:
+        TokenTypeString = "Carapace";
+        break;
+    case ETokenType::Jinx:
+        TokenTypeString = "Jinx";
+        break;
+    case ETokenType::Souvenir:
+        TokenTypeString = "Souvenir";
+        break;
+    case ETokenType::Web:
+        TokenTypeString = "Web";
+        break;
+    }
+    assert(TokenTypeString != "");
+    return TokenTypeString;
+}
+
+std::string GetHowToPlayString(EHowToPlay HowToPlay)
+{
+    std::string HowToPlayString = "";
+    switch (HowToPlay)
+    {
+    case EHowToPlay::Discard:
+        HowToPlayString = "Discard";
+        break;
+    case EHowToPlay::Keep:
+        HowToPlayString = "Keep";
+        break;
+    }
+    assert(HowToPlayString != "");
+    return HowToPlayString;
+}
+
+std::string GetTileTypeString(ETileType TileType)
+{
+    std::string FileTypeString = "";
+    switch (TileType)
+    {
+    case ETileType::HighRise:
+        FileTypeString = "High-Rise";
+        break;
+    case ETileType::Tank:
+        FileTypeString = "Tank";
+        break;
+    case ETileType::PowerPlant:
+        FileTypeString = "Power Plant";
+        break;
+    case ETileType::Jet:
+        FileTypeString = "Jet";
+        break;
+    case ETileType::Hospital:
+        FileTypeString = "Hospital";
+        break;
+    case ETileType::Infantry:
+        FileTypeString = "Infantry";
+        break;
+    }
+    assert(FileTypeString != "");
+    return FileTypeString;
+}
+
+std::string GetMonsterResourceString(EMonsterResource MonsterResource)
+{
+    std::string MonsterResourceString = "";
+    switch (MonsterResource)
+    {
+    case EMonsterResource::EnergyCube:
+        MonsterResourceString = "Energy Cube";
+        break;
+    case EMonsterResource::LifePoint:
+        MonsterResourceString = "Life Point";
+        break;
+    case EMonsterResource::VictoryPoint:
+        MonsterResourceString = "Victory Point";
+        break;
+    }
+    assert(MonsterResourceString != "");
+    return MonsterResourceString;
+};

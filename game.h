@@ -1,7 +1,6 @@
 #include <vector>
 #include <string>
 
-
 class FPlayer;
 
 class FGame

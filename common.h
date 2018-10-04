@@ -5,12 +5,11 @@
 
 const int MINIMUM_NUMBER_OF_PLAYERS = 2;
 const int MAXIMUM_NUMBER_OF_PLAYERS = 6;
-const int NUMBER_OF_FACES_ON_DICE = 6;
-const int NUMBER_OF_MONSTERS = 6;
 
 const int NUMBER_OF_DICE = 6;
 const int NUMBER_OF_ROLLS = 3;
 
+const int NUMBER_OF_MONSTERS = 6;
 enum class EMonsterName
 {
     None = -1,
@@ -21,7 +20,9 @@ enum class EMonsterName
     Rob = 4,
     Sherrif = 5
 };
+std::string GetMonsterNameString(EMonsterName MonsterName);
 
+const int NUMBER_OF_FACES_ON_DICE = 6;
 enum class EDiceFace
 {
     None = -1,
@@ -33,12 +34,60 @@ enum class EDiceFace
     Ouch = 5
 };
 
+std::string GetDiceFaceString(EDiceFace Face);
+
 struct FDiceResult
 {
     EDiceFace Dice[NUMBER_OF_FACES_ON_DICE];
 };
 
-std::string GetMonsterName(EMonsterName MonsterName);
-std::string GetFaceName(EDiceFace Face);
+const int NUMBER_OF_TOKENS = 4;
+enum class ETokenType
+{
+    //None = -1,
+    Carapace = 0,
+    Jinx = 1,
+    Souvenir = 2,
+    Web = 3
+};
+std::string GetTokenTypeString(ETokenType TokenType);
+
+struct FTokenInventory
+{
+    int Token[NUMBER_OF_TOKENS];
+};
+
+enum class EHowToPlay
+{
+    None = -1,
+    Keep = 0,
+    Discard = 1
+};
+std::string GetHowToPlayString(EHowToPlay HowToPlay);
+
+enum class ETileType
+{
+    None = -1,
+    //Energy
+    PowerPlant = 0,
+    Jet = 1,
+    //Heal
+    Hospital = 2,
+    Infantry = 3,
+    //Victory Points
+    HighRise = 4,
+    Tank = 5
+};
+std::string GetTileTypeString(ETileType TileType);
+
+int const NUMBER_OF_MONSTER_RESOURCES = 3;
+enum class EMonsterResource
+{
+    None = -1,
+    EnergyCube = 0,
+    LifePoint = 1,
+    VictoryPoint = 2
+};
+std::string GetMonsterResourceString(EMonsterResource MonsterResource);
 
 #endif

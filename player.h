@@ -1,9 +1,10 @@
 #include <string>
 #include <vector>
 #include "common.h"
+#include "card.h"
+#include "diceroller.h"
 
 struct FVertex;
-class FDiceRoller;
 
 class FPlayer
 {
@@ -22,7 +23,11 @@ private:
   std::string PlayerName;
   EMonsterName MonsterName;
   FVertex *Position;
-  FDiceRoller *DiceRoller;
+  FDiceRoller DiceRoller;
   FDiceResult CurrentDiceResult;
-
+  FTokenInventory TokenInventory;
+  std::vector<FCard> Cards;
+  int EnergyCubes;
+  int LifePoints;
+  int VictoryPoints;
 };

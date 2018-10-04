@@ -3,4 +3,4 @@
 
 int InputSingleDigit();
 std::string InputString();
-
+int ParseIntFromChar(char Char);

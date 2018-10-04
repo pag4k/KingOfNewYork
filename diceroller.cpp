@@ -6,15 +6,12 @@
 #include "diceroller.h"
 #include "common.h"
 
-FDiceRoller::FDiceRoller(int DiceNumber, int RollNumber)
+FDiceRoller::FDiceRoller()
 {
-    //Verify that both arguments are greater than zero.
-    assert(DiceNumber > 0);
-    assert(RollNumber > 0);
     //Use current time as seed for the random generator.
     std::srand(std::time(nullptr));
-    this->DiceNumber = DiceNumber;
-    this->RollNumber = RollNumber;
+    this->DiceNumber = NUMBER_OF_DICE;
+    this->RollNumber = NUMBER_OF_ROLLS;
 
     for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; i++)
     {
@@ -47,11 +44,11 @@ FDiceResult FDiceRoller::BeginRolling()
                 NewRoll = true;
                 DiceResult.Dice[i] = RollDice(NUMBER_OF_FACES_ON_DICE);
             }
-            std::cout   << (i + 1)
-                        << ": "
-                        << GetFaceName(DiceResult.Dice[i])
-                        << (NewRoll ? " (new roll)" : "")
-                        << std::endl;
+            std::cout << (i + 1)
+                      << ": "
+                      << GetDiceFaceString(DiceResult.Dice[i])
+                      << (NewRoll ? " (new roll)" : "")
+                      << std::endl;
         }
         RollCount++;
         if (RollCount >= RollNumber) {
@@ -100,6 +97,6 @@ void FDiceRoller::PrintRollHistory()
     std::cout << "### Roll History ###" << std::endl;
     for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; i++)
     {
-        std::cout << GetFaceName(EDiceFace(i)) << ": " << RollHistory[i] << std::endl;
+        std::cout << GetDiceFaceString(EDiceFace(i)) << ": " << RollHistory[i] << std::endl;
     }
 }

@@ -1,0 +1,9 @@
+Name:Chameleon
+EnergyCost:4
+HowToPlay:Keep
+Effect:You can discard as many [Celebrity] as you wish. For each [Celebrity] discarded, you can change the face of one of the dice you haven't resolved.
+
+Name:Telsa Canon
+EnergyCost:5
+HowToPlay:Discard
+Effect:+2 [VictoryPoint]. All Monsters (including you) must discard one [Keep] card.

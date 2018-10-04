@@ -6,6 +6,7 @@
 #include "diceroller.h"
 #include "graph.h"
 #include "game.h"
+#include "card.h"
 
 int main()
 {
@@ -20,6 +21,8 @@ int main()
                   << "2. Test the dice roller."
                   << std::endl
                   << "3. Create a game."
+                  << std::endl
+                  << "4. Create a deck."
                   << std::endl
                   << "0. Exit program."
                   << std::endl
@@ -45,9 +48,8 @@ int main()
             }
             case 2:
             {
-                FDiceRoller *CurrentDiceRoller = new FDiceRoller(NUMBER_OF_DICE, NUMBER_OF_ROLLS);
-                FDiceResult DiceResult = CurrentDiceRoller->BeginRolling();
-                delete CurrentDiceRoller;
+                FDiceRoller CurrentDiceRoller;
+                FDiceResult DiceResult = CurrentDiceRoller.BeginRolling();
                 break;
             }
             case 3:
@@ -78,10 +80,23 @@ int main()
                 }
                 break;
             }
+            case 4:
+            {
+                FDeck Deck;
+                while (!Deck.IsEmpty())
+                {
+                    FCard Card = Deck.Draw();
+                    std::cout   << "Name: " << Card.GetName() << std::endl
+                                << "Energy Cost: " << Card.GetEnergyCost() << std::endl
+                                << "How to Play: " << GetHowToPlayString(Card.GetHowToPlay()) << std::endl
+                                << "Effect: " << Card.GetEffect() << std::endl;
+                }
+                break;
+            }
             default:
             {
-                std::cout << "Invalid input!"
-                        << std::endl;
+                std::cout   << "Invalid input!"
+                            << std::endl;
                 break;
             }
         }

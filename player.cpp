@@ -1,9 +1,7 @@
 #include <iostream>
 
 #include "player.h"
-#include "common.h"
 #include "helper.h"
-#include "diceroller.h"
 
 FPlayer::FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[])
 {
@@ -14,20 +12,84 @@ FPlayer::FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[
 
     //NEED TO ADD POSITION
 
-    DiceRoller = new FDiceRoller(NUMBER_OF_DICE, NUMBER_OF_ROLLS);
+    for (int i = 0; i < NUMBER_OF_TOKENS; ++i)
+    {
+        TokenInventory.Token[i] = 0;
+    }
+
+    EnergyCubes = 0;
+    LifePoints = 10;
+    VictoryPoints = 0;
+
+    RollDice();
+    ResolveDice();
 }
 
 FPlayer::~FPlayer()
 {
-    delete DiceRoller;
-    DiceRoller =  nullptr;
+    //delete DiceRoller;
+    //DiceRoller = nullptr;
 }
+
+void FPlayer::RollDice()
+{
+    CurrentDiceResult = DiceRoller.BeginRolling();
+}
+
+void FPlayer::ResolveDice()
+{
+    int DiceSums[NUMBER_OF_FACES_ON_DICE];
+    for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; ++i)
+    {
+        DiceSums[i] = 0;
+    }
+    for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; ++i)
+    {
+        DiceSums[static_cast<int>(CurrentDiceResult.Dice[i])]++;
+    }
+    for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; ++i)
+    {
+        std::cout << (i+1)
+                  << ". "
+                  << DiceSums[i]
+                  << "x "
+                  << GetDiceFaceString(EDiceFace(i))
+                  << std::endl;
+    }
+
+    bool Done = false;
+    do
+    {
+        std::cout << "Enter the number of the action you want to resolve:"
+                  << std::endl
+                  << ">";
+        int Input = InputSingleDigit();
+        if (0 <= Input && Input <= NUMBER_OF_FACES_ON_DICE)
+        {
+            
+        }
+        else
+        {
+            std::cout << "Invalid input!" << std::endl;
+        }
+    } while (!Done);
+
+
+}
+
+void FPlayer::Move()
+{
+
+}
+
 
 void FPlayer::EnterPlayerName(std::vector<std::string> *PlayerNames)
 {
     while (PlayerName == "")
     {
-        std::cout << "Please enter your name:" << std::endl;
+        std::cout   << "Player "
+                    << PlayerNames->size() + 1
+                    << ", please enter your name:" << std::endl;
         std::cout << ">";
         bool bError = false;
         const std::string Input = InputString();
@@ -60,12 +122,13 @@ void FPlayer::SelectMonster(bool bAvailableMonsters[])
 {
     while (MonsterName == EMonsterName::None)
     {
-        std::cout << "Please select your monster:" << std::endl;
+        std::cout   << PlayerName
+                    << ", please select your monster:" << std::endl;
         for (int i = 0; i < NUMBER_OF_MONSTERS; ++i)
         {
             if (bAvailableMonsters[i])
             {
-                std::cout << (i + 1) << " " << GetMonsterName(static_cast<EMonsterName>(i)) << std::endl;
+                std::cout << (i + 1) << " " << GetMonsterNameString(static_cast<EMonsterName>(i)) << std::endl;
             }
         }
         std::cout << ">";

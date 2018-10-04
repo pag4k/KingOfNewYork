@@ -4,15 +4,15 @@
 struct FDiceResult;
 
 class FDiceRoller {
-    public :
-        FDiceRoller(int DiceNumber, int RollNumber);
+public :
+    FDiceRoller();
     ~FDiceRoller(){};
 
     FDiceResult BeginRolling();
     void PrintRollHistory();
 
-    private :
-        EDiceFace RollDice(int FaceNumber);
+private :
+    EDiceFace RollDice(int FaceNumber);
 
     //The numberof dices.
     int DiceNumber;
