@@ -5,20 +5,18 @@
 #include "player.h"
 #include "helper.h"
 #include "card.h"
-#include "diceroller.h"
 #include "graph.h"
 
-FPlayer::FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[], std::vector<FVertex *> &Vertices)
+FPlayer::FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[], std::vector<FVertex *> &Vertices)
 {
     PlayerName = "";
     EnterPlayerName(PlayerNames);
     MonsterName = EMonsterName::None;
     SelectMonster(bAvailableMonsters);
+    Position = nullptr;
     SelectStartingLocation(Vertices);
 
-    //NEED TO ADD POSITION
-
-    DiceRoller = new FDiceRoller();
+    DiceRoller = FDiceRoller();
 
     for (int i = 0; i < NUMBER_OF_TOKEN_TYPE; ++i)
     {
@@ -32,6 +30,8 @@ FPlayer::FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[
     bCelebrity = false;
     bStatueOfLiberty = false;
 
+    PrintLong();
+
     //RollDice();
     //ResolveDice();
 }
@@ -44,7 +44,7 @@ FPlayer::~FPlayer()
 
 void FPlayer::RollDice()
 {
-    CurrentDiceResult = DiceRoller->BeginRolling();
+    CurrentDiceResult = DiceRoller.BeginRolling();
 }
 
 void FPlayer::ResolveDice()
@@ -166,14 +166,16 @@ void FPlayer::PrintShort()
 
 void FPlayer::PrintLong()
 {
-    std::cout << "Name: " << PlayerName
-              << " Monster: " << GetMonsterNameString(MonsterName)
-              << std::endl;
+    std::cout << "Name: " << PlayerName << std::endl;
+    std::cout << "Monster: " << GetMonsterNameString(MonsterName) << std::endl;
 
-    FVertex *Position;
+    if (Position)
+    {
+        std::cout << "Position: " << Position->Name << std::endl;
+    }
 
     std::cout << "Rolling history:" << std::endl;
-    DiceRoller->PrintRollHistory();
+    DiceRoller.PrintRollHistory();
 
     std::cout << "Number of cards: " << Cards.size() << std::endl;
     for (int i = 0; i < Cards.size(); ++i)
@@ -201,11 +203,11 @@ void FPlayer::PrintLong()
               << std::endl;
 
     std::cout << "Life points:"
-              << EnergyCubes
+              << LifePoints
               << std::endl;
 
     std::cout << "Victory points:"
-              << EnergyCubes
+              << VictoryPoints
               << std::endl;
 
     if (bCelebrity)
@@ -223,12 +225,12 @@ void FPlayer::PrintLong()
     }
 }
 
-void FPlayer::EnterPlayerName(std::vector<std::string> *PlayerNames)
+void FPlayer::EnterPlayerName(std::vector<std::string> &PlayerNames)
 {
     while (PlayerName == "")
     {
         std::cout   << "Player "
-                    << PlayerNames->size() + 1
+                    << PlayerNames.size() + 1
                     << ", please enter your name:" << std::endl;
         std::cout << ">";
         bool bError = false;
@@ -240,7 +242,7 @@ void FPlayer::EnterPlayerName(std::vector<std::string> *PlayerNames)
             bError = true;
             continue;
         }
-        for (std::string Name: *PlayerNames)
+        for (std::string Name: PlayerNames)
         {
             if (Input == Name)
             {
@@ -253,7 +255,7 @@ void FPlayer::EnterPlayerName(std::vector<std::string> *PlayerNames)
         if (!bError)
         {
             PlayerName = Input;
-            PlayerNames->push_back(Input);
+            PlayerNames.push_back(Input);
         }
     }
 }
@@ -287,14 +289,13 @@ void FPlayer::SelectMonster(bool bAvailableMonsters[])
 
 void FPlayer::SelectStartingLocation(std::vector<FVertex *> &Vertices)
 {
-    while (Position)
+    while (!Position)
     {
         {
             std::cout << PlayerName
                       << ", please select your starting borough:" << std::endl;
             for (int i = 0; i < Vertices.size(); ++i)
             {
-                std::cout << Vertices[i]->bStartingLocation << " " << Vertices[i]->bInManhattan << std::endl;
                 if (Vertices[i]->Players.size() < MAXIMUM_PLAYERS_IN_BOROUGH && Vertices[i]->bStartingLocation)
                 {
                     std::cout << (i + 1)
@@ -314,14 +315,20 @@ void FPlayer::SelectStartingLocation(std::vector<FVertex *> &Vertices)
                 Vertices[Input - 1]->Players.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
                 Vertices[Input - 1]->bStartingLocation)
             {
-                for (auto it = Position->Players.begin(); it != Position->Players.end(); ++it)
+                std::cout << "Remove old position" << std::endl;
+                if (Position)
                 {
-                    if (*it == this)
+                    for (auto it = Position->Players.begin(); it != Position->Players.end(); ++it)
                     {
-                        Position->Players.erase(it);
+                        if (*it == this)
+                        {
+                            Position->Players.erase(it);
+                        }
                     }
                 }
+                std::cout << "Put new position" << std::endl;
                 Position = Vertices[Input - 1];
+                std::cout << "Put player on position" << std::endl;
                 Vertices[Input - 1]->Players.push_back(this);
             }
             else

@@ -35,7 +35,8 @@ FGraph::FGraph(std::string FileName)
                     std::size_t Position2 = Text.find(',', Position1);
                     NewVertex->bStartingLocation = (Text.substr(Position1, Position2++ - Position1) == "StartingLocation");
                     std::size_t Position3 = Text.find(',', Position2);
-                    NewVertex->bStartingLocation = (Text.substr(Position2, Position3 - Position2) == "InManhattan");
+                    std::cout << Text.substr(Position2, Position3 - Position2) << std::endl;
+                    NewVertex->bInManhattan = (Text.substr(Position2, Position3 - Position2) == "InManhattan");
                     //NewVertex->Level = 0;
                     InsertVertex(NewVertex);
                 }

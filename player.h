@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 #include "common.h"
-
+#include "diceroller.h"
 struct FVertex;
 class FDiceRoller;
 class FCard;
@@ -9,13 +9,13 @@ class FCard;
 class FPlayer
 {
 public:
-  FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[], std::vector<FVertex *> &Vertices);
+  FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[], std::vector<FVertex *> &Vertices);
   ~FPlayer();
 
   std::string GetPlayerName() const { return PlayerName; }
   EMonsterName GetMonsterName() const { return MonsterName; }
   bool GetCelebrity() const { return bCelebrity; }
-  bool SetCelebrity(const bool bCelebrity) { this->bCelebrity = bCelebrity; }
+  void SetCelebrity(const bool bCelebrity) { this->bCelebrity = bCelebrity; }
 
   void RollDice();
   void ResolveDice();
@@ -26,7 +26,7 @@ public:
   void PrintLong();
 
 private :
-    void EnterPlayerName(std::vector<std::string> *PlayerNames);
+    void EnterPlayerName(std::vector<std::string> &PlayerNames);
     void SelectMonster(bool AvailableMonsters[]);
     void SelectStartingLocation(std::vector<FVertex *> &Vertices);
     bool ResolveAttack(const int NumberOfDice);
@@ -39,7 +39,7 @@ private :
     std::string PlayerName;
     EMonsterName MonsterName;
     FVertex *Position;
-    FDiceRoller *DiceRoller;
+    FDiceRoller DiceRoller;
     std::vector<EDiceFace> CurrentDiceResult;
     int TokenInventory[NUMBER_OF_TOKEN_TYPE];
     std::vector<FCard *> Cards;

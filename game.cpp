@@ -20,7 +20,7 @@ FGame::FGame(int NumberOfPlayer)
 
     for (int i = 0; i < NumberOfPlayer; ++i)
     {
-        Players.push_back(new FPlayer(&PlayerNames, bAvailableMonsters, Graph.Vertices()));
+        Players.push_back(new FPlayer(PlayerNames, bAvailableMonsters, Graph.Vertices()));
     }
 
     Superstar = nullptr;
