@@ -5,11 +5,12 @@
 #include "card.h"
 #include "helper.h"
 
-FCard::FCard(std::string Name, int EnergyCost, EHowToPlay HowToPlay, std::string Effect)
+FCard::FCard(int Id, std::string Name, EHowToPlay HowToPlay, int EnergyCost, std::string Effect)
 {
+    this->Id = Id;
     this->Name = Name;
-    this->EnergyCost = EnergyCost;
     this->HowToPlay = HowToPlay;
+    this->EnergyCost = EnergyCost;
     this->Effect = Effect;
 }
 
@@ -21,6 +22,7 @@ FDeck::FDeck()
 FDeck::FDeck(std::string FileName)
 {
     GenerateFromFile(FileName);
+    Shuffle();
 }
 
 FCard *FDeck::Draw()
@@ -35,9 +37,10 @@ void FDeck::Print() const
 {
     for (FCard *Card: Deck)
     {
-        std::cout << "Name: " << Card->GetName() << std::endl
-                  << "Energy Cost: " << Card->GetEnergyCost() << std::endl
+        std::cout << "Id: " << Card->GetId() << std::endl
+                  << "Name: " << Card->GetName() << std::endl
                   << "How to Play: " << GetHowToPlayString(Card->GetHowToPlay()) << std::endl
+                  << "Energy Cost: " << Card->GetEnergyCost() << std::endl
                   << "Effect: " << Card->GetEffect() << std::endl;
     }
 }
@@ -59,40 +62,49 @@ void FDeck::GenerateFromFile(std::string FileName)
     }
 
     std::string Text;
+    int Id = -1;
     std::string Name = "";
-    int EnergyCost = -1;
     EHowToPlay HowToPlay = EHowToPlay::None;
+    int EnergyCost = -1;
     std::string Effect = "";
     while (!std::getline(InputStream, Text).eof())
     {
-        if (Text.substr(0,5) == "Name:")
+        if (Text.substr(0,3) == "Id:")
         {
-            if (Name != "" &&
-                EnergyCost != -1 &&
+            if (Id != -1 &&
+                Name != "" &&
                 HowToPlay != EHowToPlay::None &&
+                EnergyCost != -1 &&
                 Effect != "")
             {
-                Deck.push_back(new FCard(Name, EnergyCost, HowToPlay, Effect));
-                Name = Text.substr(5, Text.length() - 5);
+                Deck.push_back(new FCard(Id, Name, HowToPlay, EnergyCost, Effect));
+                if (ParseIntFromChar(Text[3]) >= 0 && ParseIntFromChar(Text[4]) >= 0)
+                {
+                    Id = 10 * ParseIntFromChar(Text[3]) + 1 * ParseIntFromChar(Text[4]);
+                }
+                else
+                {
+                    Id = -1;
+                }
+                Name = "";
                 EnergyCost = -1;
                 HowToPlay = EHowToPlay::None;
                 Effect = "";
             }
             else if (Deck.empty())
             {
-                Name = Text.substr(5, Text.length() - 5);
+                Id = 10 * ParseIntFromChar(Text[3]) + 1 * ParseIntFromChar(Text[4]);
             }
             else
             {
-                std::cout   << "There was a problem creating card: "
-                            << Name
-                            << std::endl;
+                std::cout << "There was a problem creating card: "
+                          << Name
+                          << std::endl;
             }
-
         }
-        else if (Text.substr(0, 11) == "EnergyCost:")
+        else if (Text.substr(0,5) == "Name:")
         {
-            EnergyCost = ParseIntFromChar(Text[11]);
+            Name = Text.substr(5, Text.length() - 5);
         }
         else if (Text.substr(0, 10) == "HowToPlay:")
         {
@@ -110,6 +122,10 @@ void FDeck::GenerateFromFile(std::string FileName)
                 HowToPlay = EHowToPlay::None;
             }
         }
+        else if (Text.substr(0, 11) == "EnergyCost:")
+        {
+            EnergyCost = ParseIntFromChar(Text[11]);
+        }
         else if (Text.substr(0, 7) == "Effect:")
         {
             Effect = Text.substr(7, Text.length() - 7);
@@ -124,12 +140,13 @@ void FDeck::GenerateFromFile(std::string FileName)
         }
     }
 
-    if (Name != "" &&
-        EnergyCost != -1 &&
+    if (Id != -1 &&
+        Name != "" &&
         HowToPlay != EHowToPlay::None &&
+        EnergyCost != -1 &&
         Effect != "")
     {
-        Deck.push_back(new FCard(Name, EnergyCost, HowToPlay, Effect));
+        Deck.push_back(new FCard(Id, Name, HowToPlay, EnergyCost, Effect));
     }
 
     InputStream.close();

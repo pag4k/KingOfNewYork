@@ -1,9 +1,65 @@
-Name:Chameleon
-EnergyCost:4
+Id:02
+Name:Diva
 HowToPlay:Keep
-Effect:You can discard as many [Celebrity] as you wish. For each [Celebrity] discarded, you can change the face of one of the dice you haven't resolved.
-
-Name:Telsa Canon
 EnergyCost:5
+Effect:The other monsters need 4 VICTORY to take Superstar from you.
+
+Id:03
+Name:Hunter
+HowToPlay:Keep
+EnergyCost:5
+Effect:Heal 1 damage each time you destroy an Infantry.
+
+Id:04
+Name:Central Park
 HowToPlay:Discard
-Effect:+2 [VictoryPoint]. All Monsters (including you) must discard one [Keep] card.
+EnergyCost:5
+Effect:Buy this card for 1 ENERGY_POINT less if you are in MANHATTAN. +2 [VictoryPoint] and heal 2 damage.
+
+Id:05
+Name:Curse
+HowToPlay:Keep
+EnergyCost:4
+Effect:When you deal damage to Monsters, give each a Curse token. Each time a Monster wants to reroll OUCH, he must spend 1 ENERGY_POINT for each Curse token he has. A Monster may use a HEART to Discard a Curse token instead of using it to heal.
+
+Id:06
+Name:Jinx Aura
+HowToPlay:Keep
+EnergyCost:4
+Effect:Other Monsters must always use all their rerolls. (They still get to choose which dice to reroll.)
+
+Id:07
+Name:Towering Titan
+HowToPlay:Keep
+EnergyCost:10
+Effect:Add 2 ATTACK to your result.
+
+Id:08
+Name:Painbow
+HowToPlay:Keep
+EnergyCost:5
+Effect:If your results are... -- 2 DESTRUCTION, you get an extra ATTACK. -- 4 DESTRUCTION, you get an extra 2 ATTACK. -- 6 DESTRUCTION, you win the game!
+
+Id:09
+Name:The Unisphere
+HowToPlay:Discard
+EnergyCost:5
+Effect:Buy this card for 1 ENERGY_POINT less if you are in QUEENS. +4 [VictoryPoint].
+
+Id:10
+Name:Sharp Shooter
+HowToPlay:Keep
+EnergyCost:4
+Effect:You can destroy Jets that are not in your borough. Gain 1 [VictoryPoint] each time you destroy a Jet.
+
+Id:51
+Name:Chameleon
+HowToPlay:Keep
+EnergyCost:4
+Effect:You can Discard as many [Celebrity] as you wish. For each [Celebrity] Discarded, you can change the face of one of the dice you haven't resolved.
+
+Id:55
+Name:Telsa Canon
+HowToPlay:Discard
+EnergyCost:5
+Effect:+2 [VictoryPoint]. All Monsters (including you) must Discard one [Keep] card.

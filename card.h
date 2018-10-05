@@ -8,17 +8,19 @@
 class FCard
 {
 public:
-    FCard(std::string Name, int EnergyCost, EHowToPlay HowToPlay, std::string Effect);
-    std::string GetName() { return Name; };
-    int GetEnergyCost() { return EnergyCost; };
-    EHowToPlay GetHowToPlay() { return HowToPlay; };
-    std::string GetEffect() { return Effect; };
+  FCard(int Id, std::string Name, EHowToPlay HowToPlay, int EnergyCost, std::string Effect);
+  int GetId() const { return Id; }
+  std::string GetName() const { return Name; };
+  EHowToPlay GetHowToPlay() const { return HowToPlay; };
+  int GetEnergyCost() const { return EnergyCost; };
+  std::string GetEffect() const { return Effect; };
 
-  private:
-    std::string Name;
-    int EnergyCost;
-    EHowToPlay HowToPlay;
-    std::string Effect;
+private:
+  int Id;
+  std::string Name;
+  EHowToPlay HowToPlay;
+  int EnergyCost;
+  std::string Effect;
 };
 
 class FDeck{

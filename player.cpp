@@ -1,17 +1,20 @@
 #include <iostream>
 #include <assert.h>
+//#include <vector>
 
 #include "player.h"
 #include "helper.h"
-//#include "card.h"
+#include "card.h"
 #include "diceroller.h"
+#include "graph.h"
 
-FPlayer::FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[])
+FPlayer::FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[], std::vector<FVertex *> &Vertices)
 {
     PlayerName = "";
     EnterPlayerName(PlayerNames);
     MonsterName = EMonsterName::None;
     SelectMonster(bAvailableMonsters);
+    SelectStartingLocation(Vertices);
 
     //NEED TO ADD POSITION
 
@@ -163,7 +166,61 @@ void FPlayer::PrintShort()
 
 void FPlayer::PrintLong()
 {
+    std::cout << "Name: " << PlayerName
+              << " Monster: " << GetMonsterNameString(MonsterName)
+              << std::endl;
 
+    FVertex *Position;
+
+    std::cout << "Rolling history:" << std::endl;
+    DiceRoller->PrintRollHistory();
+
+    std::cout << "Number of cards: " << Cards.size() << std::endl;
+    for (int i = 0; i < Cards.size(); ++i)
+    {
+        if (Cards[i])
+        {
+            std::cout << "\t-"
+                      << Cards[i]->GetName()
+                      << std::endl;
+        }
+    }
+
+    std::cout << "Tokens:" << std::endl;
+    for (int i = 0; i < NUMBER_OF_TOKEN_TYPE; ++i)
+    {
+        std::cout << "\t-"
+                  << GetTokenTypeString(ETokenType(i))
+                  << ": "
+                  << TokenInventory[i]
+                  << std::endl;
+    }
+
+    std::cout << "Energy cubes:"
+              << EnergyCubes
+              << std::endl;
+
+    std::cout << "Life points:"
+              << EnergyCubes
+              << std::endl;
+
+    std::cout << "Victory points:"
+              << EnergyCubes
+              << std::endl;
+
+    if (bCelebrity)
+    {
+        std::cout << GetMonsterNameString(MonsterName)
+                  << "is a Superstar!"
+                  << std::endl;
+    }
+
+    if (bStatueOfLiberty)
+    {
+        std::cout << GetMonsterNameString(MonsterName)
+                  << " has help from the Status of Liberty!"
+                  << std::endl;
+    }
 }
 
 void FPlayer::EnterPlayerName(std::vector<std::string> *PlayerNames)
@@ -224,6 +281,54 @@ void FPlayer::SelectMonster(bool bAvailableMonsters[])
         else
         {
             std::cout << "Invalid input, please try again." << std::endl << std::endl;
+        }
+    }
+}
+
+void FPlayer::SelectStartingLocation(std::vector<FVertex *> &Vertices)
+{
+    while (Position)
+    {
+        {
+            std::cout << PlayerName
+                      << ", please select your starting borough:" << std::endl;
+            for (int i = 0; i < Vertices.size(); ++i)
+            {
+                std::cout << Vertices[i]->bStartingLocation << " " << Vertices[i]->bInManhattan << std::endl;
+                if (Vertices[i]->Players.size() < MAXIMUM_PLAYERS_IN_BOROUGH && Vertices[i]->bStartingLocation)
+                {
+                    std::cout << (i + 1)
+                              << ". "
+                              << Vertices[i]->Name
+                              << (Vertices[i]->Players.size() == 1 ?
+                                " ( " +
+                                GetMonsterNameString(Vertices[i]->Players[0]->GetMonsterName()) +
+                                " is already there)" : "")
+                              << std::endl;
+                }
+            }
+            std::cout << ">";
+            const int Input = InputSingleDigit();
+            if (1 <= Input &&
+                Input <= Vertices.size() &&
+                Vertices[Input - 1]->Players.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
+                Vertices[Input - 1]->bStartingLocation)
+            {
+                for (auto it = Position->Players.begin(); it != Position->Players.end(); ++it)
+                {
+                    if (*it == this)
+                    {
+                        Position->Players.erase(it);
+                    }
+                }
+                Position = Vertices[Input - 1];
+                Vertices[Input - 1]->Players.push_back(this);
+            }
+            else
+            {
+                std::cout << "Invalid input, please try again." << std::endl
+                          << std::endl;
+            }
         }
     }
 }

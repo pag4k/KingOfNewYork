@@ -9,28 +9,26 @@ class FCard;
 class FPlayer
 {
 public:
-    FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[]);
-    ~FPlayer();
+  FPlayer(std::vector<std::string> *PlayerNames, bool bAvailableMonsters[], std::vector<FVertex *> &Vertices);
+  ~FPlayer();
 
-    std::string GetPlayerName() const { return PlayerName; }
-    EMonsterName GetMonsterName() const { return MonsterName; }
-    bool GetCelebrity() const { return bCelebrity; }
-    bool SetCelebrity(const bool bCelebrity) { this->bCelebrity = bCelebrity; }
+  std::string GetPlayerName() const { return PlayerName; }
+  EMonsterName GetMonsterName() const { return MonsterName; }
+  bool GetCelebrity() const { return bCelebrity; }
+  bool SetCelebrity(const bool bCelebrity) { this->bCelebrity = bCelebrity; }
 
+  void RollDice();
+  void ResolveDice();
+  void Move();
+  void BuyCards();
 
-    void RollDice();
-    void ResolveDice();
-    void Move();
-    void BuyCards();
-
-
-
-    void PrintShort();
-    void PrintLong();
+  void PrintShort();
+  void PrintLong();
 
 private :
     void EnterPlayerName(std::vector<std::string> *PlayerNames);
     void SelectMonster(bool AvailableMonsters[]);
+    void SelectStartingLocation(std::vector<FVertex *> &Vertices);
     bool ResolveAttack(const int NumberOfDice);
     bool ResolveCelebrity(const int NumberOfDice);
     bool ResolveDestruction(const int NumberOfDice);
@@ -48,7 +46,9 @@ private :
     int EnergyCubes;
     int LifePoints;
     int VictoryPoints;
+
     bool bCelebrity;
     bool bStatueOfLiberty;
 
+    //TODO: ADD CARD BUYING CODE.
 };

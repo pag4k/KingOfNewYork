@@ -1,3 +1,6 @@
+#ifndef TILE_H
+#define TILE_H
+
 #include <vector>
 #include <string>
 #include "common.h"
@@ -34,3 +37,5 @@ private:
     void GenerateFromFile(const std::string FileName);
     std::vector<FTile *> TileStack;
 };
+
+#endif

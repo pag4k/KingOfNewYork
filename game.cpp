@@ -5,6 +5,8 @@
 
 FGame::FGame(int NumberOfPlayer)
 {
+    Graph = FGraph("newyork.map");
+
     std::vector<std::string> PlayerNames;
     bool bAvailableMonsters[NUMBER_OF_MONSTERS];
     for (int i = 0; i < NUMBER_OF_MONSTERS; ++i)
@@ -18,19 +20,21 @@ FGame::FGame(int NumberOfPlayer)
 
     for (int i = 0; i < NumberOfPlayer; ++i)
     {
-        Players.push_back(new FPlayer(&PlayerNames, bAvailableMonsters));
+        Players.push_back(new FPlayer(&PlayerNames, bAvailableMonsters, Graph.Vertices()));
     }
-
-    Deck = FDeck("cards.txt");
-    TileStack = FTileStack("tiles.txt");
 
     Superstar = nullptr;
     StatusOfLiberty = nullptr;
+
+    Deck = FDeck("cards.txt");
+    TileStack = FTileStack("tiles.txt");
 
     for (int i = 0; i < NUMBER_OF_TOKEN_TYPE; ++i)
     {
         TokenInventory[i] = STARTING_TOKENS;
     }
+
+    EnergyCubes = MAXIMUM_ENERGY_CUBES;
 }
 
 FGame::~FGame()
@@ -52,6 +56,22 @@ void FGame::Print()
         std::cout << "\t-";
         Player->PrintShort();
     }
+    
+    std::cout << "Monster in Manhattam:";
+    if (PlayersInManhattan.empty())
+    {
+        std::cout << "No one." << std::endl;
+    }
+    else
+    {
+        for (FPlayer *Player : Players)
+        {
+            std::cout   << "\t-"
+                        << GetMonsterNameString(Player->GetMonsterName())
+                        << std::endl;
+        }
+    }
+
     std::cout   << "Superstar: "
                 << (Superstar ?
                     GetMonsterNameString(Superstar->GetMonsterName()) :
@@ -76,6 +96,10 @@ void FGame::Print()
                     << TokenInventory[i]
                     << std::endl;
     }
+
+    std::cout   << "Energy cubes left:"
+                << EnergyCubes
+                << std::endl;
 
     std::cout << "Available cards:" << std::endl;
     for (int i = 0; i < MAXIMUM_AVAILABLE_CARDS; ++i)

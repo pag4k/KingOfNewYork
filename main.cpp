@@ -83,7 +83,7 @@ int main()
             }
             case 4:
             {
-                FDeck Deck;
+                FDeck Deck("cards.txt");
                 Deck.Print();
                 break;
             }

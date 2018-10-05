@@ -6,6 +6,13 @@
 const int MINIMUM_NUMBER_OF_PLAYERS = 2;
 const int MAXIMUM_NUMBER_OF_PLAYERS = 6;
 
+const int MAXIMUM_PLAYERS_IN_BOROUGH = 2;
+
+//TODO: This can change based on the rules.
+const int MAXIMUM_PLAYERS_IN_MANHATTAN = 2;
+
+const int NUMBER_OF_TILESTACKS_IN_BOROUGH = 3;
+
 const int NUMBER_OF_DICE = 6;
 const int NUMBER_OF_ROLLS = 3;
 
@@ -84,6 +91,7 @@ enum class ETileType
 std::string GetTileTypeString(ETileType TileType);
 
 int const NUMBER_OF_MONSTER_RESOURCES = 3;
+int const MAXIMUM_ENERGY_CUBES = 40; //TODO: Get the right amount.
 int const MAXIMUM_LIFE_POINTS = 10;
 int const NUMBER_VICTORY_POINTS_TO_WIN = 20;
 enum class EMonsterResource
