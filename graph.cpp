@@ -29,7 +29,7 @@ FGraph::FGraph(std::string FileName)
                 }
                 else
                 {
-                    FVertex *NewVertex = new FVertex;
+                    std::shared_ptr<FVertex> NewVertex = std::make_shared<FVertex>();
                     std::size_t Position1 = Text.find(',');
                     NewVertex->Name = Text.substr(0,Position1++);
                     std::size_t Position2 = Text.find(',', Position1);
@@ -59,7 +59,7 @@ FGraph::FGraph(std::string FileName)
                 if (Position != std::string::npos)
                 {
                     std::string OriginName = Text.substr(0, Position);
-                    FVertex *OriginVertex = GetVertexWithName(OriginName);
+                    std::shared_ptr<FVertex> OriginVertex = GetVertexWithName(OriginName);
                     if (OriginVertex)
                     {
                         std::string EdgeNames = Text.substr(Position+1);
@@ -71,10 +71,10 @@ FGraph::FGraph(std::string FileName)
                             {
                                 std::size_t Current = EdgeNames.find(',', Previous);
                                 std::string DestinationName = EdgeNames.substr(Previous, Current - Previous);
-                                FVertex *DestinationVertex = GetVertexWithName(DestinationName);
+                                std::shared_ptr<FVertex> DestinationVertex = GetVertexWithName(DestinationName);
                                 if (DestinationVertex)
                                 {
-                                    FEdge *NewEdge = new FEdge;
+                                    std::shared_ptr<FEdge> NewEdge = std::make_shared<FEdge>();
                                     InsertEdge(OriginVertex, DestinationVertex, NewEdge);
                                 }
 
@@ -98,7 +98,7 @@ FGraph::FGraph(std::string FileName)
 
 }
 
-const FVertex *FGraph::EndVertices(const FEdge *CurrentEdge) const
+const std::shared_ptr<FVertex> FGraph::EndVertices(const std::shared_ptr<FVertex> CurrentEdge) const
 {
     //I don't know how to return that because I can only return a pointer to an array.
     //const std::vector<Edge> Array[] = { CurrentEdge->Origin, CurrentEdge->Destination }
@@ -107,7 +107,7 @@ const FVertex *FGraph::EndVertices(const FEdge *CurrentEdge) const
 }
 
 //NOTE: I'm using this to know if an edge as this vertex. This is not the role of this method.
-const FVertex *FGraph::Opposite(const FVertex *CurrentVertex, const FEdge *CurrentEdge) const
+const std::shared_ptr<FVertex> FGraph::Opposite(const std::shared_ptr<FVertex> CurrentVertex, const std::shared_ptr<FEdge> CurrentEdge) const
 {
     if (CurrentVertex && CurrentEdge)
     {
@@ -131,7 +131,7 @@ const FVertex *FGraph::Opposite(const FVertex *CurrentVertex, const FEdge *Curre
     }
 }
 
-bool FGraph::AreAdjacent(const FVertex *VertexA, const FVertex *VertexB) const
+bool FGraph::AreAdjacent(const std::shared_ptr<FVertex> VertexA, const std::shared_ptr<FVertex> VertexB) const
 {
     if (VertexA && VertexB)
     {
@@ -141,7 +141,7 @@ bool FGraph::AreAdjacent(const FVertex *VertexA, const FVertex *VertexB) const
             return false;
         }
 
-        for (const FEdge *IncidentEdge : VertexA->IncidentEdgeVector)
+        for (const std::shared_ptr<FEdge> &IncidentEdge : VertexA->IncidentEdgeVector)
         {
             if (Opposite(VertexA, IncidentEdge))
             {
@@ -156,7 +156,7 @@ bool FGraph::AreAdjacent(const FVertex *VertexA, const FVertex *VertexB) const
     }
 }
 
-void FGraph::Replace(FVertex *OldVertex, FVertex *NewVertex)
+void FGraph::Replace(std::shared_ptr<FVertex> OldVertex, std::shared_ptr<FVertex> NewVertex)
 {
     if (OldVertex && NewVertex)
     {
@@ -164,7 +164,7 @@ void FGraph::Replace(FVertex *OldVertex, FVertex *NewVertex)
     }
 }
 
-void FGraph::Replace(FEdge *OldEdge, FEdge *NewEdge)
+void FGraph::Replace(std::shared_ptr<FEdge> OldEdge, std::shared_ptr<FEdge> NewEdge)
 {
     if (OldEdge && NewEdge)
     {
@@ -173,7 +173,7 @@ void FGraph::Replace(FEdge *OldEdge, FEdge *NewEdge)
 }
 
 //This function assumes that the Vertex has no Edge.
-const FVertex *FGraph::InsertVertex(FVertex *NewVertex)
+const std::shared_ptr<FVertex> FGraph::InsertVertex(std::shared_ptr<FVertex> NewVertex)
 {
     if (NewVertex)
     {
@@ -185,12 +185,12 @@ const FVertex *FGraph::InsertVertex(FVertex *NewVertex)
 }
 
 //This function assumes that the Edge has no Vertex.
-const FEdge *FGraph::InsertEdge(FVertex *OriginVertex, FVertex *DestinationVertex, FEdge *NewEdge)
+const std::shared_ptr<FEdge> FGraph::InsertEdge(std::shared_ptr<FVertex> OriginVertex, std::shared_ptr<FVertex> DestinationVertex, std::shared_ptr<FEdge> NewEdge)
 {
     if (OriginVertex && DestinationVertex && NewEdge)
     {
         EdgeVector.push_back(NewEdge);
-        FEdge *CreatedEdge = EdgeVector.back();
+        std::shared_ptr<FEdge> CreatedEdge = EdgeVector.back();
         CreatedEdge->Location = CreatedEdge;
         CreatedEdge->Origin = OriginVertex;
         CreatedEdge->Destination = DestinationVertex;
@@ -202,12 +202,12 @@ const FEdge *FGraph::InsertEdge(FVertex *OriginVertex, FVertex *DestinationVerte
     return nullptr;
 }
 
-const FVertex *FGraph::RemoveVertex(FVertex *VertexToRemove)
+const std::shared_ptr<FVertex> FGraph::RemoveVertex(std::shared_ptr<FVertex> VertexToRemove)
 {
     if (VertexToRemove)
     {
         //Remove all pointers to that Vertex in the other Vertex IncidentEdgeVector.
-        for (FVertex *OtherVertex : VertexVector)
+        for (const std::shared_ptr<FVertex> &OtherVertex : VertexVector)
         {
             if (AreAdjacent(VertexToRemove, OtherVertex))
             {
@@ -227,7 +227,7 @@ const FVertex *FGraph::RemoveVertex(FVertex *VertexToRemove)
         {
             if (Opposite(VertexToRemove, *it))
             {
-                delete *it;
+                //delete *it;
                 EdgeVector.erase(it);
             }
             else{
@@ -244,7 +244,7 @@ const FVertex *FGraph::RemoveVertex(FVertex *VertexToRemove)
         {
             if (*it == VertexToRemove)
             {
-                delete *it;
+                //delete *it;
                 VertexVector.erase(it);
                 return *it;
             }
@@ -254,7 +254,7 @@ const FVertex *FGraph::RemoveVertex(FVertex *VertexToRemove)
     return nullptr;
 }
 
-const FEdge *FGraph::RemoveEdge(FEdge *EdgeToRemove)
+const std::shared_ptr<FEdge> FGraph::RemoveEdge(std::shared_ptr<FEdge> EdgeToRemove)
 {
     if (EdgeToRemove)
     {
@@ -289,7 +289,7 @@ const FEdge *FGraph::RemoveEdge(FEdge *EdgeToRemove)
         {
             if (*it == EdgeToRemove)
             {
-                delete *it;
+                //delete *it;
                 EdgeVector.erase(it);
                 return *it;
             }
@@ -299,24 +299,24 @@ const FEdge *FGraph::RemoveEdge(FEdge *EdgeToRemove)
     return nullptr;
 }
 
-std::vector<FVertex *> &FGraph::Vertices()
+std::vector<std::shared_ptr<FVertex>> &FGraph::Vertices()
 {
     return VertexVector;
 }
 
-std::vector<FEdge *> &FGraph::Edges()
+std::vector<std::shared_ptr<FEdge>> &FGraph::Edges()
 {
     return EdgeVector; 
 }
 
-std::vector<FEdge *> &FGraph::IncidentEdges(FVertex *CurrentVertex)
+std::vector<std::shared_ptr<FEdge>> &FGraph::IncidentEdges(std::shared_ptr<FVertex> CurrentVertex)
 {
     return CurrentVertex->IncidentEdgeVector;
 }
 
-FVertex *FGraph::GetVertexWithName(std::string Name)
+std::shared_ptr<FVertex> FGraph::GetVertexWithName(std::string Name)
 {
-    for (FVertex *Vertex: VertexVector)
+    for (std::shared_ptr<FVertex> &Vertex : VertexVector)
     {
         if (Vertex->Name == Name)
         {

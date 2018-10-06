@@ -42,8 +42,8 @@ int main()
                         << std::endl
                         << ">";
                 const std::string FileName = InputString();
-                FGraph *NewYorkGraph = new FGraph(FileName);
-                delete NewYorkGraph;
+                std::shared_ptr<FGraph> NewYorkGraph = std::make_shared<FGraph>(FileName);
+                //delete NewYorkGraph;
                 break;
             }
             case 2:
@@ -66,9 +66,9 @@ int main()
                 if (MINIMUM_NUMBER_OF_PLAYERS <= NumberOfPlayer &&
                     NumberOfPlayer <= MAXIMUM_NUMBER_OF_PLAYERS)
                 {
-                    FGame *Game = new FGame(NumberOfPlayer);
+                    std::shared_ptr<FGame> Game = std::make_shared<FGame>(NumberOfPlayer);
                     Game->Print();
-                    delete Game;
+                    //delete Game;
                 }
                 else
                 {

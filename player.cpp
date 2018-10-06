@@ -7,14 +7,13 @@
 #include "card.h"
 #include "graph.h"
 
-FPlayer::FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[], std::vector<FVertex *> &Vertices)
+FPlayer::FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[])
 {
     PlayerName = "";
     EnterPlayerName(PlayerNames);
     MonsterName = EMonsterName::None;
     SelectMonster(bAvailableMonsters);
     Position = nullptr;
-    SelectStartingLocation(Vertices);
 
     DiceRoller = FDiceRoller();
 
@@ -287,7 +286,7 @@ void FPlayer::SelectMonster(bool bAvailableMonsters[])
     }
 }
 
-void FPlayer::SelectStartingLocation(std::vector<FVertex *> &Vertices)
+void FPlayer::SelectStartingLocation(std::vector<std::shared_ptr<FVertex>> &Vertices)
 {
     while (!Position)
     {
@@ -320,7 +319,7 @@ void FPlayer::SelectStartingLocation(std::vector<FVertex *> &Vertices)
                 {
                     for (auto it = Position->Players.begin(); it != Position->Players.end(); ++it)
                     {
-                        if (*it == this)
+                        if (*it == shared_from_this())
                         {
                             Position->Players.erase(it);
                         }
@@ -329,7 +328,9 @@ void FPlayer::SelectStartingLocation(std::vector<FVertex *> &Vertices)
                 std::cout << "Put new position" << std::endl;
                 Position = Vertices[Input - 1];
                 std::cout << "Put player on position" << std::endl;
-                Vertices[Input - 1]->Players.push_back(this);
+                std::shared_ptr<FPlayer> Test = shared_from_this();
+                std::cout << "Put player on position" << std::endl;
+                Vertices[Input - 1]->Players.push_back(shared_from_this()); 
             }
             else
             {

@@ -1,16 +1,19 @@
 #include <string>
 #include <vector>
+#include <memory>
 #include "common.h"
 #include "diceroller.h"
 struct FVertex;
 class FDiceRoller;
 class FCard;
 
-class FPlayer
+class FPlayer : public std::enable_shared_from_this<FPlayer>
 {
 public:
-  FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[], std::vector<FVertex *> &Vertices);
+  FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[]);
   ~FPlayer();
+
+  void SelectStartingLocation(std::vector<std::shared_ptr<FVertex>> &Vertices);
 
   std::string GetPlayerName() const { return PlayerName; }
   EMonsterName GetMonsterName() const { return MonsterName; }
@@ -28,7 +31,6 @@ public:
 private :
     void EnterPlayerName(std::vector<std::string> &PlayerNames);
     void SelectMonster(bool AvailableMonsters[]);
-    void SelectStartingLocation(std::vector<FVertex *> &Vertices);
     bool ResolveAttack(const int NumberOfDice);
     bool ResolveCelebrity(const int NumberOfDice);
     bool ResolveDestruction(const int NumberOfDice);
@@ -38,11 +40,11 @@ private :
 
     std::string PlayerName;
     EMonsterName MonsterName;
-    FVertex *Position;
+    std::shared_ptr<FVertex> Position;
     FDiceRoller DiceRoller;
     std::vector<EDiceFace> CurrentDiceResult;
     int TokenInventory[NUMBER_OF_TOKEN_TYPE];
-    std::vector<FCard *> Cards;
+    std::vector<std::unique_ptr<FCard>> Cards;
     int EnergyCubes;
     int LifePoints;
     int VictoryPoints;

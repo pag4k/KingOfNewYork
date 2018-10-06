@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 #include "common.h"
 
 class FTile
@@ -30,12 +31,12 @@ public:
     void Shuffle();
     int Size() const { return TileStack.size(); } 
     bool IsEmpty() const { return TileStack.empty(); }
-    FTile *Draw();
+    std::unique_ptr<FTile> Draw();
     void Print() const;
 
 private:
     void GenerateFromFile(const std::string FileName);
-    std::vector<FTile *> TileStack;
+    std::vector<std::unique_ptr<FTile>> TileStack;
 };
 
 #endif

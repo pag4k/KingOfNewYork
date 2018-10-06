@@ -21,21 +21,21 @@ struct FVertex
     bool bInManhattan;
     //int Level;
     FTileStack TileStacks[NUMBER_OF_TILESTACKS_IN_BOROUGH];
-    std::vector<FPlayer *> Players;
+    std::vector<std::shared_ptr<FPlayer>> Players;
     //END OF VERTEX DATA
     //TODO: Not sure I need that. It is a pointer to itself.
-    FVertex *Location;
-    std::vector<FEdge *> IncidentEdgeVector;
+    std::shared_ptr<FVertex> Location;
+    std::vector<std::shared_ptr<FEdge>> IncidentEdgeVector;
 };
 
 struct FEdge
 {
     std::string Name;
-    FEdge *Location;
-    FVertex *Origin;
-    FVertex *Destination;
-    FVertex *IncidentOrigin;
-    FVertex *IncidentDestination;
+    std::shared_ptr<FEdge> Location;
+    std::shared_ptr<FVertex> Origin;
+    std::shared_ptr<FVertex> Destination;
+    std::shared_ptr<FVertex> IncidentOrigin;
+    std::shared_ptr<FVertex> IncidentDestination;
 };
 
 class FGraph
@@ -45,24 +45,24 @@ class FGraph
     FGraph(std::string FileName);
     ~FGraph() {} //Must add desctructor!
 
-    const FVertex *EndVertices(const FEdge *CurrentEdge) const;
-    const FVertex *Opposite(const FVertex *CurrentVertex, const FEdge *CurrentEdge) const;
-    bool AreAdjacent(const FVertex *VertexA, const FVertex *VertexB) const;
-    void Replace(FVertex *OldVertex, FVertex *NewVertex);
-    void Replace(FEdge *OldEdge, FEdge *NewEdge);
-    const FVertex *InsertVertex(FVertex *NewVertex);
-    const FEdge *InsertEdge(FVertex *VertexA, FVertex *VertexB, FEdge *NewEdge);
-    const FVertex *RemoveVertex(FVertex *CurrentVertex);
-    const FEdge *RemoveEdge(FEdge *CurrentEdge);
-    std::vector<FVertex *> &Vertices();
-    std::vector<FEdge *> &Edges();
-    std::vector<FEdge *> &IncidentEdges(FVertex *CurrentVertex);
+    const std::shared_ptr<FVertex> EndVertices(const std::shared_ptr<FVertex> CurrentEdge) const;
+    const std::shared_ptr<FVertex> Opposite(const std::shared_ptr<FVertex> CurrentVertex, const std::shared_ptr<FEdge> CurrentEdge) const;
+    bool AreAdjacent(const std::shared_ptr<FVertex> VertexA, const std::shared_ptr<FVertex> VertexB) const;
+    void Replace(std::shared_ptr<FVertex> OldVertex, std::shared_ptr<FVertex> NewVertex);
+    void Replace(std::shared_ptr<FEdge> OldEdge, std::shared_ptr<FEdge> NewEdge);
+    const std::shared_ptr<FVertex> InsertVertex(std::shared_ptr<FVertex> NewVertex);
+    const std::shared_ptr<FEdge> InsertEdge(std::shared_ptr<FVertex> VertexA, std::shared_ptr<FVertex> VertexB, std::shared_ptr<FEdge> NewEdge);
+    const std::shared_ptr<FVertex> RemoveVertex(std::shared_ptr<FVertex> CurrentVertex);
+    const std::shared_ptr<FEdge> RemoveEdge(std::shared_ptr<FEdge> CurrentEdge);
+    std::vector<std::shared_ptr<FVertex>> &Vertices();
+    std::vector<std::shared_ptr<FEdge>> &Edges();
+    std::vector<std::shared_ptr<FEdge>> &IncidentEdges(std::shared_ptr<FVertex> CurrentVertex);
 
-    FVertex *GetVertexWithName(std::string Name);
+    std::shared_ptr<FVertex> GetVertexWithName(std::string Name);
 
   private:
-    std::vector<FVertex *> VertexVector;
-    std::vector<FEdge *> EdgeVector;
+    std::vector<std::shared_ptr<FVertex>> VertexVector;
+    std::vector<std::shared_ptr<FEdge>> EdgeVector;
 };
 
 #endif

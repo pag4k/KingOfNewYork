@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include "common.h"
 
 class FCard
@@ -30,12 +31,12 @@ public:
     void Shuffle();
     int Size() const { return Deck.size(); };
     bool IsEmpty() const { return Deck.empty(); };
-    FCard *Draw();
+    std::unique_ptr<FCard> Draw();
     void Print() const;
 
 private:
     void GenerateFromFile(std::string FileName);
-    std::vector<FCard *> Deck;
+    std::vector<std::unique_ptr<FCard>> Deck;
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include "common.h"
+#include <memory>
 
 #include "graph.h"
 #include "card.h"
@@ -19,10 +20,10 @@ public:
 private:
     FGraph Graph;
     int Number_of_Players;
-    std::vector<FPlayer *> Players;
-    std::vector<FPlayer *> PlayersInManhattan;
-    FPlayer *Superstar;
-    FPlayer *StatusOfLiberty;
+    std::vector<std::shared_ptr<FPlayer>> Players;
+    std::vector<std::shared_ptr<FPlayer>> PlayersInManhattan;
+    std::shared_ptr<FPlayer> Superstar;
+    std::shared_ptr<FPlayer> StatusOfLiberty;
     FDeck Deck;
     FDeck DiscardDeck;
     FTileStack TileStack;
@@ -30,6 +31,6 @@ private:
     int EnergyCubes;
 
     //TODO: ADD CARD BUYING CODE.
-    FCard *AvailableCards[MAXIMUM_AVAILABLE_CARDS];
+    std::unique_ptr<FCard> AvailableCards[MAXIMUM_AVAILABLE_CARDS];
 };
 

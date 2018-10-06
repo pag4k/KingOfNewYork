@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <iostream>
+
 #include "game.h"
 #include "player.h"
 
@@ -20,7 +21,8 @@ FGame::FGame(int NumberOfPlayer)
 
     for (int i = 0; i < NumberOfPlayer; ++i)
     {
-        Players.push_back(new FPlayer(PlayerNames, bAvailableMonsters, Graph.Vertices()));
+        Players.push_back(std::make_shared<FPlayer>(PlayerNames, bAvailableMonsters));
+        Players.back()->SelectStartingLocation(Graph.Vertices());
     }
 
     Superstar = nullptr;
@@ -39,10 +41,10 @@ FGame::FGame(int NumberOfPlayer)
 
 FGame::~FGame()
 {
-    for (FPlayer *Player : Players)
-    {
-        delete Player;
-    }
+    // for (std::shared_ptr<FPlayer> Player : Players)
+    // {
+    //     delete Player;
+    // }
     Players.clear();
     Superstar = nullptr;
     StatusOfLiberty = nullptr;
@@ -51,7 +53,7 @@ FGame::~FGame()
 void FGame::Print()
 {
     std::cout << "Number of players: " << Number_of_Players << std::endl;
-    for (FPlayer *Player: Players)
+    for (const std::shared_ptr<FPlayer> &Player : Players)
     {
         std::cout << "\t-";
         Player->PrintShort();
@@ -64,7 +66,7 @@ void FGame::Print()
     }
     else
     {
-        for (FPlayer *Player : Players)
+        for (const std::shared_ptr<FPlayer> &Player : Players)
         {
             std::cout   << "\t-"
                         << GetMonsterNameString(Player->GetMonsterName())

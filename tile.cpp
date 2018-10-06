@@ -59,17 +59,18 @@ void FTileStack::Shuffle()
     std::random_shuffle(TileStack.begin(), TileStack.end());
 }
 
-FTile *FTileStack::Draw()
+std::unique_ptr<FTile> FTileStack::Draw()
 {
     assert(!IsEmpty());
-    FTile *Card = TileStack.back();
+    std::unique_ptr<FTile> Card = std::move(TileStack.back());
     TileStack.pop_back();
     return Card;
 }
 
 void FTileStack::Print() const
 {
-    for (FTile *Tile : TileStack)
+    //TODO: MAKE UNIQUE
+    for (const auto &Tile : TileStack)
     {
         std::cout << "Type: " << GetTileTypeString(Tile->GetTileType()) << std::endl
                   << "Durability: " << Tile->GetDurability() << std::endl
@@ -105,7 +106,7 @@ void FTileStack::GenerateFromFile(const std::string FileName)
             {
                 for (int i = 0; i < Number; ++i)
                 {
-                    TileStack.push_back(new FTile(TileType, Durability, Reward));
+                    TileStack.push_back(std::make_unique<FTile>(TileType, Durability, Reward));
                 }
                 Number = ParseIntFromChar(Text[7]);
                 TileType = ETileType::None;
@@ -167,7 +168,7 @@ void FTileStack::GenerateFromFile(const std::string FileName)
     {
         for (int i = 0; i < Number; ++i)
         {
-            TileStack.push_back(new FTile(TileType, Durability, Reward));
+            TileStack.push_back(std::make_unique<FTile>(TileType, Durability, Reward));
         }
     }
 

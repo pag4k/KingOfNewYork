@@ -25,17 +25,17 @@ FDeck::FDeck(std::string FileName)
     Shuffle();
 }
 
-FCard *FDeck::Draw()
+std::unique_ptr<FCard> FDeck::Draw()
 {
     assert(!IsEmpty());
-    FCard *Card = Deck.back();
+    std::unique_ptr<FCard> Card = std::move(Deck.back());
     Deck.pop_back();
     return Card;
 }
 
 void FDeck::Print() const
 {
-    for (FCard *Card: Deck)
+    for (const auto& Card : Deck)
     {
         std::cout << "Id: " << Card->GetId() << std::endl
                   << "Name: " << Card->GetName() << std::endl
@@ -77,7 +77,7 @@ void FDeck::GenerateFromFile(std::string FileName)
                 EnergyCost != -1 &&
                 Effect != "")
             {
-                Deck.push_back(new FCard(Id, Name, HowToPlay, EnergyCost, Effect));
+                Deck.push_back(std::make_unique<FCard>(Id, Name, HowToPlay, EnergyCost, Effect));
                 if (ParseIntFromChar(Text[3]) >= 0 && ParseIntFromChar(Text[4]) >= 0)
                 {
                     Id = 10 * ParseIntFromChar(Text[3]) + 1 * ParseIntFromChar(Text[4]);
@@ -146,7 +146,7 @@ void FDeck::GenerateFromFile(std::string FileName)
         EnergyCost != -1 &&
         Effect != "")
     {
-        Deck.push_back(new FCard(Id, Name, HowToPlay, EnergyCost, Effect));
+        Deck.push_back(std::make_unique<FCard>(Id, Name, HowToPlay, EnergyCost, Effect));
     }
 
     InputStream.close();
