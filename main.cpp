@@ -7,6 +7,7 @@
 #include "graph.h"
 #include "game.h"
 #include "card.h"
+#include "borough.h"
 
 int main()
 {
@@ -42,7 +43,7 @@ int main()
                         << std::endl
                         << ">";
                 const std::string FileName = InputString();
-                std::shared_ptr<FGraph> NewYorkGraph = std::make_shared<FGraph>(FileName);
+                std::shared_ptr<FGraph<FBorough>> NewYorkGraph = std::make_shared<FGraph<FBorough>>(FileName);
                 //delete NewYorkGraph;
                 break;
             }

@@ -6,6 +6,7 @@
 #include "graph.h"
 #include "card.h"
 #include "tile.h"
+#include <borough.h>
 
 class FPlayer;
 
@@ -18,7 +19,7 @@ public:
     void Print();
 
 private:
-    FGraph Graph;
+    FGraph<FBorough> Graph;
     int Number_of_Players;
     std::vector<std::shared_ptr<FPlayer>> Players;
     std::vector<std::shared_ptr<FPlayer>> PlayersInManhattan;

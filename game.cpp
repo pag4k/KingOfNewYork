@@ -6,7 +6,7 @@
 
 FGame::FGame(int NumberOfPlayer)
 {
-    Graph = FGraph("newyork.map");
+    Graph = FGraph<FBorough>("newyork.map");
 
     std::vector<std::string> PlayerNames;
     bool bAvailableMonsters[NUMBER_OF_MONSTERS];

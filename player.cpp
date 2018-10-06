@@ -170,7 +170,7 @@ void FPlayer::PrintLong()
 
     if (Position)
     {
-        std::cout << "Position: " << Position->Name << std::endl;
+        std::cout << "Position: " << Position->Element.Name << std::endl;
     }
 
     std::cout << "Rolling history:" << std::endl;
@@ -286,8 +286,9 @@ void FPlayer::SelectMonster(bool bAvailableMonsters[])
     }
 }
 
-void FPlayer::SelectStartingLocation(std::vector<std::shared_ptr<FVertex>> &Vertices)
+void FPlayer::SelectStartingLocation(std::vector<std::shared_ptr<FVertex<FBorough>>> &Vertices)
 {
+    std::cout << Vertices.size();
     while (!Position)
     {
         {
@@ -295,14 +296,14 @@ void FPlayer::SelectStartingLocation(std::vector<std::shared_ptr<FVertex>> &Vert
                       << ", please select your starting borough:" << std::endl;
             for (int i = 0; i < Vertices.size(); ++i)
             {
-                if (Vertices[i]->Players.size() < MAXIMUM_PLAYERS_IN_BOROUGH && Vertices[i]->bStartingLocation)
+                if (Vertices[i]->Element.Players.size() < MAXIMUM_PLAYERS_IN_BOROUGH && Vertices[i]->Element.bStartingLocation)
                 {
                     std::cout << (i + 1)
                               << ". "
-                              << Vertices[i]->Name
-                              << (Vertices[i]->Players.size() == 1 ?
+                              << Vertices[i]->Element.Name
+                              << (Vertices[i]->Element.Players.size() == 1 ?
                                 " ( " +
-                                GetMonsterNameString(Vertices[i]->Players[0]->GetMonsterName()) +
+                                GetMonsterNameString(Vertices[i]->Element.Players[0]->GetMonsterName()) +
                                 " is already there)" : "")
                               << std::endl;
                 }
@@ -311,17 +312,17 @@ void FPlayer::SelectStartingLocation(std::vector<std::shared_ptr<FVertex>> &Vert
             const int Input = InputSingleDigit();
             if (1 <= Input &&
                 Input <= Vertices.size() &&
-                Vertices[Input - 1]->Players.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
-                Vertices[Input - 1]->bStartingLocation)
+                Vertices[Input - 1]->Element.Players.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
+                Vertices[Input - 1]->Element.bStartingLocation)
             {
                 std::cout << "Remove old position" << std::endl;
                 if (Position)
                 {
-                    for (auto it = Position->Players.begin(); it != Position->Players.end(); ++it)
+                    for (auto it = Position->Element.Players.begin(); it != Position->Element.Players.end(); ++it)
                     {
                         if (*it == shared_from_this())
                         {
-                            Position->Players.erase(it);
+                            Position->Element.Players.erase(it);
                         }
                     }
                 }
@@ -330,7 +331,7 @@ void FPlayer::SelectStartingLocation(std::vector<std::shared_ptr<FVertex>> &Vert
                 std::cout << "Put player on position" << std::endl;
                 std::shared_ptr<FPlayer> Test = shared_from_this();
                 std::cout << "Put player on position" << std::endl;
-                Vertices[Input - 1]->Players.push_back(shared_from_this()); 
+                Vertices[Input - 1]->Element.Players.push_back(shared_from_this());
             }
             else
             {
