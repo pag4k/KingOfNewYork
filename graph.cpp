@@ -1,11 +1,7 @@
-
 #include "graph.h"
 
-//template <class T>
-//FGraph<T>::FGraph(std::string FileName)
-
 template <class T>
-const std::shared_ptr<FVertex<T>> FGraph<T>::EndVertices(const std::shared_ptr<FVertex<T>> CurrentEdge) const
+const typename FGraph<T>::FVertex *FGraph<T>::EndVertices(const FVertex *CurrentEdge) const
 {
     //I don't know how to return that because I can only return a pointer to an array.
     //const std::vector<Edge> Array[] = { CurrentEdge->Origin, CurrentEdge->Destination }
@@ -15,7 +11,7 @@ const std::shared_ptr<FVertex<T>> FGraph<T>::EndVertices(const std::shared_ptr<F
 
 //NOTE: I'm using this to know if an edge as this vertex. This is not the role of this method.
 template <class T>
-const std::shared_ptr<FVertex<T>> FGraph<T>::Opposite(const std::shared_ptr<FVertex<T>> CurrentVertex, const std::shared_ptr<FEdge<T>> CurrentEdge) const
+const typename FGraph<T>::FVertex *FGraph<T>::Opposite(const FVertex *CurrentVertex, const FEdge *CurrentEdge) const
 {
     if (CurrentVertex && CurrentEdge)
     {
@@ -40,7 +36,7 @@ const std::shared_ptr<FVertex<T>> FGraph<T>::Opposite(const std::shared_ptr<FVer
 }
 
 template <class T>
-bool FGraph<T>::AreAdjacent(const std::shared_ptr<FVertex<T>> VertexA, const std::shared_ptr<FVertex<T>> VertexB) const
+bool FGraph<T>::AreAdjacent(const FVertex * VertexA, const FVertex * VertexB) const
 {
     if (VertexA && VertexB)
     {
@@ -50,7 +46,7 @@ bool FGraph<T>::AreAdjacent(const std::shared_ptr<FVertex<T>> VertexA, const std
             return false;
         }
 
-        for (const std::shared_ptr<FEdge<T>> &IncidentEdge : VertexA->IncidentEdgeVector)
+        for (const FEdge * &IncidentEdge : VertexA->IncidentEdgeVector)
         {
             if (Opposite(VertexA, IncidentEdge))
             {
@@ -66,7 +62,7 @@ bool FGraph<T>::AreAdjacent(const std::shared_ptr<FVertex<T>> VertexA, const std
 }
 
 template <class T>
-void FGraph<T>::Replace(std::shared_ptr<FVertex<T>> OldVertex, std::shared_ptr<FVertex<T>> NewVertex)
+void FGraph<T>::Replace(FVertex * OldVertex, FVertex * NewVertex)
 {
     if (OldVertex && NewVertex)
     {
@@ -75,7 +71,7 @@ void FGraph<T>::Replace(std::shared_ptr<FVertex<T>> OldVertex, std::shared_ptr<F
 }
 
 template <class T>
-void FGraph<T>::Replace(std::shared_ptr<FEdge<T>> OldEdge, std::shared_ptr<FEdge<T>> NewEdge)
+void FGraph<T>::Replace(FEdge * OldEdge, FEdge * NewEdge)
 {
     if (OldEdge && NewEdge)
     {
@@ -83,21 +79,13 @@ void FGraph<T>::Replace(std::shared_ptr<FEdge<T>> OldEdge, std::shared_ptr<FEdge
     }
 }
 
-//This function assumes that the Vertex has no Edge.
-//template <class T>
-//const std::shared_ptr<FVertex<T>> FGraph<T>::InsertVertex(std::shared_ptr<FVertex<T>> NewVertex)
-
-//This function assumes that the Edge has no Vertex.
-//template <class T>
-//const std::shared_ptr<FEdge<T>> FGraph<T>::InsertEdge(std::shared_ptr<FVertex<T>> OriginVertex, std::shared_ptr<FVertex<T>> DestinationVertex, std::shared_ptr<FEdge<T>> NewEdge)
-
 template <class T>
-const std::shared_ptr<FVertex<T>> FGraph<T>::RemoveVertex(std::shared_ptr<FVertex<T>> VertexToRemove)
+const typename FGraph<T>::FVertex *FGraph<T>::RemoveVertex(FVertex *VertexToRemove)
 {
     if (VertexToRemove)
     {
         //Remove all pointers to that Vertex in the other Vertex IncidentEdgeVector.
-        for (const std::shared_ptr<FVertex<T>> &OtherVertex : VertexVector)
+        for (const auto OtherVertex : VertexVector)
         {
             if (AreAdjacent(VertexToRemove, OtherVertex))
             {
@@ -117,7 +105,7 @@ const std::shared_ptr<FVertex<T>> FGraph<T>::RemoveVertex(std::shared_ptr<FVerte
         {
             if (Opposite(VertexToRemove, *it))
             {
-                //delete *it;
+                delete *it;
                 EdgeVector.erase(it);
             }
             else{
@@ -134,7 +122,7 @@ const std::shared_ptr<FVertex<T>> FGraph<T>::RemoveVertex(std::shared_ptr<FVerte
         {
             if (*it == VertexToRemove)
             {
-                //delete *it;
+                delete *it;
                 VertexVector.erase(it);
                 return *it;
             }
@@ -145,7 +133,7 @@ const std::shared_ptr<FVertex<T>> FGraph<T>::RemoveVertex(std::shared_ptr<FVerte
 }
 
 template <class T>
-const std::shared_ptr<FEdge<T>> FGraph<T>::RemoveEdge(std::shared_ptr<FEdge<T>> EdgeToRemove)
+const typename FGraph<T>::FEdge *FGraph<T>::RemoveEdge(FEdge *EdgeToRemove)
 {
     if (EdgeToRemove)
     {
@@ -180,7 +168,7 @@ const std::shared_ptr<FEdge<T>> FGraph<T>::RemoveEdge(std::shared_ptr<FEdge<T>> 
         {
             if (*it == EdgeToRemove)
             {
-                //delete *it;
+                delete *it;
                 EdgeVector.erase(it);
                 return *it;
             }
@@ -190,20 +178,23 @@ const std::shared_ptr<FEdge<T>> FGraph<T>::RemoveEdge(std::shared_ptr<FEdge<T>> 
     return nullptr;
 }
 
-//template <class T>
-//std::vector<std::shared_ptr<FVertex<T>>> &FGraph<T>::Vertices()
+template <class T>
+std::vector<typename FGraph<T>::FVertex *> &FGraph<T>::Vertices()
+{
+    return VertexVector;
+}
 
 template <class T>
-std::vector<std::shared_ptr<FEdge<T>>> &FGraph<T>::Edges()
+std::vector<typename FGraph<T>::FEdge *> &FGraph<T>::Edges()
 {
     return EdgeVector; 
 }
 
 template <class T>
-std::vector<std::shared_ptr<FEdge<T>>> &FGraph<T>::IncidentEdges(std::shared_ptr<FVertex<T>> CurrentVertex)
+std::vector<typename FGraph<T>::FEdge *> &FGraph<T>::IncidentEdges(FVertex * CurrentVertex)
 {
     return CurrentVertex->IncidentEdgeVector;
 }
 
 //template <class T>
-//std::shared_ptr<FVertex<T>> FGraph<T>::GetVertexWithName(std::string Name)x
+//typename FGraph<T>::FVertex *FGraph<T>::GetVertexWithName(std::string Name)

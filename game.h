@@ -3,7 +3,7 @@
 #include "common.h"
 #include <memory>
 
-#include "graph.h"
+#include "map.h"
 #include "card.h"
 #include "tile.h"
 #include <borough.h>
@@ -19,7 +19,7 @@ public:
     void Print();
 
 private:
-    FGraph<FBorough> Graph;
+    FMap Map;
     int Number_of_Players;
     std::vector<std::shared_ptr<FPlayer>> Players;
     std::vector<std::shared_ptr<FPlayer>> PlayersInManhattan;

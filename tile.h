@@ -29,14 +29,14 @@ public:
     FTileStack();
     FTileStack(std::string FileName);
     void Shuffle();
-    int Size() const { return TileStack.size(); } 
-    bool IsEmpty() const { return TileStack.empty(); }
-    std::unique_ptr<FTile> Draw();
+    //int Size() const { return TileStack.size(); } 
+    //bool IsEmpty() const { return TileStack.empty(); }
+    //std::unique_ptr<FTile> Draw();
     void Print() const;
 
 private:
-    void GenerateFromFile(const std::string FileName);
-    std::vector<std::unique_ptr<FTile>> TileStack;
+    //void GenerateFromFile(const std::string FileName);
+    //std::vector<std::unique_ptr<FTile>> TileStack;
 };
 
 #endif

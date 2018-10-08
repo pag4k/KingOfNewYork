@@ -4,9 +4,7 @@
 #include "common.h"
 #include "diceroller.h"
 #include "borough.h"
-
-template <class T>
-struct FVertex;
+#include "map.h"
 
 class FDiceRoller;
 class FCard;
@@ -17,7 +15,7 @@ public:
   FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[]);
   ~FPlayer();
 
-  void SelectStartingLocation(std::vector<std::shared_ptr<FVertex<FBorough>>> &Vertices);
+  void SelectStartingLocation(FMap &Map);
 
   std::string GetPlayerName() const { return PlayerName; }
   EMonsterName GetMonsterName() const { return MonsterName; }
@@ -44,7 +42,7 @@ private :
 
     std::string PlayerName;
     EMonsterName MonsterName;
-    std::shared_ptr<FVertex<FBorough>> Position;
+    std::shared_ptr<FBorough> Position;
     FDiceRoller DiceRoller;
     std::vector<EDiceFace> CurrentDiceResult;
     int TokenInventory[NUMBER_OF_TOKEN_TYPE];

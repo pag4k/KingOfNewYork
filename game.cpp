@@ -6,7 +6,7 @@
 
 FGame::FGame(int NumberOfPlayer)
 {
-    Graph = FGraph<FBorough>("newyork.map");
+    Map = FMap("newyork.map");
 
     std::vector<std::string> PlayerNames;
     bool bAvailableMonsters[NUMBER_OF_MONSTERS];
@@ -22,7 +22,7 @@ FGame::FGame(int NumberOfPlayer)
     for (int i = 0; i < NumberOfPlayer; ++i)
     {
         Players.push_back(std::make_shared<FPlayer>(PlayerNames, bAvailableMonsters));
-        Players.back()->SelectStartingLocation(Graph.Vertices());
+        Players.back()->SelectStartingLocation(Map);
     }
 
     Superstar = nullptr;
@@ -87,7 +87,7 @@ void FGame::Print()
 
     std::cout << "Number of cards in deck: " << Deck.Size() << std::endl;
     std::cout << "Number of cards in discard deck: " << DiscardDeck.Size() << std::endl;
-    std::cout << "Number of tiles in tile stack: " << TileStack.Size() << std::endl;
+    //std::cout << "Number of tiles in tile stack: " << TileStack.Size() << std::endl;
 
     std::cout << "Tokens left:" << std::endl;
     for (int i = 0; i < NUMBER_OF_TOKEN_TYPE; ++i)

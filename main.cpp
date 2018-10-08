@@ -4,10 +4,9 @@
 #include "helper.h"
 #include "common.h"
 #include "diceroller.h"
-#include "graph.h"
 #include "game.h"
 #include "card.h"
-#include "borough.h"
+#include "map.h"
 
 int main()
 {
@@ -43,7 +42,7 @@ int main()
                         << std::endl
                         << ">";
                 const std::string FileName = InputString();
-                std::shared_ptr<FGraph<FBorough>> NewYorkGraph = std::make_shared<FGraph<FBorough>>(FileName);
+                FMap NewYorkMap = FMap(FileName);
                 //delete NewYorkGraph;
                 break;
             }

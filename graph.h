@@ -1,145 +1,86 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include <assert.h>
 #include <vector>
 #include <string>
 #include <iostream>
-#include <memory>
-#include <fstream>
-
-template <class T>
-struct FEdge;
-
-template <class T>
-struct FVertex
-{
-    T Element;
-    std::string Name;
-    //TODO: Not sure I need that. It is a pointer to itself.
-    std::shared_ptr<FVertex<T>> Location;
-    std::vector<std::shared_ptr<FEdge<T>>> IncidentEdgeVector;
-};
-
-template <class T>
-struct FEdge
-{
-    std::string Name;
-    std::shared_ptr<FEdge<T>> Location;
-    std::shared_ptr<FVertex<T>> Origin;
-    std::shared_ptr<FVertex<T>> Destination;
-    std::shared_ptr<FVertex<T>> IncidentOrigin;
-    std::shared_ptr<FVertex<T>> IncidentDestination;
-};
 
 template<class T>
 class FGraph
 {
-  public:
+private:
+    struct FEdge;
+    struct FVertex;
+public:
     FGraph() {}
-    FGraph(std::string FileName)
-    {
-        std::ifstream InputStream;
-        InputStream.open(FileName);
-
-        if (InputStream.fail())
+    ~FGraph() {
+        for (FEdge *Edge : EdgeVector)
         {
-            std::cout << "Could not open file: " << FileName << std::endl;
-            return;
+            delete Edge;
         }
-
-        std::string Text;
-        while (!std::getline(InputStream, Text).eof())
+        for (FVertex *Vertex : VertexVector)
         {
-            //std::cout << "-" << Text << "-" << std::endl;
-            if (Text == "VERTEX")
-            {
-                while (!std::getline(InputStream, Text).eof())
-                {
-                    if (Text == "")
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        std::shared_ptr<FVertex<T>> NewVertex = std::make_shared<FVertex<T>>();
-                        std::size_t Position1 = Text.find(',');
-                        NewVertex->Name = Text.substr(0, Position1);
-                        NewVertex->Element.Name = Text.substr(0, Position1++);
-                        std::size_t Position2 = Text.find(',', Position1);
-                        NewVertex->Element.bStartingLocation = (Text.substr(Position1, Position2++ - Position1) == "StartingLocation");
-                        std::size_t Position3 = Text.find(',', Position2);
-                        std::cout << Text.substr(Position2, Position3 - Position2) << std::endl;
-                        NewVertex->Element.bInManhattan = (Text.substr(Position2, Position3 - Position2) == "InManhattan");
-                        //NewVertex->Level = 0;
-                        InsertVertex(NewVertex);
-                    }
-                }
-            }
-            else if (Text == "EDGE")
-            {
-                while (!std::getline(InputStream, Text).eof())
-                {
-                    if (Text == "")
-                    {
-                        std::cout << "-"
-                                  << "BREAK"
-                                  << "-" << std::endl;
-
-                        break;
-                    }
-                    //std::cout << "-" << Text << "-" << std::endl;
-
-                    std::size_t Position = Text.find(':');
-
-                    if (Position != std::string::npos)
-                    {
-                        std::string OriginName = Text.substr(0, Position);
-                        std::shared_ptr<FVertex<T>> OriginVertex = GetVertexWithName(OriginName);
-                        if (OriginVertex)
-                        {
-                            std::string EdgeNames = Text.substr(Position + 1);
-                            //Checking if there is at least one comma.
-                            if (Text.find(',') != std::string::npos)
-                            {
-                                std::size_t Previous = 0;
-                                while (EdgeNames.find(',', Previous) != std::string::npos)
-                                {
-                                    std::size_t Current = EdgeNames.find(',', Previous);
-                                    std::string DestinationName = EdgeNames.substr(Previous, Current - Previous);
-                                    std::shared_ptr<FVertex<T>> DestinationVertex = GetVertexWithName(DestinationName);
-                                    if (DestinationVertex)
-                                    {
-                                        std::shared_ptr<FEdge<T>> NewEdge = std::make_shared<FEdge<T>>();
-                                        InsertEdge(OriginVertex, DestinationVertex, NewEdge);
-                                    }
-
-                                    if (EdgeNames.length() > Current)
-                                    {
-                                        Previous = Current + 1;
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            delete Vertex;
         }
-
-        InputStream.close();
+        EdgeVector.clear();
+        VertexVector.clear();
     }
 
-    ~FGraph() {} //Must add desctructor!
+    ElementIterator Begin() { return ElementIterator(VertexVector[0]); }
+    ElementIterator End() { return ElementIterator(VertexVector.back()); }
+    int ElementCount() { return VertexVector.size(); }
+    T &GetElement(int n) { assert(0 <= n && n < VertexVector.size()); return VertexVector[n]->Element; }
+    std::vector<int> GetNeighbours(int n)
+    {
+        assert(0 <= n && n < VertexVector.size());
+        std::vector<int> Neighbours;
+        for (int i = 0; i < VertexVector.size(); ++i)
+        {
+            if (i == n)
+            {
+                continue;
+            }
+            if (AreAdjacent(VertexVector[i], VertexVector[n]))
+            {
+                Neighbours.push_back(i);
+            }
+        }
+        return Neighbours;
+    }
 
-    const std::shared_ptr<FVertex<T>> EndVertices(const std::shared_ptr<FVertex<T>> CurrentEdge) const;
-    const std::shared_ptr<FVertex<T>> Opposite(const std::shared_ptr<FVertex<T>> CurrentVertex, const std::shared_ptr<FEdge<T>> CurrentEdge) const;
-    bool AreAdjacent(const std::shared_ptr<FVertex<T>> VertexA, const std::shared_ptr<FVertex<T>> VertexB) const;
-    void Replace(std::shared_ptr<FVertex<T>> OldVertex, std::shared_ptr<FVertex<T>> NewVertex);
-    void Replace(std::shared_ptr<FEdge<T>> OldEdge, std::shared_ptr<FEdge<T>> NewEdge);
-    const std::shared_ptr<FVertex<T>> InsertVertex(std::shared_ptr<FVertex<T>> NewVertex)
+    T &InsertVertex(std::string VertexName)
+    {
+        for (FVertex *Vertex: VertexVector)
+        {
+            if (Vertex->Name == VertexName)
+            {
+                std::cout   << "Error: There is already a vertex named: "
+                            << VertexName
+                            << "."
+                            << std::endl;
+                return Vertex->Element;
+            }
+        }
+        FVertex *NewVertex = new FVertex;
+        NewVertex->Name = VertexName;
+        return InsertVertex(NewVertex)->Element;
+    }
+
+    void InsertEdge(std::string OriginName, std::string DestinationName)
+    {
+        FEdge *NewEdge = new FEdge;
+        InsertEdge(GetVertexWithName(OriginName), GetVertexWithName(DestinationName), NewEdge);
+    }
+
+private:
+    const FVertex * EndVertices(const FVertex * CurrentEdge) const;
+    const FVertex * Opposite(const FVertex * CurrentVertex, const FEdge * CurrentEdge) const;
+    bool AreAdjacent(const FVertex * VertexA, const FVertex * VertexB) const;
+    void Replace(FVertex * OldVertex, FVertex * NewVertex);
+    void Replace(FEdge * OldEdge, FEdge * NewEdge);
+
+    FVertex * InsertVertex(FVertex * NewVertex)
     {
         if (NewVertex)
         {
@@ -150,13 +91,13 @@ class FGraph
         return nullptr;
     }
 
-    const std::shared_ptr<FEdge<T>> InsertEdge(std::shared_ptr<FVertex<T>> OriginVertex, std::shared_ptr<FVertex<T>> DestinationVertex, std::shared_ptr<FEdge<T>> NewEdge)
+    FEdge * InsertEdge(FVertex * OriginVertex, FVertex * DestinationVertex, FEdge * NewEdge)
     {
         if (OriginVertex && DestinationVertex && NewEdge)
         {
             EdgeVector.push_back(NewEdge);
-            std::shared_ptr<FEdge<T>> CreatedEdge = EdgeVector.back();
-            CreatedEdge->Location = CreatedEdge;
+            FEdge * CreatedEdge = EdgeVector.back();
+            //CreatedEdge->Location = CreatedEdge;
             CreatedEdge->Origin = OriginVertex;
             CreatedEdge->Destination = DestinationVertex;
             OriginVertex->IncidentEdgeVector.push_back(CreatedEdge);
@@ -167,19 +108,16 @@ class FGraph
         return nullptr;
     }
 
-    const std::shared_ptr<FVertex<T>> RemoveVertex(std::shared_ptr<FVertex<T>> CurrentVertex);
-    const std::shared_ptr<FEdge<T>> RemoveEdge(std::shared_ptr<FEdge<T>> CurrentEdge);
-    std::vector<std::shared_ptr<FVertex<T>>> &Vertices()
-    {
-        return VertexVector;
-    }
+    const FVertex * RemoveVertex(FVertex * CurrentVertex);
+    const FEdge * RemoveEdge(FEdge * CurrentEdge);
 
-    std::vector<std::shared_ptr<FEdge<T>>> &Edges();
-    std::vector<std::shared_ptr<FEdge<T>>> &IncidentEdges(std::shared_ptr<FVertex<T>> CurrentVertex);
+    std::vector<FVertex *> &Vertices();
+    std::vector<FEdge *> &Edges();
+    std::vector<FEdge *> &IncidentEdges(FVertex * CurrentVertex);
 
-    std::shared_ptr<FVertex<T>> GetVertexWithName(std::string Name)
+    FVertex * GetVertexWithName(std::string Name)
     {
-        for (std::shared_ptr<FVertex<T>> &Vertex : VertexVector)
+        for (FVertex *&Vertex : VertexVector)
         {
             if (Vertex->Name == Name)
             {
@@ -190,9 +128,25 @@ class FGraph
         return nullptr;
     }
 
-  private:
-    std::vector<std::shared_ptr<FVertex<T>>> VertexVector;
-    std::vector<std::shared_ptr<FEdge<T>>> EdgeVector;
+    struct FVertex
+    {
+        T Element;
+        std::string Name;
+        //FVertex * Location;
+        std::vector<FEdge *> IncidentEdgeVector;
+    };
+  
+    struct FEdge
+    {
+        //FEdge * Location;
+        FVertex * Origin;
+        FVertex * Destination;
+        FVertex * IncidentOrigin;
+        FVertex * IncidentDestination;
+    };
+
+  std::vector<FVertex *> VertexVector;
+  std::vector<FEdge *> EdgeVector;
 };
 
 #endif
