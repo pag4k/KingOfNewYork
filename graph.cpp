@@ -10,56 +10,11 @@ const typename FGraph<T>::FVertex *FGraph<T>::EndVertices(const FVertex *Current
 }
 
 //NOTE: I'm using this to know if an edge as this vertex. This is not the role of this method.
-template <class T>
-const typename FGraph<T>::FVertex *FGraph<T>::Opposite(const FVertex *CurrentVertex, const FEdge *CurrentEdge) const
-{
-    if (CurrentVertex && CurrentEdge)
-    {
-        if (CurrentEdge->Origin && CurrentEdge->Origin == CurrentVertex)
-        {
-            return CurrentEdge->Destination;
-        }
-        else if (CurrentEdge->Destination && CurrentEdge->Destination == CurrentVertex)
-        {
-            return CurrentEdge->Origin;
-        }
-        else
-        {
-            //Should output Error somehow.
-            return nullptr;
-        }
-    }
-    else
-    {
-        return nullptr;
-    }
-}
+//template <class T>
+//const typename FGraph<T>::FVertex *FGraph<T>::Opposite(const FVertex *CurrentVertex, const FEdge *CurrentEdge) const
 
-template <class T>
-bool FGraph<T>::AreAdjacent(const FVertex * VertexA, const FVertex * VertexB) const
-{
-    if (VertexA && VertexB)
-    {
-        //Not sure about what to return when it is itself.
-        if (VertexA == VertexB)
-        {
-            return false;
-        }
-
-        for (const FEdge * &IncidentEdge : VertexA->IncidentEdgeVector)
-        {
-            if (Opposite(VertexA, IncidentEdge))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-    else
-    {
-        return false;
-    }
-}
+//template <class T>
+//bool FGraph<T>::AreAdjacent(const FVertex * VertexA, const FVertex * VertexB) const
 
 template <class T>
 void FGraph<T>::Replace(FVertex * OldVertex, FVertex * NewVertex)

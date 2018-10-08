@@ -1,12 +1,13 @@
 #include <iostream>
 #include <string>
 
+#include <assignment1.h>
+
 #include "helper.h"
 #include "common.h"
-#include "diceroller.h"
-#include "game.h"
+
 #include "card.h"
-#include "map.h"
+
 
 int main()
 {
@@ -14,20 +15,25 @@ int main()
     while (bIsRunning)
     {
         std::cout << std::endl
-                  << "Write the number corresponding to what you want to test"
+                  << "COMP345 Assignment 1 driver program by Pierre-André Gagnon (40067198)."
                   << std::endl
-                  << "1. Generate the map and test it."
+                  << "Please enter the number corresponding to the part you want to test:"
                   << std::endl
-                  << "2. Test the dice roller."
+                  << "1. Part 1: Maps."
                   << std::endl
-                  << "3. Create a game."
+                  << "2. Part 2: Map loader."
                   << std::endl
-                  << "4. Create a deck."
+                  << "3. Part 3: Dice Roller."
+                  << std::endl
+                  << "4. Part 4: Player."
+                  << std::endl
+                  << "5. Part 5: Cards deck/Monster cards/Tokens/cubes/unit tiles."
                   << std::endl
                   << "0. Exit program."
                   << std::endl
                   << ">";
         const int Input = InputSingleDigit();
+        //std::cout << std::endl;
         switch (Input)
         {
             case 0:
@@ -37,51 +43,25 @@ int main()
             }
             case 1:
             {
-                std::cout << std::endl
-                        << "Enter the name of the file to use to generate the graph:"
-                        << std::endl
-                        << ">";
-                const std::string FileName = InputString();
-                FMap NewYorkMap = FMap(FileName);
-                //delete NewYorkGraph;
+                Part1();
                 break;
             }
             case 2:
             {
-                FDiceRoller CurrentDiceRoller;
-                std::vector<EDiceFace> DiceResult = CurrentDiceRoller.BeginRolling();
+                Part2();
                 break;
             }
             case 3:
             {
-                std::cout   << std::endl
-                            << "Enter the number of player ("
-                            << MINIMUM_NUMBER_OF_PLAYERS
-                            << "-"
-                            << MAXIMUM_NUMBER_OF_PLAYERS
-                            << "):"
-                            << std::endl
-                            << ">";
-                const int NumberOfPlayer = InputSingleDigit();
-                if (MINIMUM_NUMBER_OF_PLAYERS <= NumberOfPlayer &&
-                    NumberOfPlayer <= MAXIMUM_NUMBER_OF_PLAYERS)
-                {
-                    std::shared_ptr<FGame> Game = std::make_shared<FGame>(NumberOfPlayer);
-                    Game->Print();
-                    //delete Game;
-                }
-                else
-                {
-                    std::cout   << "Invalid number of player. It has to be between "
-                                << MINIMUM_NUMBER_OF_PLAYERS
-                                << " and "
-                                << MAXIMUM_NUMBER_OF_PLAYERS
-                                << ". Please try again."
-                                << std::endl;
-                }
+                Part3();
                 break;
             }
             case 4:
+            {
+                Part4();
+                break;
+            }
+            case 40:
             {
                 FDeck Deck("cards.txt");
                 Deck.Print();

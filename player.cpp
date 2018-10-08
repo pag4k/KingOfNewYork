@@ -28,7 +28,7 @@ FPlayer::FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[
     bCelebrity = false;
     bStatueOfLiberty = false;
 
-    PrintLong();
+    //PrintLong();
 
     //RollDice();
     //ResolveDice();
@@ -287,24 +287,21 @@ void FPlayer::SelectMonster(bool bAvailableMonsters[])
 
 void FPlayer::SelectStartingLocation(FMap &Map)
 {
-    //std::cout << Map.BoroughCount();
     while (!Position)
     {
         {
             std::cout << PlayerName
                       << ", please select your starting borough:" << std::endl;
-            for (int i = 0; i<Map.BoroughCount(); ++i)
+            for (int i = 0; i < Map.BoroughCount(); ++i)
             {
-                std::cout << Map.BoroughCount();
                 FBorough &CurrentBorough = Map.GetBorough(i);
                 if (CurrentBorough.Players.size() < MAXIMUM_PLAYERS_IN_BOROUGH && CurrentBorough.bStartingLocation)
                 {
-                    std::cout << Map.BoroughCount();
                     std::cout << (i + 1)
                               << ". "
                               << CurrentBorough.Name
                               << (CurrentBorough.Players.size() == 1 ?
-                                " ( " +
+                                " (" +
                                 GetMonsterNameString(CurrentBorough.Players[0]->GetMonsterName()) +
                                 " is already there)" : "")
                               << std::endl;
@@ -328,11 +325,9 @@ void FPlayer::SelectStartingLocation(FMap &Map)
                         }
                     }
                 }
-                std::cout << "Put new position" << std::endl;
+                //Setting player position to selected borough.
                 Position = std::make_shared<FBorough>(Map.GetBorough(Input - 1));
-                std::cout << "Put player on position" << std::endl;
-                std::shared_ptr<FPlayer> Test = shared_from_this();
-                std::cout << "Put player on position" << std::endl;
+                //Put player in the borough player list.
                 Map.GetBorough(Input - 1).Players.push_back(shared_from_this());
             }
             else

@@ -10,7 +10,7 @@ FMap::FMap(std::string FileName)
 
     if (InputStream.fail())
     {
-        std::cout << "Could not open file: " << FileName << std::endl;
+        std::cout << "Error: Could not open file: " << FileName << std::endl;
         return;
     }
 
@@ -28,12 +28,12 @@ FMap::FMap(std::string FileName)
                 else
                 {
                     std::size_t Position1 = Text.find(',');
-                    FBorough &Borough = Graph.InsertVertex(Text.substr(0, Position1));
-                    Borough.Name = Text.substr(0, Position1++);
+                    std::string Name = Text.substr(0, Position1++);
+                    FBorough &Borough = Graph.InsertVertex(Name);
+                    Borough.Name = Name;
                     std::size_t Position2 = Text.find(',', Position1);
                     Borough.bStartingLocation = (Text.substr(Position1, Position2++ - Position1) == "StartingLocation");
                     std::size_t Position3 = Text.find(',', Position2);
-                    std::cout << Text.substr(Position2, Position3 - Position2) << std::endl;
                     Borough.bInManhattan = (Text.substr(Position2, Position3 - Position2) == "InManhattan");
                 }
             }
@@ -44,10 +44,6 @@ FMap::FMap(std::string FileName)
             {
                 if (Text == "")
                 {
-                    std::cout << "-"
-                              << "BREAK"
-                              << "-" << std::endl;
-
                     break;
                 }
                 std::size_t Position = Text.find(':');

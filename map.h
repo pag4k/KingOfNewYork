@@ -13,7 +13,7 @@ public:
 
     int BoroughCount() { return Graph.ElementCount(); }
     FBorough &GetBorough(int n) { return Graph.GetElement(n); }
-    std::vector<int> GetNeighbourgs(int n) { Graph.GetNeighbours(n); }
+    std::vector<int> GetNeighbourgs(int n) { return Graph.GetNeighbours(n); }
 
 private:
     FGraph<FBorough> Graph;

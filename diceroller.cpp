@@ -85,7 +85,7 @@ std::vector<EDiceFace> FDiceRoller::BeginRolling(int DiceNumber)
         }
     }
 
-    PrintRollHistory();
+    //PrintRollHistory();
 
     return DiceResult;
 }

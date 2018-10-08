@@ -1,15 +1,13 @@
 VERTEX
 Bronx,StartingLocation, ,
 Brooklyn,StartingLocation, ,
-Manhattan,StartingLocation, ,
 Queens,StartingLocation, ,
 StatenIsland,StartingLocation, ,
 Manhattan, ,InManhattan,
 
 EDGE
-Bronx:Brooklyn,Manhattan,Queens,StatenIsland,Manhattan,
-Brooklyn:Bronx,Manhattan,Queens,StatenIsland,Manhattan,
-Manhattan:Bronx,Brooklyn,Queens,StatenIsland,Manhattan,
-Queens:Bronx,Brooklyn,Manhattan,StatenIsland,Manhattan,
-StatenIsland:Bronx,Brooklyn,Manhattan,Queens,Manhattan,
-Manhattan:Bronx,Brooklyn,Manhattan,Queens,StatenIsland,
+Bronx:Brooklyn,Queens,StatenIsland,Manhattan,
+Brooklyn:Bronx,Queens,StatenIsland,Manhattan,
+Queens:Bronx,Brooklyn,StatenIsland,Manhattan,
+StatenIsland:Bronx,Brooklyn,Queens,Manhattan,
+Manhattan:Bronx,Brooklyn,Queens,StatenIsland,

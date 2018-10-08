@@ -19,7 +19,7 @@ public:
     void Print();
 
 private:
-    FMap Map;
+    FMap *Map =  nullptr;
     int Number_of_Players;
     std::vector<std::shared_ptr<FPlayer>> Players;
     std::vector<std::shared_ptr<FPlayer>> PlayersInManhattan;

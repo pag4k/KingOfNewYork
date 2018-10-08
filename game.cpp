@@ -6,7 +6,7 @@
 
 FGame::FGame(int NumberOfPlayer)
 {
-    Map = FMap("newyork.map");
+    Map = new FMap("newyork.map");
 
     std::vector<std::string> PlayerNames;
     bool bAvailableMonsters[NUMBER_OF_MONSTERS];
@@ -22,7 +22,8 @@ FGame::FGame(int NumberOfPlayer)
     for (int i = 0; i < NumberOfPlayer; ++i)
     {
         Players.push_back(std::make_shared<FPlayer>(PlayerNames, bAvailableMonsters));
-        Players.back()->SelectStartingLocation(Map);
+        Players.back()->SelectStartingLocation(*Map);
+        Players.back()->PrintLong();
     }
 
     Superstar = nullptr;
@@ -41,6 +42,7 @@ FGame::FGame(int NumberOfPlayer)
 
 FGame::~FGame()
 {
+    delete Map;
     // for (std::shared_ptr<FPlayer> Player : Players)
     // {
     //     delete Player;
