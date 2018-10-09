@@ -11,7 +11,7 @@ struct FBorough
     bool bStartingLocation;
     bool bInManhattan;
     //int Level;
-    FTileStack TileStacks[NUMBER_OF_TILESTACKS_IN_BOROUGH];
+    //std::vector<std::unique_ptr<FTile>> TileStacks;
     std::vector<std::shared_ptr<FPlayer>> Players;
 };
 

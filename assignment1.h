@@ -224,10 +224,11 @@ void Part4()
               << "):"
               << std::endl
               << ">";
-    const int NumberOfPlayer = InputSingleDigit();
+    const int NumberOfPlayer = InputSingleDigit();    
     if (MINIMUM_NUMBER_OF_PLAYERS <= NumberOfPlayer &&
         NumberOfPlayer <= MAXIMUM_NUMBER_OF_PLAYERS)
     {
+        std::cout << std::endl;
         std::shared_ptr<FGame> Game = std::make_shared<FGame>(NumberOfPlayer);
         //Game->Print();
     }
@@ -241,3 +242,51 @@ void Part4()
                   << std::endl;
     }
 }
+
+void Part5()
+{
+    std::shared_ptr<FGame> Game = std::make_shared<FGame>();
+
+    bool bContinue = true;
+    while (bContinue)
+    {
+        std::cout << std::endl
+                  << "Write the number corresponding to what you want to do"
+                  << std::endl
+                  << "1. See game status."
+                  << std::endl
+                  << "2. Shuffle and show deck."
+                  << std::endl
+                  << "3. Shuffle and show tile stack."
+                  << std::endl
+                  << "0. Go back to main menu."
+                  << std::endl
+                  << ">";
+        const int Input = InputSingleDigit();
+        std::cout << std::endl;
+        switch (Input)
+        {
+            case 0:
+            {
+                bContinue = false;
+                break;
+            }
+            case 1:
+            {
+                Game->Print();
+                break;
+            }
+            case 2:
+            {
+                Game->ShuffleAndPrintDeck();
+                break;
+            }
+            case 3:
+            {
+                Game->ShuffleAndPrintTileStack();
+                break;
+            }
+        }
+    }
+}
+

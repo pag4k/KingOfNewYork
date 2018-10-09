@@ -1,3 +1,6 @@
+#ifndef GAME_H
+#define GAME_H
+
 #include <vector>
 #include <string>
 #include "common.h"
@@ -13,12 +16,17 @@ class FPlayer;
 class FGame
 {
 public:
+    FGame();
     FGame(int NumberOfPlayer);
     ~FGame();
-
+  
     void Print();
+    void ShuffleAndPrintDeck();
+    void ShuffleAndPrintTileStack();
 
-private:
+  private:
+    void LoadGameData();
+    void AddPlayers(int NumberOfPlayer);
     FMap *Map =  nullptr;
     int Number_of_Players;
     std::vector<std::shared_ptr<FPlayer>> Players;
@@ -35,3 +43,4 @@ private:
     std::unique_ptr<FCard> AvailableCards[MAXIMUM_AVAILABLE_CARDS];
 };
 
+#endif

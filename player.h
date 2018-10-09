@@ -1,6 +1,8 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
 #include <string>
 #include <vector>
-#include <memory>
 #include "common.h"
 #include "diceroller.h"
 #include "borough.h"
@@ -56,3 +58,5 @@ private :
 
     //TODO: ADD CARD BUYING CODE.
 };
+
+#endif

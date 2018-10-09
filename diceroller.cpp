@@ -106,4 +106,5 @@ void FDiceRoller::PrintRollHistory()
     {
         std::cout << GetDiceFaceString(EDiceFace(i)) << ": " << RollHistory[i] << std::endl;
     }
+    std::cout << "####################" << std::endl;
 }

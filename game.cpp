@@ -4,49 +4,20 @@
 #include "game.h"
 #include "player.h"
 
+FGame::FGame()
+{
+    LoadGameData();
+}
+
 FGame::FGame(int NumberOfPlayer)
 {
-    Map = new FMap("newyork.map");
-
-    std::vector<std::string> PlayerNames;
-    bool bAvailableMonsters[NUMBER_OF_MONSTERS];
-    for (int i = 0; i < NUMBER_OF_MONSTERS; ++i)
-    {
-        bAvailableMonsters[i] = true;
-    }
-
-    assert(MINIMUM_NUMBER_OF_PLAYERS <= NumberOfPlayer &&
-           NumberOfPlayer <= MAXIMUM_NUMBER_OF_PLAYERS);
-    this->Number_of_Players = NumberOfPlayer;
-
-    for (int i = 0; i < NumberOfPlayer; ++i)
-    {
-        Players.push_back(std::make_shared<FPlayer>(PlayerNames, bAvailableMonsters));
-        Players.back()->SelectStartingLocation(*Map);
-        Players.back()->PrintLong();
-    }
-
-    Superstar = nullptr;
-    StatusOfLiberty = nullptr;
-
-    Deck = FDeck("cards.txt");
-    TileStack = FTileStack("tiles.txt");
-
-    for (int i = 0; i < NUMBER_OF_TOKEN_TYPE; ++i)
-    {
-        TokenInventory[i] = STARTING_TOKENS;
-    }
-
-    EnergyCubes = MAXIMUM_ENERGY_CUBES;
+    LoadGameData();
+    AddPlayers(Number_of_Players);
 }
 
 FGame::~FGame()
 {
     delete Map;
-    // for (std::shared_ptr<FPlayer> Player : Players)
-    // {
-    //     delete Player;
-    // }
     Players.clear();
     Superstar = nullptr;
     StatusOfLiberty = nullptr;
@@ -61,7 +32,7 @@ void FGame::Print()
         Player->PrintShort();
     }
     
-    std::cout << "Monster in Manhattam:";
+    std::cout << "Monster in Manhattam: ";
     if (PlayersInManhattan.empty())
     {
         std::cout << "No one." << std::endl;
@@ -101,7 +72,7 @@ void FGame::Print()
                     << std::endl;
     }
 
-    std::cout   << "Energy cubes left:"
+    std::cout   << "Energy cubes left: "
                 << EnergyCubes
                 << std::endl;
 
@@ -115,5 +86,57 @@ void FGame::Print()
                       << std::endl;
         }
         
+    }
+}
+
+void FGame::ShuffleAndPrintDeck()
+{
+    Deck.Shuffle();
+    Deck.Print();
+}
+
+void FGame::ShuffleAndPrintTileStack()
+{
+    TileStack.Shuffle();
+    TileStack.Print();
+}
+
+void FGame::LoadGameData()
+{
+    Map = new FMap("newyork.map");
+
+    Superstar = nullptr;
+    StatusOfLiberty = nullptr;
+
+    Deck = FDeck("cards.txt");
+    TileStack = FTileStack("tiles.txt");
+
+    for (int i = 0; i < NUMBER_OF_TOKEN_TYPE; ++i)
+    {
+        TokenInventory[i] = STARTING_TOKENS;
+    }
+
+    EnergyCubes = MAXIMUM_ENERGY_CUBES;
+}
+
+void FGame::AddPlayers(int NumberOfPlayer)
+{
+
+    std::vector<std::string> PlayerNames;
+    bool bAvailableMonsters[NUMBER_OF_MONSTERS];
+    for (int i = 0; i < NUMBER_OF_MONSTERS; ++i)
+    {
+        bAvailableMonsters[i] = true;
+    }
+
+    assert(MINIMUM_NUMBER_OF_PLAYERS <= NumberOfPlayer &&
+           NumberOfPlayer <= MAXIMUM_NUMBER_OF_PLAYERS);
+    this->Number_of_Players = NumberOfPlayer;
+
+    for (int i = 0; i < NumberOfPlayer; ++i)
+    {
+        Players.push_back(std::make_shared<FPlayer>(PlayerNames, bAvailableMonsters));
+        Players.back()->SelectStartingLocation(*Map);
+        Players.back()->PrintLong();
     }
 }

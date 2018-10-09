@@ -29,12 +29,21 @@ FMap::FMap(std::string FileName)
                 {
                     std::size_t Position1 = Text.find(',');
                     std::string Name = Text.substr(0, Position1++);
-                    FBorough &Borough = Graph.InsertVertex(Name);
-                    Borough.Name = Name;
-                    std::size_t Position2 = Text.find(',', Position1);
-                    Borough.bStartingLocation = (Text.substr(Position1, Position2++ - Position1) == "StartingLocation");
-                    std::size_t Position3 = Text.find(',', Position2);
-                    Borough.bInManhattan = (Text.substr(Position2, Position3 - Position2) == "InManhattan");
+                    FBorough *Borough = Graph.InsertVertex(Name);
+                    if (Borough)
+                    {
+                        Borough->Name = Name;
+                        std::size_t Position2 = Text.find(',', Position1);
+                        Borough->bStartingLocation = (Text.substr(Position1, Position2++ - Position1) == "StartingLocation");
+                        std::size_t Position3 = Text.find(',', Position2);
+                        Borough->bInManhattan = (Text.substr(Position2, Position3 - Position2) == "InManhattan");
+                    }
+                    else
+                    {
+                        std::cout << "Error: Could not create borough." << std::endl;
+                        continue;
+                    }
+
                 }
             }
         }
@@ -76,5 +85,6 @@ FMap::FMap(std::string FileName)
         }
     }
 
+    std::cout << std::endl;
     InputStream.close();
 }

@@ -172,7 +172,6 @@ void FPlayer::PrintLong()
         std::cout << "Position: " << Position->Name << std::endl;
     }
 
-    std::cout << "Rolling history:" << std::endl;
     DiceRoller.PrintRollHistory();
 
     std::cout << "Number of cards: " << Cards.size() << std::endl;
@@ -196,15 +195,15 @@ void FPlayer::PrintLong()
                   << std::endl;
     }
 
-    std::cout << "Energy cubes:"
+    std::cout << "Energy cubes: "
               << EnergyCubes
               << std::endl;
 
-    std::cout << "Life points:"
+    std::cout << "Life points: "
               << LifePoints
               << std::endl;
 
-    std::cout << "Victory points:"
+    std::cout << "Victory points: "
               << VictoryPoints
               << std::endl;
 
@@ -221,6 +220,8 @@ void FPlayer::PrintLong()
                   << " has help from the Status of Liberty!"
                   << std::endl;
     }
+
+    std::cout << std::endl;
 }
 
 void FPlayer::EnterPlayerName(std::vector<std::string> &PlayerNames)
@@ -256,6 +257,7 @@ void FPlayer::EnterPlayerName(std::vector<std::string> &PlayerNames)
             PlayerNames.push_back(Input);
         }
     }
+    std::cout << std::endl;
 }
 
 void FPlayer::SelectMonster(bool bAvailableMonsters[])
@@ -283,6 +285,7 @@ void FPlayer::SelectMonster(bool bAvailableMonsters[])
             std::cout << "Invalid input, please try again." << std::endl << std::endl;
         }
     }
+    std::cout << std::endl;
 }
 
 void FPlayer::SelectStartingLocation(FMap &Map)
@@ -309,12 +312,14 @@ void FPlayer::SelectStartingLocation(FMap &Map)
             }
             std::cout << ">";
             const int Input = InputSingleDigit();
+            std::cout << std::endl;
+
             if (1 <= Input &&
                 Input <= Map.BoroughCount() &&
                 Map.GetBorough(Input - 1).Players.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
                 Map.GetBorough(Input - 1).bStartingLocation)
             {
-                std::cout << "Remove old position" << std::endl;
+                //Removing player from prevous borough list.
                 if (Position)
                 {
                     for (auto it = Position->Players.begin(); it != Position->Players.end(); ++it)

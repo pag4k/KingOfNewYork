@@ -6,9 +6,6 @@
 #include "helper.h"
 #include "common.h"
 
-#include "card.h"
-
-
 int main()
 {
     bool bIsRunning = true;
@@ -33,7 +30,7 @@ int main()
                   << std::endl
                   << ">";
         const int Input = InputSingleDigit();
-        //std::cout << std::endl;
+        std::cout << std::endl;
         switch (Input)
         {
             case 0:
@@ -61,10 +58,9 @@ int main()
                 Part4();
                 break;
             }
-            case 40:
+            case 5:
             {
-                FDeck Deck("cards.txt");
-                Deck.Print();
+                Part5();
                 break;
             }
             default:

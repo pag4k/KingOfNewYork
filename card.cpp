@@ -22,7 +22,6 @@ FDeck::FDeck()
 FDeck::FDeck(std::string FileName)
 {
     GenerateFromFile(FileName);
-    Shuffle();
 }
 
 std::unique_ptr<FCard> FDeck::Draw()

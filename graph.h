@@ -52,12 +52,12 @@ public:
         return AreAdjacent(GetVertexWithName(Name1), GetVertexWithName(Name2));
     }
 
-    T &InsertVertex(std::string VertexName)
+    T *InsertVertex(std::string VertexName)
     {
         if (VertexName == "")
         {
             std::cout << "Error: You need to provide a non-empy string for the vertex." << std::endl;
-            //return nullptr;
+            return nullptr;
         }
         for (FVertex *Vertex: VertexVector)
         {
@@ -67,14 +67,13 @@ public:
                             << VertexName
                             << "."
                             << std::endl;
-                return Vertex->Element;
+                return &Vertex->Element;
             }
         }
         FVertex *NewVertex = new FVertex;
         NewVertex->Name = VertexName;
         FVertex *InsertedVertex = InsertVertex(NewVertex);
-        //std::cout << NewVertex << " " << InsertedVertex << std::endl;
-        return NewVertex->Element;
+        return &NewVertex->Element;
     }
 
     void InsertEdge(std::string OriginName, std::string DestinationName)
