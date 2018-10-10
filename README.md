@@ -8,12 +8,19 @@ Written by: Pierre-Andre Gagnon - 40067198
 ------------------------------------------
 
 **Design**
+
 The design of this project is straightforward. Four categories of files can be identified:
+
 1. Driver files
+
 - main.cpp and assignment1.h are strictly used to demonstrate the state of the project for assignment 1.
+
 2. Library files
+
 - graph.h/cpp was implemented as an external dependency since it does not depend at all on the rest of the projet. To do so, it uses templates to be flexible. It should be noted that most of the functions in it are not used, but were included to have a fully functionnal graph.
+
 3. Game files
+
 - borough.h contains the struct that is used as template parameter for the graph.
 - card.h/cpp contains the FCard and FDeck classes.
 - diceroller.h/cpp contains the FDice and FDiceRoller classes.
@@ -21,23 +28,32 @@ The design of this project is straightforward. Four categories of files can be i
 - map.h/cpp contains the FMap class.
 - player.h/cpp contains the FPlayer class.
 - tile.h/cpp contains the FTile and FTileStack classes.
+
 4. Other files
+
 - common.h/cpp contains various constants and enums that are used in many classes.
 - helper.h.cpp contains various functions to help manage input.
 
 **Dependencies**
+
 The project only uses the C++ Standard Library.
 
 **How to build**
+
 The command I use to build the project on my machine is:
+
     g++ main.cpp diceroller.cpp graph.cpp player.cpp game.cpp helper.cpp common.cpp card.cpp tile.cpp map.cpp -I. -g -o kingofnewyork
+
 The flags are:
+
 - -I. : To tell the compiler to search the directory which was current when the compiler was invoked for #include "file".
 - -g : To enable debugging. 
 - -o kingofnewyork : To indicate the output file of the compilation.
 
 **Coding environment**
+
 This project is being coded using VS Code on Manjaro Linux. It is compiled using the GNU C++ Compiler.
 
 **Coding standard**
+
 This project uses [Epic's coding standard](https://docs.unrealengine.com/en-us/Programming/Development/CodingStandard) which is used for the Unreal Engine.
