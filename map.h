@@ -1,3 +1,9 @@
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 1
+// Due date: October 12, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
+
 #ifndef MAP_H
 #define MAP_H
 
@@ -5,18 +11,21 @@
 #include "graph.h"
 #include "borough.h"
 
-class FMap
+namespace KingOfNewYork
 {
-public:
-    FMap() {}
-    FMap(std::string FileName);
+    class FMap
+    {
+    public:
+        FMap() {}
+        FMap(const std::string FileName);
 
-    int BoroughCount() { return Graph.ElementCount(); }
-    FBorough &GetBorough(int n) { return Graph.GetElement(n); }
-    std::vector<int> GetNeighbourgs(int n) { return Graph.GetNeighbours(n); }
+        const int BoroughCount() const { return Graph.ElementCount(); }
+        FBorough &GetBorough(const int n) { return Graph.GetElement(n); }
+        const std::vector<int> GetNeighbourgs(const int n) const { return Graph.GetNeighbours(n); }
 
-private:
-    FGraph<FBorough> Graph;
-};
+    private:
+        FGraph<FBorough> Graph;
+    };
+}
 
 #endif

@@ -1,36 +1,45 @@
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 1
+// Due date: October 12, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
+
 #include <helper.h>
 
-//If invalid, returns -1.
-int InputSingleDigit()
+namespace KingOfNewYork
 {
-    std::string Input;
-    std::getline(std::cin, Input);
-    if (Input.length() == 1)
+    //If invalid, returns -1.
+    const int InputSingleDigit()
     {
-        return ParseIntFromChar(Input[0]);
+        std::string Input;
+        std::getline(std::cin, Input);
+        if (Input.length() == 1)
+        {
+            return ParseIntFromChar(Input[0]);
+        }
+        else
+        {
+            return -1;
+        }
     }
-    else
-    {
-        return -1;
-    }
-}
 
-std::string InputString()
-{
-    std::string Input;
-    std::getline(std::cin, Input);
-    return Input;
-}
-
-int ParseIntFromChar(char Char)
-{
-    int Digit = (int)Char - 48;
-    if (0 <= Digit && Digit <= 9)
+    const std::string InputString()
     {
-        return Digit;
+        std::string Input;
+        std::getline(std::cin, Input);
+        return Input;
     }
-    else
+
+    const int ParseIntFromChar(const char Char)
     {
-        return -1;
+        int Digit = (int)Char - 48;
+        if (0 <= Digit && Digit <= 9)
+        {
+            return Digit;
+        }
+        else
+        {
+            return -1;
+        }
     }
 }

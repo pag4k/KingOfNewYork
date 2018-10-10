@@ -1,3 +1,9 @@
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 1
+// Due date: October 12, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
+
 #include <iostream>
 #include <string>
 
@@ -5,6 +11,8 @@
 
 #include "helper.h"
 #include "common.h"
+
+using namespace KingOfNewYork;
 
 int main()
 {

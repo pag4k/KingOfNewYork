@@ -1,3 +1,9 @@
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 1
+// Due date: October 12, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
+
 #ifndef TILE_H
 #define TILE_H
 
@@ -6,37 +12,40 @@
 #include <memory>
 #include "common.h"
 
-class FTile
+namespace KingOfNewYork
 {
-public:
-    FTile(ETileType TileType, int Durability, int Reward);
-    bool IsBuilding() const;
-    EMonsterResource GetMonsterResource() const;
-    void Flip();
-    ETileType GetTileType() const { return TileType; }
-    int GetDurability() const { return Durability; }
-    int GetReward() const { return Reward; }
+    class FTile
+    {
+    public:
+        FTile(const ETileType TileType, const int Durability, const int Reward);
+        const bool IsBuilding() const;
+        const EMonsterResource GetMonsterResource() const;
+        void Flip();
+        const ETileType GetTileType() const { return TileType; }
+        const int GetDurability() const { return Durability; }
+        const int GetReward() const { return Reward; }
 
-private :
-    ETileType TileType;
-    int Durability;
-    int Reward;
-};
+    private:
+        ETileType TileType;
+        int Durability;
+        int Reward;
+    };
 
-class FTileStack
-{
-public:
-    FTileStack();
-    FTileStack(std::string FileName);
-    void Shuffle();
-    int Size() const { return TileStack.size(); } 
-    bool IsEmpty() const { return TileStack.empty(); }
-    std::unique_ptr<FTile> Draw();
-    void Print() const;
+    class FTileStack
+    {
+    public:
+        FTileStack();
+        FTileStack(const std::string FileName);
+        void Shuffle();
+        const int Size() const { return TileStack.size(); }
+        const bool IsEmpty() const { return TileStack.empty(); }
+        std::unique_ptr<FTile> Draw();
+        void Print() const;
 
-private:
-    void GenerateFromFile(const std::string FileName);
-    std::vector<std::unique_ptr<FTile>> TileStack;
-};
+    private:
+        void GenerateFromFile(const std::string FileName);
+        std::vector<std::unique_ptr<FTile>> TileStack;
+    };
+}
 
 #endif

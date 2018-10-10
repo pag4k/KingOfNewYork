@@ -1,28 +1,35 @@
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 1
+// Due date: October 12, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
+
 #include <vector>
 #include <string>
 #include "common.h"
 
-struct FDiceResult;
+namespace KingOfNewYork
+{
+    struct FDiceResult;
 
-class FDiceRoller {
-public :
-    FDiceRoller();
-    ~FDiceRoller(){};
+    class FDiceRoller {
+    public :
+        FDiceRoller();
+        ~FDiceRoller(){};
 
-    std::vector<EDiceFace> BeginRolling();
-    std::vector<EDiceFace> BeginRolling(int DiceNumber);
-    void PrintRollHistory();
+        const std::vector<EDiceFace> BeginRolling() const;
+        const std::vector<EDiceFace> BeginRolling(const int DiceNumber) const;
+        void PrintRollHistory() const;
 
-private :
-    EDiceFace RollDice(int FaceNumber);
+    private :
+    const EDiceFace RollDice(const int FaceNumber) const;
     //TODO: ADD GREEN DICE!
     //The numberof dices.
     //int DiceNumber;
     //The maximum number of rolls.
     int RollNumber;
-    //The number of rolls for the current turn.
-    int RollCount;
+    
+    mutable int RollHistory[NUMBER_OF_FACES_ON_DICE];
 
-    int RollHistory[NUMBER_OF_FACES_ON_DICE];
-
-};
+    };
+}

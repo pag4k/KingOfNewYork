@@ -1,3 +1,9 @@
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 1
+// Due date: October 12, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
+
 #ifndef PLAYER_H
 #define PLAYER_H
 
@@ -8,55 +14,58 @@
 #include "borough.h"
 #include "map.h"
 
-class FDiceRoller;
-class FCard;
-
-class FPlayer : public std::enable_shared_from_this<FPlayer>
+namespace KingOfNewYork
 {
-public:
-  FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[]);
-  ~FPlayer();
+    class FDiceRoller;
+    class FCard;
 
-  void SelectStartingLocation(FMap &Map);
+    class FPlayer : public std::enable_shared_from_this<FPlayer>
+    {
+    public:
+    FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[]);
+    ~FPlayer();
 
-  std::string GetPlayerName() const { return PlayerName; }
-  EMonsterName GetMonsterName() const { return MonsterName; }
-  bool GetCelebrity() const { return bCelebrity; }
-  void SetCelebrity(const bool bCelebrity) { this->bCelebrity = bCelebrity; }
+    void SelectStartingLocation(FMap &Map);
 
-  void RollDice();
-  void ResolveDice();
-  void Move();
-  void BuyCards();
+    const std::string GetPlayerName() const { return PlayerName; }
+    const EMonsterName GetMonsterName() const { return MonsterName; }
+    const bool GetCelebrity() const { return bCelebrity; }
+    void SetCelebrity(const bool bCelebrity) { this->bCelebrity = bCelebrity; }
 
-  void PrintShort();
-  void PrintLong();
+    void RollDice();
+    void ResolveDice();
+    void Move();
+    void BuyCards();
 
-private :
-    void EnterPlayerName(std::vector<std::string> &PlayerNames);
-    void SelectMonster(bool AvailableMonsters[]);
-    bool ResolveAttack(const int NumberOfDice);
-    bool ResolveCelebrity(const int NumberOfDice);
-    bool ResolveDestruction(const int NumberOfDice);
-    bool ResolveEnergy(const int NumberOfDice);
-    bool ResolveHeal(const int NumberOfDice);
-    bool ResolveOuch(const int NumberOfDice);
+    void PrintShort() const;
+    void PrintLong() const;
 
-    std::string PlayerName;
-    EMonsterName MonsterName;
-    std::shared_ptr<FBorough> Position;
-    FDiceRoller DiceRoller;
-    std::vector<EDiceFace> CurrentDiceResult;
-    int TokenInventory[NUMBER_OF_TOKEN_TYPE];
-    std::vector<std::unique_ptr<FCard>> Cards;
-    int EnergyCubes;
-    int LifePoints;
-    int VictoryPoints;
+    private :
+        void EnterPlayerName(std::vector<std::string> &PlayerNames);
+        void SelectMonster(bool AvailableMonsters[]);
+        const bool ResolveAttack(const int NumberOfDice);
+        const bool ResolveCelebrity(const int NumberOfDice);
+        const bool ResolveDestruction(const int NumberOfDice);
+        const bool ResolveEnergy(const int NumberOfDice);
+        const bool ResolveHeal(const int NumberOfDice);
+        const bool ResolveOuch(const int NumberOfDice);
 
-    bool bCelebrity;
-    bool bStatueOfLiberty;
+        std::string PlayerName;
+        EMonsterName MonsterName;
+        std::shared_ptr<FBorough> Position;
+        FDiceRoller DiceRoller;
+        std::vector<EDiceFace> CurrentDiceResult;
+        int TokenInventory[NUMBER_OF_TOKEN_TYPE];
+        std::vector<std::unique_ptr<FCard>> Cards;
+        int EnergyCubes;
+        int LifePoints;
+        int VictoryPoints;
 
-    //TODO: ADD CARD BUYING CODE.
-};
+        bool bCelebrity;
+        bool bStatueOfLiberty;
+
+        //TODO: ADD CARD BUYING CODE.
+    };
+}
 
 #endif
