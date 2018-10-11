@@ -24,7 +24,6 @@ namespace KingOfNewYork
         const ETileType GetTileType() const { return TileType; }
         const int GetDurability() const { return Durability; }
         const int GetReward() const { return Reward; }
-
     private:
         ETileType TileType;
         int Durability;
@@ -34,14 +33,13 @@ namespace KingOfNewYork
     class FTileStack
     {
     public:
-        FTileStack();
+        FTileStack() {}
         FTileStack(const std::string FileName);
         void Shuffle();
         const int Size() const { return TileStack.size(); }
         const bool IsEmpty() const { return TileStack.empty(); }
         std::unique_ptr<FTile> Draw();
         void Print() const;
-
     private:
         void GenerateFromFile(const std::string FileName);
         std::vector<std::unique_ptr<FTile>> TileStack;

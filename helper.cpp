@@ -4,6 +4,7 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
+#include <iostream>
 #include <helper.h>
 
 namespace KingOfNewYork

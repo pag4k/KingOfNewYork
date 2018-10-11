@@ -18,13 +18,15 @@ namespace KingOfNewYork
     public:
         FMap() {}
         FMap(const std::string FileName);
-
+        bool LoadMap(const std::string FileName);
+        bool SaveMap(const std::string FileName);
         const int BoroughCount() const { return Graph.ElementCount(); }
         FBorough &GetBorough(const int n) { return Graph.GetElement(n); }
-        const std::vector<int> GetNeighbourgs(const int n) const { return Graph.GetNeighbours(n); }
-
+        const std::vector<int> GetNeighbourgs(const int n) const;
+        const bool IsValid() const { return bIsValid; }
     private:
         FGraph<FBorough> Graph;
+        bool bIsValid;
     };
 }
 

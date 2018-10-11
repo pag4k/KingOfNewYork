@@ -14,18 +14,24 @@ namespace KingOfNewYork
 {
     FGame::FGame()
     {
-        LoadGameData();
+        bIsValid = LoadGameData();
     }
 
     FGame::FGame(const int NumberOfPlayers)
     {
-        LoadGameData();
-        AddPlayers(NumberOfPlayers);
+        bIsValid = LoadGameData();
+        if (bIsValid)
+        {
+            AddPlayers(NumberOfPlayers);
+        }
     }
 
     FGame::~FGame()
     {
-        delete Map;
+        if (Map)
+        {
+            delete Map;
+        }
         Players.clear();
         Superstar = nullptr;
         StatusOfLiberty = nullptr;
@@ -67,7 +73,9 @@ namespace KingOfNewYork
                 << std::endl;
 
         std::cout << "Number of cards in deck: " << Deck.Size() << std::endl;
-        std::cout << "Number of cards in discard deck: " << DiscardDeck.Size() << std::endl;
+        std::cout << "Number of cards in discard deck: "
+                  << DiscardDeck.Size()
+                  << std::endl;
 
         std::cout << "Tokens left:" << std::endl;
         for (int i = 0; i < NUMBER_OF_TOKEN_TYPE; ++i)
@@ -108,9 +116,16 @@ namespace KingOfNewYork
         TileStack.Print();
     }
 
-    void FGame::LoadGameData()
+    const bool FGame::LoadGameData()
     {
         Map = new FMap("newyork.map");
+        
+        if (!Map->IsValid())
+        {
+            delete Map;
+            Map = nullptr;
+            return false;
+        }
 
         Superstar = nullptr;
         StatusOfLiberty = nullptr;
@@ -124,6 +139,7 @@ namespace KingOfNewYork
         }
 
         EnergyCubes = MAXIMUM_ENERGY_CUBES;
+        return true;
     }
 
     void FGame::AddPlayers(const int NumberOfPlayers)
@@ -141,7 +157,9 @@ namespace KingOfNewYork
 
         for (int i = 0; i < NumberOfPlayers; ++i)
         {
-            Players.push_back(std::make_shared<FPlayer>(PlayerNames, bAvailableMonsters));
+            Players.push_back(
+                std::make_shared<FPlayer>(
+                    PlayerNames, bAvailableMonsters));
             Players.back()->SelectStartingLocation(*Map);
             Players.back()->PrintLong();
         }

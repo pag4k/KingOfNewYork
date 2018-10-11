@@ -13,7 +13,9 @@
 
 namespace KingOfNewYork
 {
-    FPlayer::FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[])
+    FPlayer::FPlayer(
+        std::vector<std::string> &PlayerNames,
+        bool bAvailableMonsters[])
     {
         PlayerName = "";
         EnterPlayerName(PlayerNames);
@@ -34,17 +36,11 @@ namespace KingOfNewYork
 
         bCelebrity = false;
         bStatueOfLiberty = false;
-
-        //PrintLong();
-
-        //RollDice();
-        //ResolveDice();
     }
 
-    FPlayer::~FPlayer()
+    void FPlayer::SetCelebrity(const bool bCelebrity)
     {
-        //delete DiceRoller;
-        //DiceRoller = nullptr;
+        this->bCelebrity = bCelebrity;
     }
 
     void FPlayer::RollDice()
@@ -153,12 +149,6 @@ namespace KingOfNewYork
             }
         } while (!Done);
 
-
-    }
-
-    void FPlayer::Move()
-    {
-
     }
 
     void FPlayer::PrintShort() const
@@ -172,7 +162,9 @@ namespace KingOfNewYork
     void FPlayer::PrintLong() const
     {
         std::cout << "Name: " << PlayerName << std::endl;
-        std::cout << "Monster: " << GetMonsterNameString(MonsterName) << std::endl;
+        std::cout << "Monster: "
+                  << GetMonsterNameString(MonsterName)
+                  << std::endl;
 
         if (Position)
         {
@@ -243,8 +235,9 @@ namespace KingOfNewYork
             const std::string Input = InputString();
             if (Input == "")
             {
-                std::cout << "Invalid input, please try again." << std::endl
-                        << std::endl;
+                std::cout << "Invalid input, please try again."
+                          << std::endl
+                          << std::endl;
                 bError = true;
                 continue;
             }
@@ -252,8 +245,9 @@ namespace KingOfNewYork
             {
                 if (Input == Name)
                 {
-                    std::cout << "Name already taken, please try again." << std::endl
-                            << std::endl;
+                    std::cout << "Name already taken, please try again."
+                              << std::endl
+                              << std::endl;
                     bError = true;
                     break;
                 }
@@ -277,19 +271,27 @@ namespace KingOfNewYork
             {
                 if (bAvailableMonsters[i])
                 {
-                    std::cout << (i + 1) << " " << GetMonsterNameString(static_cast<EMonsterName>(i)) << std::endl;
+                    std::cout << (i + 1)
+                              << " "
+                              << GetMonsterNameString(
+                                    static_cast<EMonsterName>(i))
+                              << std::endl;
                 }
             }
             std::cout << ">";
             const int Input = InputSingleDigit();
-            if (1 <= Input && Input <= NUMBER_OF_MONSTERS && bAvailableMonsters[Input-1])
+            if (1 <= Input &&
+                Input <= NUMBER_OF_MONSTERS &&
+                bAvailableMonsters[Input-1])
             {
                 MonsterName = static_cast<EMonsterName>(Input - 1);
                 bAvailableMonsters[Input - 1] = false;
             }
             else
             {
-                std::cout << "Invalid input, please try again." << std::endl << std::endl;
+                std::cout << "Invalid input, please try again."
+                          << std::endl
+                          << std::endl;
             }
         }
         std::cout << std::endl;
@@ -301,51 +303,70 @@ namespace KingOfNewYork
         {
             {
                 std::cout << PlayerName
-                        << ", please select your starting borough:" << std::endl;
+                          << ", please select your starting borough:"
+                          << std::endl;
                 for (int i = 0; i < Map.BoroughCount(); ++i)
                 {
                     FBorough &CurrentBorough = Map.GetBorough(i);
-                    if (CurrentBorough.Players.size() < MAXIMUM_PLAYERS_IN_BOROUGH && CurrentBorough.bStartingLocation)
+                    std::vector<std::shared_ptr<FPlayer>> &CurrentPlayers =
+                        CurrentBorough.Players;
+                    //TODO: This assumes that MAXIMUM_PLAYERS_IN_BOROUGH = 2.
+                    if (CurrentPlayers.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
+                        CurrentBorough.bStartingLocation)
                     {
                         std::cout << (i + 1)
-                                << ". "
-                                << CurrentBorough.Name
-                                << (CurrentBorough.Players.size() == 1 ?
-                                    " (" +
-                                    GetMonsterNameString(CurrentBorough.Players[0]->GetMonsterName()) +
-                                    " is already there)" : "")
-                                << std::endl;
+                                  << ". "
+                                  << CurrentBorough.Name
+                                  << (CurrentPlayers.size() == 1 ?
+                                      " (" +
+                                      GetMonsterNameString(
+                                          CurrentPlayers[0]->GetMonsterName()) +
+                                      " is already there)" : "")
+                                  << std::endl;
                     }
                 }
                 std::cout << ">";
                 const int Input = InputSingleDigit();
                 std::cout << std::endl;
 
-                if (1 <= Input &&
-                    Input <= Map.BoroughCount() &&
-                    Map.GetBorough(Input - 1).Players.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
-                    Map.GetBorough(Input - 1).bStartingLocation)
+                if (1 <= Input && Input <= Map.BoroughCount())
                 {
-                    //Removing player from prevous borough list.
-                    if (Position)
+                    FBorough &SelectedBorough = Map.GetBorough(Input - 1);
+                    std::vector<std::shared_ptr<FPlayer>> &SelectedPlayers =
+                        SelectedBorough.Players;
+                    if (SelectedPlayers.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
+                        SelectedBorough.bStartingLocation)
                     {
-                        for (auto it = Position->Players.begin(); it != Position->Players.end(); ++it)
+                        //Removing player from prevous borough list.
+                        if (Position)
                         {
-                            if (*it == shared_from_this())
+                            for (auto it = Position->Players.begin();
+                                 it != Position->Players.end();
+                                 ++it)
                             {
-                                Position->Players.erase(it);
+                                if (*it == shared_from_this())
+                                {
+                                    Position->Players.erase(it);
+                                }
                             }
                         }
+                        //Setting player position to selected borough.
+                        Position = std::make_shared<FBorough>(SelectedBorough);
+                        //Put player in the borough player list.
+                        SelectedBorough.Players.push_back(shared_from_this());
                     }
-                    //Setting player position to selected borough.
-                    Position = std::make_shared<FBorough>(Map.GetBorough(Input - 1));
-                    //Put player in the borough player list.
-                    Map.GetBorough(Input - 1).Players.push_back(shared_from_this());
+                    else
+                    {
+                        std::cout << "Invalid borough, please try again."
+                                  << std::endl
+                                  << std::endl;
+                    }
                 }
                 else
                 {
-                    std::cout << "Invalid input, please try again." << std::endl
-                            << std::endl;
+                    std::cout << "Invalid input, please try again."
+                              << std::endl
+                              << std::endl;
                 }
             }
         }
@@ -368,19 +389,21 @@ namespace KingOfNewYork
             if (NumberOfDice >= NUMBER_OF_DICE_FOR_CELEBRITY)
             {
                 bCelebrity = true;
-                NewVictoryPoints = NumberOfDice - (NUMBER_OF_DICE_FOR_CELEBRITY - 1);
+                NewVictoryPoints = NumberOfDice -
+                                   (NUMBER_OF_DICE_FOR_CELEBRITY - 1);
             }
         }
         VictoryPoints += NewVictoryPoints;
         std::cout << "Earned "
-                << NewVictoryPoints
-                << " victory point"
-                << (NumberOfDice == 1 ? ". " : "s. ")
-                << "New total: "
-                << VictoryPoints
-                << "."
-                << std::endl;
-        //TODO: NOT SURE HOW TO DEAL WITH VICTORY. WITH A SETTER OR A CHECK AFTER TURN.
+                  << NewVictoryPoints
+                  << " victory point"
+                  << (NumberOfDice == 1 ? ". " : "s. ")
+                  << "New total: "
+                  << VictoryPoints
+                  << "."
+                  << std::endl;
+        //TODO: NOT SURE HOW TO DEAL WITH VICTORY.
+        //WITH A SETTER OR A CHECK AFTER TURN.
         return true;
     }
 

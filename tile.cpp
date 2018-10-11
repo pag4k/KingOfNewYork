@@ -13,12 +13,13 @@
 
 namespace KingOfNewYork
 {
-    FTile::FTile(const ETileType TileType, const int Durability, const int Reward)
-    {
-        this->TileType = TileType;
-        this->Durability = Durability;
-        this->Reward = Reward;
-    }
+    FTile::FTile(
+        const ETileType TileType,
+        const int Durability,
+        const int Reward) :
+        TileType(TileType),
+        Durability(Durability),
+        Reward(Reward) {}
 
     const bool FTile::IsBuilding() const
     {
@@ -29,7 +30,7 @@ namespace KingOfNewYork
 
     const EMonsterResource FTile::GetMonsterResource() const
     {
-        //This only works if ETileType and EMonsterResources are in the right order.
+        //This only works if ETileType and EMonsterResources are in right order.
         return EMonsterResource(static_cast<int>(TileType) / 2);
     }
 
@@ -50,11 +51,6 @@ namespace KingOfNewYork
         }
         Reward = Durability;
         Durability++;
-    }
-
-    FTileStack::FTileStack()
-    {
-
     }
 
     FTileStack::FTileStack(const std::string FileName)
@@ -79,9 +75,15 @@ namespace KingOfNewYork
     {
         for (const auto &Tile : TileStack)
         {
-            std::cout << "Type: " << GetTileTypeString(Tile->GetTileType()) << std::endl
-                    << "Durability: " << Tile->GetDurability() << std::endl
-                    << "Reward: " << Tile->GetReward() << std::endl;
+            std::cout << "Type: "
+                      << GetTileTypeString(Tile->GetTileType())
+                      << std::endl
+                      << "Durability: "
+                      << Tile->GetDurability()
+                      << std::endl
+                      << "Reward: "
+                      << Tile->GetReward()
+                      << std::endl;
         }
     }
 
@@ -89,7 +91,6 @@ namespace KingOfNewYork
     {
 
         std::ifstream InputStream;
-
         InputStream.open(FileName);
         if (InputStream.fail())
         {
@@ -113,7 +114,12 @@ namespace KingOfNewYork
                 {
                     for (int i = 0; i < Number; ++i)
                     {
-                        TileStack.push_back(std::make_unique<FTile>(TileType, Durability, Reward));
+                        //TODO: Not sure if this does a copy or not.
+                        TileStack.push_back(
+                            std::make_unique<FTile>(
+                                TileType,
+                                Durability,
+                                Reward));
                     }
                     Number = ParseIntFromChar(Text[7]);
                     TileType = ETileType::None;
@@ -164,7 +170,13 @@ namespace KingOfNewYork
             }
             else
             {
-                //INVALID
+                std::cout << "Error: Invalid line detected: "
+                          << Text
+                          << std::endl;
+                Number = -1;
+                TileType = ETileType::None;
+                Durability = -1;
+                Reward = -1;
             }
         }
 
@@ -175,7 +187,11 @@ namespace KingOfNewYork
         {
             for (int i = 0; i < Number; ++i)
             {
-                TileStack.push_back(std::make_unique<FTile>(TileType, Durability, Reward));
+                TileStack.push_back(
+                    std::make_unique<FTile>(
+                        TileType,
+                        Durability,
+                        Reward));
             }
         }
 

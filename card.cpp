@@ -21,14 +21,15 @@ namespace KingOfNewYork
     }
 
     void FDeck::Print() const
-    {
+    { 
         for (const auto& Card : Deck)
         {
             std::cout << "Id: " << Card->GetId() << std::endl
-                    << "Name: " << Card->GetName() << std::endl
-                    << "How to Play: " << GetHowToPlayString(Card->GetHowToPlay()) << std::endl
-                    << "Energy Cost: " << Card->GetEnergyCost() << std::endl
-                    << "Effect: " << Card->GetEffect() << std::endl;
+                      << "Name: " << Card->GetName() << std::endl
+                      << "How to Play: "
+                      << GetHowToPlayString(Card->GetHowToPlay()) << std::endl
+                      << "Energy Cost: " << Card->GetEnergyCost() << std::endl
+                      << "Effect: " << Card->GetEffect() << std::endl;
         }
     }
 
@@ -54,6 +55,7 @@ namespace KingOfNewYork
         EHowToPlay HowToPlay = EHowToPlay::None;
         int EnergyCost = -1;
         std::string Effect = "";
+
         while (!std::getline(InputStream, Text).eof())
         {
             if (Text.substr(0,3) == "Id:")
@@ -64,10 +66,14 @@ namespace KingOfNewYork
                     EnergyCost != -1 &&
                     Effect != "")
                 {
-                    Deck.push_back(std::make_unique<FCard>(Id, Name, HowToPlay, EnergyCost, Effect));
-                    if (ParseIntFromChar(Text[3]) >= 0 && ParseIntFromChar(Text[4]) >= 0)
+                    Deck.push_back(
+                        std::make_unique<FCard>(
+                            Id, Name, HowToPlay, EnergyCost, Effect));
+                    if (ParseIntFromChar(Text[3]) >= 0 &&
+                        ParseIntFromChar(Text[4]) >= 0)
                     {
-                        Id = 10 * ParseIntFromChar(Text[3]) + 1 * ParseIntFromChar(Text[4]);
+                        Id = 10 * ParseIntFromChar(Text[3]) +
+                              1 * ParseIntFromChar(Text[4]);
                     }
                     else
                     {
@@ -80,13 +86,19 @@ namespace KingOfNewYork
                 }
                 else if (Deck.empty())
                 {
-                    Id = 10 * ParseIntFromChar(Text[3]) + 1 * ParseIntFromChar(Text[4]);
+                    Id = 10 * ParseIntFromChar(Text[3]) +
+                          1 * ParseIntFromChar(Text[4]);
                 }
                 else
                 {
                     std::cout << "There was a problem creating card: "
                             << Name
                             << std::endl;
+                    Id = -1;
+                    Name = "";
+                    EnergyCost = -1;
+                    HowToPlay = EHowToPlay::None;
+                    Effect = "";
                 }
             }
             else if (Text.substr(0,5) == "Name:")
@@ -123,7 +135,14 @@ namespace KingOfNewYork
             }
             else
             {
-                //INVALID
+                std::cout << "Error: Invalid line detected: "
+                          << Text
+                          << std::endl;
+                Id = -1;
+                Name = "";
+                EnergyCost = -1;
+                HowToPlay = EHowToPlay::None;
+                Effect = "";
             }
         }
 
@@ -133,7 +152,9 @@ namespace KingOfNewYork
             EnergyCost != -1 &&
             Effect != "")
         {
-            Deck.push_back(std::make_unique<FCard>(Id, Name, HowToPlay, EnergyCost, Effect));
+            Deck.push_back(
+                std::make_unique<FCard>(
+                    Id, Name, HowToPlay, EnergyCost, Effect));
         }
 
         InputStream.close();

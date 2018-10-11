@@ -13,9 +13,17 @@ namespace KingOfNewYork
     {
     public:
         FCard() :
-            Id(-1), Name(""), HowToPlay(EHowToPlay::None), EnergyCost(-1), Effect("") {}
+            Id(-1),
+            Name(""),
+            HowToPlay(EHowToPlay::None),
+            EnergyCost(-1),
+            Effect("") {}
         FCard(int Id, std::string Name, EHowToPlay HowToPlay, int EnergyCost, std::string Effect) :
-            Id(Id), Name(Name), HowToPlay(HowToPlay), EnergyCost(EnergyCost), Effect(Effect) {}
+            Id(Id),
+            Name(Name),
+            HowToPlay(HowToPlay),
+            EnergyCost(EnergyCost),
+            Effect(Effect) {}
         const int GetId() const { return Id; }
         const std::string GetName() const { return Name; };
         const EHowToPlay GetHowToPlay() const { return HowToPlay; };
@@ -30,7 +38,7 @@ namespace KingOfNewYork
     };
 
     //This class represents a deck of cards.
-    //Notice that the cards in it are unique_ptr and that they are handled as such.
+    //Note: The cards in it are unique_ptr and that they are handled as such.
     class FDeck{
     public:
         FDeck() {}

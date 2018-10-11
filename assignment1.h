@@ -93,6 +93,14 @@ namespace KingOfNewYork
             PrintNeighbours(Graph, "Ireland");
             PrintNeighbours(Graph, "Malta");
 
+            std::cout << "Removing one country: " << std::endl;
+            Graph.RemoveVertex("Luxembourg");
+
+            std::cout << "Showing neighbours:" << std::endl;
+            PrintNeighbours(Graph, "Germany");
+            PrintNeighbours(Graph, "Ireland");
+            PrintNeighbours(Graph, "Malta");
+
             std::cout << "Checking adjacency:" << std::endl;
             PrintAdjacent(Graph, "France", "Italy");
             PrintAdjacent(Graph, "Denmark", "Portugal");
@@ -130,6 +138,18 @@ namespace KingOfNewYork
                 << ">";
         const std::string FileName = InputString();
         FMap Map = FMap(FileName);
+        std::string CopyFileName = "Copy" + FileName;
+        if (Map.SaveMap(CopyFileName))
+        {
+            std::cout << "Map succesfully saved to: "
+                      << CopyFileName
+                      << "."
+                      << std::endl;
+        }
+        else
+        {
+            std::cout << "Error: Map was not saved." << std::endl;
+        }
     }
 
     void PrintDiceResult(const std::vector<EDiceFace> &DiceResult)
@@ -247,6 +267,10 @@ namespace KingOfNewYork
     void Part5()
     {
         std::shared_ptr<FGame> Game = std::make_shared<FGame>();
+        if (!Game->IsValid())
+        {
+            return;
+        }
 
         bool bContinue = true;
         while (bContinue)

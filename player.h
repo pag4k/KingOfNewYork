@@ -22,24 +22,20 @@ namespace KingOfNewYork
     class FPlayer : public std::enable_shared_from_this<FPlayer>
     {
     public:
-    FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[]);
-    ~FPlayer();
-
-    void SelectStartingLocation(FMap &Map);
-
-    const std::string GetPlayerName() const { return PlayerName; }
-    const EMonsterName GetMonsterName() const { return MonsterName; }
-    const bool GetCelebrity() const { return bCelebrity; }
-    void SetCelebrity(const bool bCelebrity) { this->bCelebrity = bCelebrity; }
-
-    void RollDice();
-    void ResolveDice();
-    void Move();
-    void BuyCards();
-
-    void PrintShort() const;
-    void PrintLong() const;
-
+        FPlayer(
+            std::vector<std::string> &PlayerNames,
+            bool bAvailableMonsters[]);
+        void SelectStartingLocation(FMap &Map);
+        const std::string GetPlayerName() const { return PlayerName; }
+        const EMonsterName GetMonsterName() const { return MonsterName; }
+        const bool GetCelebrity() const { return bCelebrity; }
+        void SetCelebrity(const bool bCelebrity);
+        void RollDice();
+        void ResolveDice();
+        void Move();
+        void BuyCards();
+        void PrintShort() const;
+        void PrintLong() const;
     private :
         void EnterPlayerName(std::vector<std::string> &PlayerNames);
         void SelectMonster(bool AvailableMonsters[]);
@@ -49,7 +45,6 @@ namespace KingOfNewYork
         const bool ResolveEnergy(const int NumberOfDice);
         const bool ResolveHeal(const int NumberOfDice);
         const bool ResolveOuch(const int NumberOfDice);
-
         std::string PlayerName;
         EMonsterName MonsterName;
         std::shared_ptr<FBorough> Position;
@@ -60,11 +55,8 @@ namespace KingOfNewYork
         int EnergyCubes;
         int LifePoints;
         int VictoryPoints;
-
         bool bCelebrity;
         bool bStatueOfLiberty;
-
-        //TODO: ADD CARD BUYING CODE.
     };
 }
 

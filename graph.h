@@ -9,6 +9,7 @@
 
 #include <assert.h>
 #include <vector>
+#include <set>
 #include <string>
 #include <iostream>
 
@@ -22,6 +23,7 @@ namespace KingOfNewYork
         struct FVertex;
     public:
         FGraph() {}
+        
         ~FGraph()
         {
             for (FEdge *Edge : EdgeVector)
@@ -37,34 +39,53 @@ namespace KingOfNewYork
         }
 
         const int ElementCount() const { return VertexVector.size(); }
-        T &GetElement(int n) {
+
+        T &GetElement(int n)
+        {
             assert(0 <= n && n < VertexVector.size());
-            T &Element = VertexVector[n]->Element;
-            return Element;
+            return VertexVector[n]->Element;
         }
-        const std::string &GetName(const int n) const { assert(0 <= n && n < VertexVector.size()); return VertexVector[n]->Name; }
+
+        const std::string &GetName(const int n) const
+        {
+            assert(0 <= n && n < VertexVector.size());
+            return VertexVector[n]->Name;
+        }
 
         const std::vector<int> GetNeighbours(const int n) const
         {
             assert(0 <= n && n < VertexVector.size());
-            std::vector<int> Neighbours;
+            //Using a set to make sure there are not duplicates.
+            std::set<int> NeighbourSet;
             for (FEdge *Edge : VertexVector[n]->IncidentEdgeVector)
             {
-                Neighbours.push_back(GetIndexFromName(Opposite(VertexVector[n], Edge)->Name));
+                NeighbourSet.insert(
+                    GetIndexFromName(Opposite(VertexVector[n], Edge)->Name));
             }
-            return Neighbours;
+            std::vector<int> NeighbourVector;
+            for (int Index : NeighbourSet)
+            {
+                NeighbourVector.push_back(Index);
+            }
+
+            return NeighbourVector;
         }
 
-        const bool AreAdjacent(const std::string Name1, const std::string Name2) const
+        const bool AreAdjacent(
+            const std::string Name1,
+            const std::string Name2) const
         {
-            return AreAdjacent(GetVertexWithName(Name1), GetVertexWithName(Name2));
+            return AreAdjacent(
+                GetVertexWithName(Name1),
+                GetVertexWithName(Name2));
         }
 
         T *InsertVertex(const std::string VertexName)
         {
             if (VertexName == "")
             {
-                std::cout << "Error: You need to provide a non-empy string for the vertex." << std::endl;
+                std::cout << "Error: You need to provide a non-empy string."
+                          << std::endl;
                 return nullptr;
             }
             for (FVertex *Vertex: VertexVector)
@@ -75,7 +96,7 @@ namespace KingOfNewYork
                                 << VertexName
                                 << "."
                                 << std::endl;
-                    return &Vertex->Element;
+                    return nullptr;
                 }
             }
             FVertex *NewVertex = new FVertex;
@@ -84,15 +105,32 @@ namespace KingOfNewYork
             return &NewVertex->Element;
         }
 
-        void InsertEdge(const std::string OriginName, const std::string DestinationName)
+        void RemoveVertex(const std::string VertexName)
+        {
+            if (VertexName == "")
+            {
+                std::cout << "Error: You need to provide a non-empy string."
+                          << std::endl;
+                return;
+            }
+            RemoveVertex(GetVertexWithName(VertexName));
+        }
+
+        void InsertEdge(
+            const std::string OriginName,
+            const std::string DestinationName)
         {
             if (OriginName == "" || DestinationName == "")
             {
-                std::cout << "Error: You need to provide non-empy strings for both ends of the edge." << std::endl;
+                std::cout << "Error: You need to provide two non-empy strings."
+                          << std::endl;
                 return;
             }
             FEdge *NewEdge = new FEdge;
-            InsertEdge(GetVertexWithName(OriginName), GetVertexWithName(DestinationName), NewEdge);
+            InsertEdge(
+                GetVertexWithName(OriginName),
+                GetVertexWithName(DestinationName),
+                NewEdge);
         }
 
         const int GetIndexFromName(const std::string Name) const
@@ -104,14 +142,21 @@ namespace KingOfNewYork
                     return i;
                 }
             }
-            std::cout << "Error: Could not find vertex with name: " << Name << std::endl;
+            std::cout << "Error: Could not find vertex with name: "
+                      << Name
+                      << std::endl;
             return -1;
         }
 
     private:
-        void EndVertices(const FEdge * CurrentEdge, FVertex *OutOriginVertex, FVertex *OutDestinationVertex) const;
+        void EndVertices(
+            const FEdge * CurrentEdge,
+            FVertex *OutOriginVertex,
+            FVertex *OutDestinationVertex) const;
 
-        const FVertex * Opposite(const FVertex * CurrentVertex, const FEdge * CurrentEdge) const
+        const FVertex * Opposite(
+            const FVertex * CurrentVertex,
+            const FEdge * CurrentEdge) const
         {
             if (CurrentVertex && CurrentEdge)
             {
@@ -119,23 +164,29 @@ namespace KingOfNewYork
                 {
                     return CurrentEdge->Destination;
                 }
-                else if (CurrentEdge->Destination && CurrentEdge->Destination == CurrentVertex)
+                else if (CurrentEdge->Destination &&
+                         CurrentEdge->Destination == CurrentVertex)
                 {
                     return CurrentEdge->Origin;
                 }
                 else
                 {
-                    //Should output Error somehow.
+                    std::cout << "Error: The edge does not have this vertex."
+                              << std::endl;
                     return nullptr;
                 }
             }
             else
             {
+                std::cout << "Error: Invalid vertex and/or edge.."
+                          << std::endl;
                 return nullptr;
             }
         }
 
-        const bool AreAdjacent(const FVertex * VertexA, const FVertex * VertexB) const
+        const bool AreAdjacent(
+            const FVertex * VertexA,
+            const FVertex * VertexB) const
         {
             if (VertexA && VertexB)
             {
@@ -150,6 +201,8 @@ namespace KingOfNewYork
             }
             else
             {
+                std::cout << "Error: Invalid vertices."
+                          << std::endl;
                 return false;
             }
         }
@@ -165,32 +218,103 @@ namespace KingOfNewYork
                 std::cout << "Added Vertex: " << NewVertex->Name << std::endl;
                 return VertexVector.back();
             }
+            std::cout << "Error: Invalid vertex."
+                      << std::endl;
             return nullptr;
         }
 
-        FEdge * InsertEdge(FVertex * OriginVertex, FVertex * DestinationVertex, FEdge * NewEdge)
+        FEdge * InsertEdge(
+            FVertex * OriginVertex,
+            FVertex * DestinationVertex,
+            FEdge * NewEdge)
         {
             if (OriginVertex && DestinationVertex && NewEdge)
             {
                 EdgeVector.push_back(NewEdge);
                 FEdge * CreatedEdge = EdgeVector.back();
-                //CreatedEdge->Location = CreatedEdge;
                 CreatedEdge->Origin = OriginVertex;
                 CreatedEdge->Destination = DestinationVertex;
                 OriginVertex->IncidentEdgeVector.push_back(CreatedEdge);
                 DestinationVertex->IncidentEdgeVector.push_back(CreatedEdge);
-                std::cout << "Added Node from " << OriginVertex->Name << " to " << DestinationVertex->Name << std::endl;
+                std::cout << "Added Node from "
+                          << OriginVertex->Name
+                          << " to "
+                          << DestinationVertex->Name
+                          << std::endl;
                 return CreatedEdge;
             }
+            std::cout << "Error: Invalid vertex and/or edge."
+                      << std::endl;
             return nullptr;
         }
 
-        const FVertex * RemoveVertex(FVertex * CurrentVertex);
-        const FEdge * RemoveEdge(FEdge * CurrentEdge);
+        const FVertex *RemoveVertex(FVertex *VertexToRemove)
+        {
+            if (VertexToRemove)
+            {
+                //Remove pointers to that vertex in the other IncidentEdgeVector.
+                for (const auto OtherVertex : VertexVector)
+                {
+                    if (AreAdjacent(VertexToRemove, OtherVertex))
+                    {
+                        for (auto it = OtherVertex->IncidentEdgeVector.begin();
+                             it != OtherVertex->IncidentEdgeVector.end();
+                             ++it)
+                        {
+                            if (Opposite(OtherVertex, *it) == VertexToRemove)
+                            {
+                                OtherVertex->IncidentEdgeVector.erase(it);
+                                break;
+                            }
+                        }
+                    }
+                }
 
-        std::vector<FVertex *> &Vertices();
-        std::vector<FEdge *> &Edges();
-        std::vector<FEdge *> &IncidentEdges(FVertex * CurrentVertex);
+                //Deleting incident edges and their pointers in the edge list.
+                int RemovedEdgeCount = 0;
+                for (auto it = EdgeVector.begin(); it != EdgeVector.end();)
+                {
+                    FEdge *CurrentEdge = *it;
+                    if (CurrentEdge->Origin == VertexToRemove ||
+                        CurrentEdge->Destination == VertexToRemove)
+                    {
+                        RemovedEdgeCount++;
+                        delete CurrentEdge;
+                        EdgeVector.erase(it);
+                    }
+                    else
+                    {
+                        ++it;
+                    }
+                }
+
+                //Clearing the the incident edge list.
+                assert(VertexToRemove->IncidentEdgeVector.size() ==
+                       RemovedEdgeCount);
+                VertexToRemove->IncidentEdgeVector.clear();
+
+                //Delete the vertex and its pointer in the vertex list.
+                for (auto it = VertexVector.begin(); it != VertexVector.end(); ++it)
+                {
+                    if (*it == VertexToRemove)
+                    {
+                        std::cout << "Removing vertex:"
+                                  << VertexToRemove->Name
+                                  << "."
+                                  << std::endl;
+                        delete *it;
+                        VertexVector.erase(it);
+                        return *it;
+                    }
+                }
+            }
+
+            std::cout << "Error: Invalid vertex."
+                      << std::endl;
+            return nullptr;
+        }
+
+        const FEdge * RemoveEdge(FEdge * CurrentEdge);
 
         FVertex *GetVertexWithName(const std::string Name) const
         {
@@ -201,7 +325,9 @@ namespace KingOfNewYork
                     return Vertex;
                 }
             }
-            std::cout << "Error: Could not find Vertex with name: " << Name << std::endl;
+            std::cout << "Error: Could not find Vertex with name: "
+                      << Name
+                      << std::endl;
             return nullptr;
         }
 
@@ -223,6 +349,8 @@ namespace KingOfNewYork
     std::vector<FVertex *> VertexVector;
     std::vector<FEdge *> EdgeVector;
     };
+
+    
 }
 
 #endif

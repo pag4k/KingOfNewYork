@@ -131,7 +131,8 @@ namespace KingOfNewYork
         return FileTypeString;
     }
 
-    const std::string GetMonsterResourceString(const EMonsterResource MonsterResource)
+    const std::string GetMonsterResourceString(
+        const EMonsterResource MonsterResource)
     {
         std::string MonsterResourceString = "";
         switch (MonsterResource)

@@ -18,8 +18,7 @@ namespace KingOfNewYork
     {
         //Use current time as seed for the random generator.
         std::srand(std::time(nullptr));
-        //this->DiceNumber = NUMBER_OF_DICE;
-        this->RollNumber = NUMBER_OF_ROLLS;
+        this->MaximumRollCount = MAXIMUM_ROLL_COUNT;
 
         for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; i++)
         {
@@ -27,27 +26,25 @@ namespace KingOfNewYork
         }
     }
 
-    const std::vector<EDiceFace> FDiceRoller::BeginRolling() const
+    const std::vector<EDiceFace> FDiceRoller::BeginRolling(
+        const int DiceNumber) const
     {
-        return BeginRolling(NUMBER_OF_DICE);    
-    }
-
-    const std::vector<EDiceFace> FDiceRoller::BeginRolling(const int DiceNumber) const
-    {
-        assert(0 <= DiceNumber &&
-                DiceNumber <= NUMBER_OF_DICE);
+        assert(0 <= DiceNumber && DiceNumber <= NUMBER_OF_DICE);
+        
         int RollCount = 0;
+
         std::vector<EDiceFace> DiceResult;
         for (int i = 0; i < DiceNumber; i++)
         {
             DiceResult.push_back(EDiceFace::None);
         }
-        while (RollCount < RollNumber)
+
+        while (RollCount < MaximumRollCount)
         {
             std::cout   << "### Roll number "
                         << (RollCount + 1)
                         << " out of "
-                        << (RollNumber)
+                        << (MaximumRollCount)
                         << " ###"
                         << std::endl;
 
@@ -60,23 +57,29 @@ namespace KingOfNewYork
                     DiceResult[i] = RollDice(NUMBER_OF_FACES_ON_DICE);
                 }
                 std::cout << (i + 1)
-                        << ": "
-                        << GetDiceFaceString(DiceResult[i])
-                        << (NewRoll ? " (new roll)" : "")
-                        << std::endl;
+                          << ": "
+                          << GetDiceFaceString(DiceResult[i])
+                          << (NewRoll ? " (new roll)" : "")
+                          << std::endl;
             }
+
             RollCount++;
-            if (RollCount >= RollNumber) {
+            if (RollCount >= MaximumRollCount)
+            {
                 break;
             }
-            std::cout   << "#############################"
-                        << std::endl;
-            std::cout   << "Enter the numbers of the dice you want to reroll and"
-                        << "press enter."
-                        << std::endl;
-            std::cout   << "Ex.: \"123\" (all other characters will be ignored)." << std::endl;
-            std::cout << "Write nothing and press enter to end the rolling phase)." << std::endl;
+
+            std::cout << "#############################"
+                      << std::endl;
+            std::cout << "Enter the numbers of the dice you want to reroll and"
+                      << "press enter."
+                      << std::endl;
+            std::cout << "Ex.: \"123\" (all other characters will be ignored)."
+                      << std::endl;
+            std::cout << "Write nothing to end the rolling phase)."
+                      << std::endl;
             std::cout << "> ";
+            
             std::string input;
             std::getline(std::cin, input);
             if (input == "")
@@ -84,6 +87,7 @@ namespace KingOfNewYork
                 std::cout << "Ending rolling phase..." << std::endl;
                 break;
             }
+
             for (int i = 0; i < DiceNumber; i++)
             {
                 if (input.find((char)(i+1+48)) != std::string::npos)
@@ -92,15 +96,13 @@ namespace KingOfNewYork
                 }
             }
         }
-
-        //PrintRollHistory();
-
+        
         return DiceResult;
     }
 
     const EDiceFace FDiceRoller::RollDice(const int FaceNumber) const
     {
-        assert(FaceNumber > 0);
+        assert(1 <= FaceNumber && FaceNumber <= NUMBER_OF_FACES_ON_DICE);
         int Roll = std::rand() / ((RAND_MAX + 1u) / FaceNumber);
         assert(0 <= Roll && Roll <= FaceNumber - 1);
         RollHistory[Roll]++;
@@ -112,7 +114,10 @@ namespace KingOfNewYork
         std::cout << "### Roll History ###" << std::endl;
         for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; i++)
         {
-            std::cout << GetDiceFaceString(EDiceFace(i)) << ": " << RollHistory[i] << std::endl;
+            std::cout << GetDiceFaceString(EDiceFace(i))
+                      << ": "
+                      << RollHistory[i]
+                      << std::endl;
         }
         std::cout << "####################" << std::endl;
     }

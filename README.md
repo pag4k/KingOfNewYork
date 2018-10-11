@@ -11,15 +11,15 @@ Written by: Pierre-Andre Gagnon - 40067198
 
 The design of this project is straightforward. Four categories of files can be identified:
 
-1. Driver files
+Driver files
 
 - main.cpp and assignment1.h are strictly used to demonstrate the state of the project for assignment 1.
 
-2. Library files
+Library files
 
-- graph.h/cpp was implemented as an external dependency since it does not depend at all on the rest of the projet. To do so, it uses templates to be flexible. It should be noted that most of the functions in it are not used, but were included to have a fully functionnal graph.
+- graph.h/cpp was implemented as an external dependency since it does not depend at all on the rest of the projet. To do so, it uses templates to be flexible. It should be noted that most of the functions in it are not used, but were included to have a fully functionnal graph. Also note that these files are a bit messy since the use of templates implied that functions definitions had to be included in the files using them. As such, the functions that are used are definded in the header file instead of the source file.
 
-3. Game files
+Game files
 
 - borough.h contains the struct that is used as template parameter for the graph.
 - card.h/cpp contains the FCard and FDeck classes.
@@ -29,7 +29,7 @@ The design of this project is straightforward. Four categories of files can be i
 - player.h/cpp contains the FPlayer class.
 - tile.h/cpp contains the FTile and FTileStack classes.
 
-4. Other files
+Other files
 
 - common.h/cpp contains various constants and enums that are used in many classes.
 - helper.h.cpp contains various functions to help manage input.

@@ -9,13 +9,12 @@
 
 #include <vector>
 #include <string>
-#include "common.h"
 #include <memory>
-
+#include "common.h"
 #include "map.h"
 #include "card.h"
 #include "tile.h"
-#include <borough.h>
+#include "borough.h"
 
 namespace KingOfNewYork
 {
@@ -24,31 +23,30 @@ namespace KingOfNewYork
   class FGame
   {
   public:
-      FGame();
-      FGame(const int NumberOfPlayers);
-      ~FGame();
-    
-      void Print() const;
-      void ShuffleAndPrintDeck();
-      void ShuffleAndPrintTileStack();
-
+        FGame();
+        FGame(const int NumberOfPlayers);
+        ~FGame();
+        const bool IsValid() const { return bIsValid; }
+        void Print() const;
+        void ShuffleAndPrintDeck();
+        void ShuffleAndPrintTileStack();
     private:
-      void LoadGameData();
-      void AddPlayers(const int NumberOfPlayers);
-      FMap *Map =  nullptr;
-      int NumberOfPlayers;
-      std::vector<std::shared_ptr<FPlayer>> Players;
-      std::vector<std::shared_ptr<FPlayer>> PlayersInManhattan;
-      std::shared_ptr<FPlayer> Superstar;
-      std::shared_ptr<FPlayer> StatusOfLiberty;
-      FDeck Deck;
-      FDeck DiscardDeck;
-      FTileStack TileStack;
-      int TokenInventory[NUMBER_OF_TOKEN_TYPE];
-      int EnergyCubes;
-
-      //TODO: ADD CARD BUYING CODE.
-      std::unique_ptr<FCard> AvailableCards[MAXIMUM_AVAILABLE_CARDS];
+        const bool LoadGameData();
+        void AddPlayers(const int NumberOfPlayers);
+        bool bIsValid;
+        int TokenInventory[NUMBER_OF_TOKEN_TYPE];
+        int EnergyCubes = 0;
+        int NumberOfPlayers = 0;
+        FMap *Map =  nullptr;
+        std::vector<std::shared_ptr<FPlayer>> Players;
+        std::vector<std::shared_ptr<FPlayer>> PlayersInManhattan;
+        std::shared_ptr<FPlayer> Superstar;
+        std::shared_ptr<FPlayer> StatusOfLiberty;
+        FDeck Deck;
+        FDeck DiscardDeck;
+        FTileStack TileStack;
+        //TODO: ADD CARD BUYING CODE.
+        std::unique_ptr<FCard> AvailableCards[MAXIMUM_AVAILABLE_CARDS];
   };
 }
 

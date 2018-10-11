@@ -5,12 +5,8 @@
 // ----------------------------------------------------------------------------
 
 #include <iostream>
-#include <string>
-
-#include <assignment1.h>
-
+#include "assignment1.h"
 #include "helper.h"
-#include "common.h"
 
 using namespace KingOfNewYork;
 

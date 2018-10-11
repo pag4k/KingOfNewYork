@@ -11,6 +11,7 @@
 
 namespace KingOfNewYork
 {
+    //This files contains contants, enums declaration and functions.
     const int MINIMUM_NUMBER_OF_PLAYERS = 2;
     const int MAXIMUM_NUMBER_OF_PLAYERS = 6;
 
@@ -22,7 +23,7 @@ namespace KingOfNewYork
     const int NUMBER_OF_TILESTACKS_IN_BOROUGH = 3;
 
     const int NUMBER_OF_DICE = 6;
-    const int NUMBER_OF_ROLLS = 3;
+    const int MAXIMUM_ROLL_COUNT = 3;
 
     const int NUMBER_OF_MONSTERS = 6;
     enum class EMonsterName
@@ -99,7 +100,8 @@ namespace KingOfNewYork
         LifePoint = 1,
         VictoryPoint = 2
     };
-    const std::string GetMonsterResourceString(const EMonsterResource MonsterResource);
+    const std::string GetMonsterResourceString(
+        const EMonsterResource MonsterResource);
 }
 
 #endif
