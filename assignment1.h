@@ -138,17 +138,20 @@ namespace KingOfNewYork
                 << ">";
         const std::string FileName = InputString();
         FMap Map = FMap(FileName);
-        std::string CopyFileName = "Copy" + FileName;
-        if (Map.SaveMap(CopyFileName))
+        if (Map.IsValid())
         {
-            std::cout << "Map succesfully saved to: "
-                      << CopyFileName
-                      << "."
-                      << std::endl;
-        }
-        else
-        {
-            std::cout << "Error: Map was not saved." << std::endl;
+            std::string CopyFileName = "Copy" + FileName;
+            if (Map.SaveMap(CopyFileName))
+            {
+                std::cout << "Map succesfully saved to: "
+                          << CopyFileName
+                          << "."
+                          << std::endl;
+            }
+            else
+            {
+                std::cout << "Error: Map was not saved." << std::endl;
+            }
         }
     }
 
