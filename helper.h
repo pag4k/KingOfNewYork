@@ -11,9 +11,13 @@
 
 namespace KingOfNewYork
 {
+    extern std::string Path;
+
     const int InputSingleDigit();
     const std::string InputString();
     const int ParseIntFromChar(const char Char);
+    std::string GetFileName(const std::string &FullPath);
+    void PrintFiles(const std::string &Folder);
 }
 
 #endif

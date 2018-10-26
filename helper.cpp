@@ -5,10 +5,12 @@
 // ----------------------------------------------------------------------------
 
 #include <iostream>
+#include <filesystem>
 #include <helper.h>
 
 namespace KingOfNewYork
 {
+    std::string Path;
     //If invalid, returns -1.
     const int InputSingleDigit()
     {
@@ -42,5 +44,26 @@ namespace KingOfNewYork
         {
             return -1;
         }
+    }
+
+    std::string GetFileName(const std::string &FullPath)
+    {
+        int Position = FullPath.length() - 1;
+        while (FullPath[Position] != '/')
+        {
+            --Position;
+            if (Position < 0)
+            {
+                return "";
+            }
+        }
+        return FullPath.substr(Position + 1, FullPath.length() - Position);
+    }
+
+    void PrintFiles(const std::string &Folder)
+    {
+        //TODO: Not sure if this will work on Windows because of the /
+        for (auto &p : std::filesystem::directory_iterator(Path.substr(0, Path.length() - GetFileName(Path).length()) + Folder))
+            std::cout << GetFileName(p.path().string()) << std::endl; // "p" is the directory entry. Get the path with "p.path()".
     }
 }
