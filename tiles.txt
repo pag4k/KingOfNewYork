@@ -1,44 +1,34 @@
-Number:5
+Number:22
 TileType:High-Rise
 Durability:1
 Reward:1
 
-Number:1
+Number:8
 TileType:High-Rise
 Durability:2
 Reward:2
 
-Number:1
+Number:3
 TileType:High-Rise
 Durability:3
 Reward:3
 
-Number:1
-TileType:Power Plant
-Durability:1
-Reward:1
-
-Number:1
+Number:3
 TileType:Power Plant
 Durability:2
 Reward:2
 
-Number:1
+Number:3
 TileType:Power Plant
 Durability:3
 Reward:3
 
-Number:1
-TileType:Hospital
-Durability:1
-Reward:1
-
-Number:1
+Number:3
 TileType:Hospital
 Durability:2
 Reward:2
 
-Number:1
+Number:3
 TileType:Hospital
 Durability:3
 Reward:3

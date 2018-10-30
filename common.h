@@ -11,6 +11,8 @@
 
 namespace KingOfNewYork
 {
+    const std::string MAP_PATH = "map/";
+
     //This files contains contants, enums declaration and functions.
     const int MINIMUM_NUMBER_OF_PLAYERS = 2;
     const int MAXIMUM_NUMBER_OF_PLAYERS = 6;

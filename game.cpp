@@ -9,20 +9,16 @@
 
 #include "game.h"
 #include "player.h"
+#include "helper.h"
 
 namespace KingOfNewYork
 {
     FGame::FGame()
     {
-        bIsValid = LoadGameData();
-    }
-
-    FGame::FGame(const int NumberOfPlayers)
-    {
-        bIsValid = LoadGameData();
-        if (bIsValid)
+        if (!Initialize())
         {
-            AddPlayers(NumberOfPlayers);
+            std::cout << "Error: There was a problem initializing the game."
+                      << std::endl;
         }
     }
 
@@ -39,7 +35,7 @@ namespace KingOfNewYork
 
     void FGame::Print() const
     {
-        std::cout << "Number of players: " << NumberOfPlayers << std::endl;
+        std::cout << "Number of players: " << PlayerCount << std::endl;
         for (const std::shared_ptr<FPlayer> &Player : Players)
         {
             std::cout << "\t-";
@@ -116,16 +112,19 @@ namespace KingOfNewYork
         TileStack.Print();
     }
 
-    const bool FGame::LoadGameData()
+    const bool FGame::Initialize()
     {
-        Map = new FMap("newyork.map");
-        
-        if (!Map->IsValid())
+        if (!SelectMap())
         {
-            delete Map;
-            Map = nullptr;
             return false;
         }
+
+        if (!GetPlayerCount())
+        {
+            return false;
+        }
+
+        CreatePlayers();
 
         Superstar = nullptr;
         StatusOfLiberty = nullptr;
@@ -142,12 +141,100 @@ namespace KingOfNewYork
         return true;
     }
 
-    void FGame::AddPlayers(const int NumberOfPlayers)
+    const bool FGame::SelectMap()
     {
-        assert(MINIMUM_NUMBER_OF_PLAYERS <= NumberOfPlayers &&
-               NumberOfPlayers <= MAXIMUM_NUMBER_OF_PLAYERS);
-        this->NumberOfPlayers = NumberOfPlayers;
+        bool isValid = false;
+        std::vector<std::string> MapFiles = GetMapFiles(MAP_PATH);
+        if (MapFiles.empty())
+        {
+            std::cout << std::endl
+                      << "Error: No map files have been found."
+                      << std::endl;
+            return false;
+        }
+        while (!isValid)
+        {
+            std::cout << std::endl
+                      << "Please choose a map by entering its number (0 to exit):"
+                      << std::endl;
+            for (int  i = 0; i < MapFiles.size(); ++i)
+            {
+                std::cout << (i+1)
+                          << ". "
+                          << MapFiles[i]
+                          << std::endl;
+            }
+            std::cout << ">";
+            const int FileNumber = InputSingleDigit();
+            if (FileNumber == 0)
+            {
+                return false;
+            }
+            else if (1 <= FileNumber && FileNumber <= MapFiles.size())
+            {
+                Map = new FMap(MAP_PATH + MapFiles[FileNumber - 1]);
+                if (Map->IsValid())
+                {
+                    isValid = true;
+                }
+                else
+                {
+                    delete Map;
+                    Map = nullptr;
+                }
+            }
+            else
+            {
+                std::cout << std::endl
+                          << "Error: Invalid input."
+                          << std::endl;
+            }
+        }
+        return true;
+    }
 
+    const bool FGame::GetPlayerCount()
+    {
+        bool isValid = false;
+        while (!isValid)
+        {
+            std::cout << std::endl
+                    << "Enter the number of player ("
+                    << MINIMUM_NUMBER_OF_PLAYERS
+                    << "-"
+                    << MAXIMUM_NUMBER_OF_PLAYERS
+                    << " or 0 to exit):"
+                    << std::endl
+                    << ">";
+            const int PlayerCount = InputSingleDigit();
+            if (PlayerCount == 0)
+            {
+                return false;
+            }
+            else if (MINIMUM_NUMBER_OF_PLAYERS <= PlayerCount &&
+                PlayerCount <= MAXIMUM_NUMBER_OF_PLAYERS)
+            {
+                std::cout << std::endl;
+                this->PlayerCount = PlayerCount;
+                isValid = true;
+            }
+            else
+            {
+                std::cout << "Invalid number of player. It has to be between "
+                        << MINIMUM_NUMBER_OF_PLAYERS
+                        << " and "
+                        << MAXIMUM_NUMBER_OF_PLAYERS
+                        << ". Please try again."
+                        << std::endl;
+            }
+        }
+        return true;
+    }
+
+    void FGame::CreatePlayers()
+    {
+        assert(MINIMUM_NUMBER_OF_PLAYERS <= PlayerCount &&
+               PlayerCount <= MAXIMUM_NUMBER_OF_PLAYERS);
         std::vector<std::string> PlayerNames;
         bool bAvailableMonsters[NUMBER_OF_MONSTERS];
         for (int i = 0; i < NUMBER_OF_MONSTERS; ++i)
@@ -155,7 +242,7 @@ namespace KingOfNewYork
             bAvailableMonsters[i] = true;
         }
 
-        for (int i = 0; i < NumberOfPlayers; ++i)
+        for (int i = 0; i < PlayerCount; ++i)
         {
             Players.push_back(
                 std::make_shared<FPlayer>(

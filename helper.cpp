@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <filesystem>
+
 #include <helper.h>
 
 namespace KingOfNewYork
@@ -60,10 +61,14 @@ namespace KingOfNewYork
         return FullPath.substr(Position + 1, FullPath.length() - Position);
     }
 
-    void PrintFiles(const std::string &Folder)
+    const std::vector<std::string> GetMapFiles(const std::string &Folder)
     {
+        std::vector<std::string> MapFiles;
         //TODO: Not sure if this will work on Windows because of the /
         for (auto &p : std::filesystem::directory_iterator(Path.substr(0, Path.length() - GetFileName(Path).length()) + Folder))
-            std::cout << GetFileName(p.path().string()) << std::endl; // "p" is the directory entry. Get the path with "p.path()".
+        {
+            MapFiles.push_back(GetFileName(p.path().string()));
+        }
+        return MapFiles;
     }
 }

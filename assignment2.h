@@ -10,34 +10,34 @@ namespace KingOfNewYork
 {
     void Part1()
     {
-        PrintFiles("map/");
-
+        std::shared_ptr<FGame> Game = std::make_shared<FGame>();
+        //Game->Initialize();
         std::cout << std::endl;
     }
 
     void Part2()
     {
-        std::cout << std::endl
-                << "Enter the name of the file to use to generate the map:"
-                << std::endl
-                << ">";
-        const std::string FileName = InputString();
-        FMap Map = FMap(FileName);
-        if (Map.IsValid())
-        {
-            std::string CopyFileName = "Copy" + FileName;
-            if (Map.SaveMap(CopyFileName))
-            {
-                std::cout << "Map succesfully saved to: "
-                          << CopyFileName
-                          << "."
-                          << std::endl;
-            }
-            else
-            {
-                std::cout << "Error: Map was not saved." << std::endl;
-            }
-        }
+        // std::cout << std::endl
+        //         << "Enter the name of the file to use to generate the map:"
+        //         << std::endl
+        //         << ">";
+        // const std::string FileName = InputString();
+        // FMap Map = FMap(FileName);
+        // if (Map.IsValid())
+        // {
+        //     std::string CopyFileName = "Copy" + FileName;
+        //     if (Map.SaveMap(CopyFileName))
+        //     {
+        //         std::cout << "Map succesfully saved to: "
+        //                   << CopyFileName
+        //                   << "."
+        //                   << std::endl;
+        //     }
+        //     else
+        //     {
+        //         std::cout << "Error: Map was not saved." << std::endl;
+        //     }
+        // }
     }
 
     void PrintDiceResult(const std::vector<EDiceFace> &DiceResult)
@@ -139,7 +139,7 @@ namespace KingOfNewYork
             NumberOfPlayer <= MAXIMUM_NUMBER_OF_PLAYERS)
         {
             std::cout << std::endl;
-            std::shared_ptr<FGame> Game = std::make_shared<FGame>(NumberOfPlayer);
+            //std::shared_ptr<FGame> Game = std::make_shared<FGame>(NumberOfPlayer);
         }
         else
         {

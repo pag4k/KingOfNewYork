@@ -24,19 +24,20 @@ namespace KingOfNewYork
   {
   public:
         FGame();
-        FGame(const int NumberOfPlayers);
         ~FGame();
         const bool IsValid() const { return bIsValid; }
         void Print() const;
         void ShuffleAndPrintDeck();
         void ShuffleAndPrintTileStack();
     private:
-        const bool LoadGameData();
-        void AddPlayers(const int NumberOfPlayers);
+        const bool Initialize();
+        const bool SelectMap();
+        const bool GetPlayerCount();
+        void CreatePlayers();
         bool bIsValid;
         int TokenInventory[NUMBER_OF_TOKEN_TYPE];
-        int EnergyCubes = 0;
-        int NumberOfPlayers = 0;
+        int EnergyCubes = -1;
+        int PlayerCount = -1;
         FMap *Map =  nullptr;
         std::vector<std::shared_ptr<FPlayer>> Players;
         std::vector<std::shared_ptr<FPlayer>> PlayersInManhattan;
@@ -47,6 +48,7 @@ namespace KingOfNewYork
         FTileStack TileStack;
         //TODO: ADD CARD BUYING CODE.
         std::unique_ptr<FCard> AvailableCards[MAXIMUM_AVAILABLE_CARDS];
+        int CurrentPlayer = -1;
   };
 }
 

@@ -6,7 +6,7 @@
 
 #ifndef HELPER_H
 #define HELPER_H
-
+#include <vector>
 #include <string>
 
 namespace KingOfNewYork
@@ -17,7 +17,7 @@ namespace KingOfNewYork
     const std::string InputString();
     const int ParseIntFromChar(const char Char);
     std::string GetFileName(const std::string &FullPath);
-    void PrintFiles(const std::string &Folder);
+    const std::vector<std::string> GetMapFiles(const std::string &Folder);
 }
 
 #endif
