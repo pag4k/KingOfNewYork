@@ -42,8 +42,8 @@ namespace KingOfNewYork
 
     void PrintDiceResult(const std::vector<EDiceFace> &DiceResult)
     {
-        int DiceSums[NUMBER_OF_FACES_ON_DICE];
-        for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; ++i)
+        int DiceSums[FACE_ON_DICE_COUNT];
+        for (int i = 0; i < FACE_ON_DICE_COUNT; ++i)
         {
             DiceSums[i] = 0;
         }
@@ -52,7 +52,7 @@ namespace KingOfNewYork
             DiceSums[static_cast<int>(DiceFace)]++;
         }
         std::cout << "Dice results:" << std::endl;
-        for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; ++i)
+        for (int i = 0; i < FACE_ON_DICE_COUNT; ++i)
         {
             std::cout << (i + 1)
                     << ". "
@@ -128,15 +128,15 @@ namespace KingOfNewYork
     {
         std::cout << std::endl
                 << "Enter the number of player ("
-                << MINIMUM_NUMBER_OF_PLAYERS
+                << MINIMUM_PLAYER
                 << "-"
-                << MAXIMUM_NUMBER_OF_PLAYERS
+                << MAXIMUM_PLAYER
                 << "):"
                 << std::endl
                 << ">";
-        const int NumberOfPlayer = InputSingleDigit();    
-        if (MINIMUM_NUMBER_OF_PLAYERS <= NumberOfPlayer &&
-            NumberOfPlayer <= MAXIMUM_NUMBER_OF_PLAYERS)
+        const int NumberOfPlayer = InputSingleDigit();
+        if (MINIMUM_PLAYER <= NumberOfPlayer &&
+            NumberOfPlayer <= MAXIMUM_PLAYER)
         {
             std::cout << std::endl;
             //std::shared_ptr<FGame> Game = std::make_shared<FGame>(NumberOfPlayer);
@@ -144,9 +144,9 @@ namespace KingOfNewYork
         else
         {
             std::cout << "Invalid number of player. It has to be between "
-                    << MINIMUM_NUMBER_OF_PLAYERS
+                    << MINIMUM_PLAYER
                     << " and "
-                    << MAXIMUM_NUMBER_OF_PLAYERS
+                    << MAXIMUM_PLAYER
                     << ". Please try again."
                     << std::endl;
         }

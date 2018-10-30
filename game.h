@@ -30,12 +30,17 @@ namespace KingOfNewYork
         void ShuffleAndPrintDeck();
         void ShuffleAndPrintTileStack();
     private:
-        const bool Initialize();
+        const bool InitializationPhase();
         const bool SelectMap();
         const bool GetPlayerCount();
         void CreatePlayers();
+        const bool StartupPhase();
+        void GetFirstPlayer();
+        void SelectStartingBoroughs();
+        void MainPhase();
+        const int VictoriousPlayer();
         bool bIsValid;
-        int TokenInventory[NUMBER_OF_TOKEN_TYPE];
+        int TokenInventory[TOKEN_TYPE_COUNT];
         int EnergyCubes = -1;
         int PlayerCount = -1;
         FMap *Map =  nullptr;

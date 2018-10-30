@@ -25,7 +25,7 @@ namespace KingOfNewYork
 
         DiceRoller = FDiceRoller();
 
-        for (int i = 0; i < NUMBER_OF_TOKEN_TYPE; ++i)
+        for (int i = 0; i < TOKEN_TYPE_COUNT; ++i)
         {
             TokenInventory[i] = 0;
         }
@@ -38,21 +38,80 @@ namespace KingOfNewYork
         bStatueOfLiberty = false;
     }
 
+    const std::string FPlayer::GetPlayerAndMonsterNames()
+    {
+        return GetPlayerName() + "(" + GetMonsterNameString(GetMonsterName()) + ")";
+    }
+
+    void FPlayer::TakeTurn(FMap &Map)
+    {
+        std::cout << GetPlayerAndMonsterNames()
+                  << " turn:"
+                  << std::endl;
+
+        std::cout << "Roll dice phase. Press enter to start:"
+                  << std::endl;
+
+        std::cin.get();
+
+        RollDice(GREEN_DICE_COUNT, MAXIMUM_ROLL);
+
+        std::cout << "Resolve dice phase. Press enter to start:"
+                  << std::endl;
+
+        std::cin.get();
+
+        ResolveDice();
+
+        std::cout << "Move phase. Press enter to start:"
+                  << std::endl;
+
+        std::cin.get();
+
+        Move(Map);
+
+        std::cout << "Buy card phase. Press enter to start:"
+                  << std::endl;
+
+        std::cin.get();
+
+        BuyCards();
+
+        std::cout << "Turn over. Press enter to end."
+                  << std::endl;
+
+        std::cin.get();
+    }
+
     void FPlayer::SetCelebrity(const bool bCelebrity)
     {
         this->bCelebrity = bCelebrity;
     }
 
-    void FPlayer::RollDice()
+    void FPlayer::RollDice(const int DiceCount, const int RollCount)
     {
-        CurrentDiceResult = DiceRoller.BeginRolling();
+        CurrentDiceResult = DiceRoller.BeginRolling(DiceCount, RollCount);
+    }
+
+    const int FPlayer::GetAttackCount() const
+    {
+        assert(!CurrentDiceResult.empty());
+        int AttackCount = 0;
+        for (EDiceFace DiceFace : CurrentDiceResult)
+        {
+            if (DiceFace == EDiceFace::Attack)
+            {
+                AttackCount++;
+            }
+        }
+        return AttackCount;
     }
 
     void FPlayer::ResolveDice()
     {
         assert(!CurrentDiceResult.empty());
-        int DiceSums[NUMBER_OF_FACES_ON_DICE];
-        for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; ++i)
+        int DiceSums[FACE_ON_DICE_COUNT];
+        for (int i = 0; i < FACE_ON_DICE_COUNT; ++i)
         {
             DiceSums[i] = 0;
         }
@@ -65,7 +124,7 @@ namespace KingOfNewYork
         do
         {
             std::cout << "### Resolve the dice ###" << std::endl;
-            for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; ++i)
+            for (int i = 0; i < FACE_ON_DICE_COUNT; ++i)
             {
                 std::cout << (i + 1)
                         << ". "
@@ -78,7 +137,7 @@ namespace KingOfNewYork
                     << std::endl
                     << ">";
             int Input = InputSingleDigit();
-            if (0 <= Input && Input <= NUMBER_OF_FACES_ON_DICE)
+            if (0 <= Input && Input <= FACE_ON_DICE_COUNT)
             {
                 if (DiceSums[Input] > 0)
                 {
@@ -126,7 +185,7 @@ namespace KingOfNewYork
                             break;
                     }
                     Done = true;
-                    for (int i = 0; i < NUMBER_OF_FACES_ON_DICE; ++i)
+                    for (int i = 0; i < FACE_ON_DICE_COUNT; ++i)
                     {
                         if (DiceSums[i] > 0)
                         {
@@ -148,6 +207,16 @@ namespace KingOfNewYork
                 std::cout << "Invalid input!" << std::endl;
             }
         } while (!Done);
+
+    }
+
+    void FPlayer::Move(FMap &Map)
+    {
+
+    }
+
+    void FPlayer::BuyCards()
+    {
 
     }
 
@@ -185,7 +254,7 @@ namespace KingOfNewYork
         }
 
         std::cout << "Tokens:" << std::endl;
-        for (int i = 0; i < NUMBER_OF_TOKEN_TYPE; ++i)
+        for (int i = 0; i < TOKEN_TYPE_COUNT; ++i)
         {
             std::cout << "\t-"
                     << GetTokenTypeString(ETokenType(i))
@@ -267,7 +336,7 @@ namespace KingOfNewYork
         {
             std::cout   << PlayerName
                         << ", please select your monster:" << std::endl;
-            for (int i = 0; i < NUMBER_OF_MONSTERS; ++i)
+            for (int i = 0; i < MONSTER_COUNT; ++i)
             {
                 if (bAvailableMonsters[i])
                 {
@@ -281,8 +350,8 @@ namespace KingOfNewYork
             std::cout << ">";
             const int Input = InputSingleDigit();
             if (1 <= Input &&
-                Input <= NUMBER_OF_MONSTERS &&
-                bAvailableMonsters[Input-1])
+                Input <= MONSTER_COUNT &&
+                bAvailableMonsters[Input - 1])
             {
                 MonsterName = static_cast<EMonsterName>(Input - 1);
                 bAvailableMonsters[Input - 1] = false;
@@ -302,7 +371,7 @@ namespace KingOfNewYork
         while (!Position)
         {
             {
-                std::cout << PlayerName
+                std::cout << GetPlayerAndMonsterNames()
                           << ", please select your starting borough:"
                           << std::endl;
                 for (int i = 0; i < Map.BoroughCount(); ++i)
@@ -386,11 +455,11 @@ namespace KingOfNewYork
         }
         else
         {
-            if (NumberOfDice >= NUMBER_OF_DICE_FOR_CELEBRITY)
+            if (NumberOfDice >= DICE_FOR_CELEBRITY_COUNT)
             {
                 bCelebrity = true;
                 NewVictoryPoints = NumberOfDice -
-                                   (NUMBER_OF_DICE_FOR_CELEBRITY - 1);
+                                   (DICE_FOR_CELEBRITY_COUNT - 1);
             }
         }
         VictoryPoints += NewVictoryPoints;

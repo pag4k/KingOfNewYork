@@ -15,11 +15,17 @@ namespace KingOfNewYork
 {
     FGame::FGame()
     {
-        if (!Initialize())
+        if (!InitializationPhase())
         {
-            std::cout << "Error: There was a problem initializing the game."
+            std::cout << "Error: There was a problem during the initialization phase."
                       << std::endl;
         }
+        if (!StartupPhase())
+        {
+            std::cout << "Error: There was a problem during the startup phase."
+                      << std::endl;
+        }
+        MainPhase();
     }
 
     FGame::~FGame()
@@ -74,7 +80,7 @@ namespace KingOfNewYork
                   << std::endl;
 
         std::cout << "Tokens left:" << std::endl;
-        for (int i = 0; i < NUMBER_OF_TOKEN_TYPE; ++i)
+        for (int i = 0; i < TOKEN_TYPE_COUNT; ++i)
         {
             std::cout   << "\t-"
                         << GetTokenTypeString(ETokenType(i))
@@ -112,7 +118,7 @@ namespace KingOfNewYork
         TileStack.Print();
     }
 
-    const bool FGame::Initialize()
+    const bool FGame::InitializationPhase()
     {
         if (!SelectMap())
         {
@@ -132,7 +138,7 @@ namespace KingOfNewYork
         Deck = FDeck("cards.txt");
         TileStack = FTileStack("tiles.txt");
 
-        for (int i = 0; i < NUMBER_OF_TOKEN_TYPE; ++i)
+        for (int i = 0; i < TOKEN_TYPE_COUNT; ++i)
         {
             TokenInventory[i] = STARTING_TOKENS;
         }
@@ -200,9 +206,9 @@ namespace KingOfNewYork
         {
             std::cout << std::endl
                     << "Enter the number of player ("
-                    << MINIMUM_NUMBER_OF_PLAYERS
+                    << MINIMUM_PLAYER
                     << "-"
-                    << MAXIMUM_NUMBER_OF_PLAYERS
+                    << MAXIMUM_PLAYER
                     << " or 0 to exit):"
                     << std::endl
                     << ">";
@@ -211,8 +217,8 @@ namespace KingOfNewYork
             {
                 return false;
             }
-            else if (MINIMUM_NUMBER_OF_PLAYERS <= PlayerCount &&
-                PlayerCount <= MAXIMUM_NUMBER_OF_PLAYERS)
+            else if (MINIMUM_PLAYER <= PlayerCount &&
+                PlayerCount <= MAXIMUM_PLAYER)
             {
                 std::cout << std::endl;
                 this->PlayerCount = PlayerCount;
@@ -221,9 +227,9 @@ namespace KingOfNewYork
             else
             {
                 std::cout << "Invalid number of player. It has to be between "
-                        << MINIMUM_NUMBER_OF_PLAYERS
+                        << MINIMUM_PLAYER
                         << " and "
-                        << MAXIMUM_NUMBER_OF_PLAYERS
+                        << MAXIMUM_PLAYER
                         << ". Please try again."
                         << std::endl;
             }
@@ -233,11 +239,13 @@ namespace KingOfNewYork
 
     void FGame::CreatePlayers()
     {
-        assert(MINIMUM_NUMBER_OF_PLAYERS <= PlayerCount &&
-               PlayerCount <= MAXIMUM_NUMBER_OF_PLAYERS);
+        assert(MINIMUM_PLAYER <= PlayerCount &&
+               PlayerCount <= MAXIMUM_PLAYER);
+        Players.reserve(PlayerCount);
         std::vector<std::string> PlayerNames;
-        bool bAvailableMonsters[NUMBER_OF_MONSTERS];
-        for (int i = 0; i < NUMBER_OF_MONSTERS; ++i)
+        PlayerNames.reserve(PlayerCount);
+        bool bAvailableMonsters[MONSTER_COUNT];
+        for (int i = 0; i < MONSTER_COUNT; ++i)
         {
             bAvailableMonsters[i] = true;
         }
@@ -247,8 +255,108 @@ namespace KingOfNewYork
             Players.push_back(
                 std::make_shared<FPlayer>(
                     PlayerNames, bAvailableMonsters));
-            Players.back()->SelectStartingLocation(*Map);
-            Players.back()->PrintLong();
+            //Players.back()->PrintLong();
         }
+    }
+
+    const bool FGame::StartupPhase()
+    {
+        GetFirstPlayer();
+
+        if (CurrentPlayer == -1)
+        {
+            return false;
+        }
+
+        SelectStartingBoroughs();
+        return true;
+    }
+
+    void FGame::GetFirstPlayer()
+    {
+        int MaxAttack = -1;
+        std::vector<int> AttackCount;
+        AttackCount.resize(PlayerCount);
+        for (int& Attack : AttackCount)
+        {
+            Attack = -1;
+        }
+
+        std::cout << "In order to see who goes first, each player rolls the 6 black dice and the 2 green dice, and whoever rolls the most Attacks starts the game."
+                  << std::endl;
+        while (CurrentPlayer == -1)
+        {
+            int NewMaxAttack = MaxAttack;
+            for (int i = 0; i < PlayerCount; ++i)
+            {
+                if (AttackCount[i] == MaxAttack)
+                {
+                    std::cout << Players[i]->GetPlayerAndMonsterNames()
+                              << ": Press enter to roll the dice.";
+                    std::string Trash;
+                    std::getline(std::cin, Trash);
+                    Players[i]->RollDice(BLACK_DICE_COUNT + GREEN_DICE_COUNT, 1);
+                    AttackCount[i] = Players[i]->GetAttackCount();
+                    std::cout << "Number of attacks: "
+                              << AttackCount[i]
+                              << std::endl;
+                    if (AttackCount[i] > NewMaxAttack)
+                    {
+                        NewMaxAttack = AttackCount[i];
+                        CurrentPlayer = i;
+                    }
+                    else if (AttackCount[i] == NewMaxAttack)
+                    {
+                        CurrentPlayer = -1;
+                    }
+                }
+            }
+            MaxAttack = NewMaxAttack;
+            if (CurrentPlayer > -1)
+            {
+                std::cout << Players[CurrentPlayer]->GetPlayerAndMonsterNames()
+                          << " has rolled the highest number of attacks ("
+                          << MaxAttack
+                          << ")."
+                          << std::endl;
+            }
+            else
+            {
+                std::cout << "There is a tie! The tied players have to roll again."
+                          << std::endl
+                          << std::endl;
+            }
+        }
+    }
+
+    void FGame::SelectStartingBoroughs()
+    {
+        std::cout << "Starting with the first player, and going clockwise: Place your Monster in the borough of your choice, except Manhattan. There can be no more than 2 Monsters in any borough."
+                  << std::endl;
+        for (int i = 0; i < PlayerCount; ++i)
+        {
+            CurrentPlayer = (CurrentPlayer + 1) % PlayerCount;
+            Players[CurrentPlayer]->SelectStartingLocation(*Map);
+        }
+        CurrentPlayer = (CurrentPlayer + 1) % PlayerCount;
+    }
+
+    void FGame::MainPhase()
+    {
+        while (VictoriousPlayer() == -1)
+        {
+            Players[CurrentPlayer]->TakeTurn(*Map);
+            CurrentPlayer = (CurrentPlayer + 1) % PlayerCount;
+        }
+    }
+
+    const int FGame::VictoriousPlayer()
+    {
+        //TODO: Implement this.
+        for (int i = 0; i < PlayerCount; ++i)
+        {
+
+        }
+        return -1;
     }
 }

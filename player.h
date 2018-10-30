@@ -28,11 +28,14 @@ namespace KingOfNewYork
         void SelectStartingLocation(FMap &Map);
         const std::string GetPlayerName() const { return PlayerName; }
         const EMonsterName GetMonsterName() const { return MonsterName; }
+        const std::string GetPlayerAndMonsterNames();
+        void TakeTurn(FMap &Map);
         const bool GetCelebrity() const { return bCelebrity; }
         void SetCelebrity(const bool bCelebrity);
-        void RollDice();
+        void RollDice(const int DiceCount, const int RollCount);
+        const int GetAttackCount() const;
         void ResolveDice();
-        void Move();
+        void Move(FMap &Map);
         void BuyCards();
         void PrintShort() const;
         void PrintLong() const;
@@ -50,7 +53,7 @@ namespace KingOfNewYork
         std::shared_ptr<FBorough> Position;
         FDiceRoller DiceRoller;
         std::vector<EDiceFace> CurrentDiceResult;
-        int TokenInventory[NUMBER_OF_TOKEN_TYPE];
+        int TokenInventory[TOKEN_TYPE_COUNT];
         std::vector<std::unique_ptr<FCard>> Cards;
         int EnergyCubes;
         int LifePoints;

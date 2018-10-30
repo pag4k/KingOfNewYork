@@ -14,20 +14,21 @@ namespace KingOfNewYork
     const std::string MAP_PATH = "map/";
 
     //This files contains contants, enums declaration and functions.
-    const int MINIMUM_NUMBER_OF_PLAYERS = 2;
-    const int MAXIMUM_NUMBER_OF_PLAYERS = 6;
+    const int MINIMUM_PLAYER = 2;
+    const int MAXIMUM_PLAYER = 6;
 
     const int MAXIMUM_PLAYERS_IN_BOROUGH = 2;
 
     //TODO: I think part of the code assumes it is 2.
     const int MAXIMUM_PLAYERS_IN_MANHATTAN = 2;
 
-    const int NUMBER_OF_TILESTACKS_IN_BOROUGH = 3;
+    const int TILESTACK_IN_BOROUGH_COUNT = 3;
 
-    const int NUMBER_OF_DICE = 6;
-    const int MAXIMUM_ROLL_COUNT = 3;
+    const int BLACK_DICE_COUNT = 6;
+    const int GREEN_DICE_COUNT = 2;
+    const int MAXIMUM_ROLL = 3;
 
-    const int NUMBER_OF_MONSTERS = 6;
+    const int MONSTER_COUNT = 6;
     enum class EMonsterName
     {
         None = -1,
@@ -40,8 +41,8 @@ namespace KingOfNewYork
     };
     const std::string GetMonsterNameString(const EMonsterName MonsterName);
 
-    const int NUMBER_OF_FACES_ON_DICE = 6;
-    const int NUMBER_OF_DICE_FOR_CELEBRITY = 3;
+    const int FACE_ON_DICE_COUNT = 6;
+    const int DICE_FOR_CELEBRITY_COUNT = 3;
     enum class EDiceFace
     {
         None = -1,
@@ -56,7 +57,7 @@ namespace KingOfNewYork
     const std::string GetDiceFaceString(const EDiceFace Face);
 
     const int STARTING_TOKENS = 13;
-    const int NUMBER_OF_TOKEN_TYPE = 4;
+    const int TOKEN_TYPE_COUNT = 4;
 
     enum class ETokenType {
         //None = -1,
@@ -91,10 +92,10 @@ namespace KingOfNewYork
     };
     const std::string GetTileTypeString(const ETileType TileType);
 
-    int const NUMBER_OF_MONSTER_RESOURCES = 3;
+    int const MONSTER_RESOURCE_COUNT = 3;
     int const MAXIMUM_ENERGY_CUBES = 40; //TODO: Get the right amount.
     int const MAXIMUM_LIFE_POINTS = 10;
-    int const NUMBER_VICTORY_POINTS_TO_WIN = 20;
+    int const VICTORY_POINTS_TO_WIN_COUNT = 20;
     enum class EMonsterResource
     {
         None = -1,
