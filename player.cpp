@@ -21,7 +21,7 @@ namespace KingOfNewYork
         EnterPlayerName(PlayerNames);
         MonsterName = EMonsterName::None;
         SelectMonster(bAvailableMonsters);
-        Position = nullptr;
+        Borough = nullptr;
 
         DiceRoller = FDiceRoller();
 
@@ -54,7 +54,7 @@ namespace KingOfNewYork
 
         std::cin.get();
 
-        RollDice(GREEN_DICE_COUNT, MAXIMUM_ROLL);
+        RollDice(BLACK_DICE_COUNT, MAXIMUM_ROLL);
 
         std::cout << "Resolve dice phase. Press enter to start:"
                   << std::endl;
@@ -147,37 +147,37 @@ namespace KingOfNewYork
                             << std::endl;
                     switch (Input + 1)
                     {
-                        case 0:
+                        case 1:
                             if (ResolveAttack(DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
                             break;
-                        case 1:
+                        case 2:
                             if (ResolveCelebrity(DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
                             break;
-                        case 2:
+                        case 3:
                             if (ResolveDestruction(DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
                             break;
-                        case 3:
+                        case 4:
                             if (ResolveEnergy(DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
                             break;
-                        case 4:
+                        case 5:
                             if (ResolveHeal(DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
                             break;
-                        case 5:
+                        case 6:
                             if (ResolveOuch(DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
@@ -235,9 +235,9 @@ namespace KingOfNewYork
                   << GetMonsterNameString(MonsterName)
                   << std::endl;
 
-        if (Position)
+        if (Borough)
         {
-            std::cout << "Position: " << Position->Name << std::endl;
+            std::cout << "Position: " << Borough->Name << std::endl;
         }
 
         DiceRoller.PrintRollHistory();
@@ -368,7 +368,7 @@ namespace KingOfNewYork
 
     void FPlayer::SelectStartingLocation(FMap &Map)
     {
-        while (!Position)
+        while (!Borough)
         {
             {
                 std::cout << GetPlayerAndMonsterNames()
@@ -376,16 +376,16 @@ namespace KingOfNewYork
                           << std::endl;
                 for (int i = 0; i < Map.BoroughCount(); ++i)
                 {
-                    FBorough &CurrentBorough = Map.GetBorough(i);
+                    std::shared_ptr<FBorough> CurrentBorough = Map.GetBorough(i);
                     std::vector<std::shared_ptr<FPlayer>> &CurrentPlayers =
-                        CurrentBorough.Players;
+                        CurrentBorough->Players;
                     //TODO: This assumes that MAXIMUM_PLAYERS_IN_BOROUGH = 2.
                     if (CurrentPlayers.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
-                        CurrentBorough.bStartingLocation)
+                        CurrentBorough->bStartingLocation)
                     {
                         std::cout << (i + 1)
                                   << ". "
-                                  << CurrentBorough.Name
+                                  << CurrentBorough->Name
                                   << (CurrentPlayers.size() == 1 ?
                                       " (" +
                                       GetMonsterNameString(
@@ -400,29 +400,29 @@ namespace KingOfNewYork
 
                 if (1 <= Input && Input <= Map.BoroughCount())
                 {
-                    FBorough &SelectedBorough = Map.GetBorough(Input - 1);
+                    std::shared_ptr<FBorough> SelectedBorough = Map.GetBorough(Input - 1);
                     std::vector<std::shared_ptr<FPlayer>> &SelectedPlayers =
-                        SelectedBorough.Players;
+                        SelectedBorough->Players;
                     if (SelectedPlayers.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
-                        SelectedBorough.bStartingLocation)
+                        SelectedBorough->bStartingLocation)
                     {
                         //Removing player from prevous borough list.
-                        if (Position)
+                        if (Borough)
                         {
-                            for (auto it = Position->Players.begin();
-                                 it != Position->Players.end();
+                            for (auto it = Borough->Players.begin();
+                                 it != Borough->Players.end();
                                  ++it)
                             {
                                 if (*it == shared_from_this())
                                 {
-                                    Position->Players.erase(it);
+                                    Borough->Players.erase(it);
                                 }
                             }
                         }
                         //Setting player position to selected borough.
-                        Position = std::make_shared<FBorough>(SelectedBorough);
+                        Borough = SelectedBorough;
                         //Put player in the borough player list.
-                        SelectedBorough.Players.push_back(shared_from_this());
+                        SelectedBorough->Players.push_back(shared_from_this());
                     }
                     else
                     {
@@ -443,6 +443,20 @@ namespace KingOfNewYork
 
     const bool FPlayer::ResolveAttack(const int NumberOfDice)
     {
+        assert(Borough != nullptr);
+        if (Borough->bInManhattan)
+        {
+            std::cout << "Since you are in Manhattan, each Attack inflicts damage to all Monsters outside Manhattan:"
+                      << std::endl;
+                      //TODO: Need to add access to other players via the Game or something.
+        }
+        else
+        {
+            std::cout << "Since you are not in Manhattan, each Attack inflicts damage to all Monsters in Manhattan:"
+                      << std::endl;
+            //TODO: Need to add access to other players via the Game or something.
+        }
+        //COULD USE THE MAP!
         return true;
     }
 
@@ -478,6 +492,26 @@ namespace KingOfNewYork
 
     const bool FPlayer::ResolveDestruction(const int NumberOfDice)
     {
+        assert(Borough != nullptr);
+        bool bAllEmptyStack = true;
+        for (std::unique_ptr<FTileStack> &TileStack : Borough->TileStacks)
+        {
+            if (!TileStack->IsEmpty())
+            {
+                bAllEmptyStack = false;
+                break;
+            }
+        }
+        if (bAllEmptyStack)
+        {
+            std::cout << "There are no buildings or units to destruct."
+                      << std::endl;
+            return true;
+        }
+
+        std::cout << "The following buildings/units are in your borough. Select the number of the one you want to destruct:"
+                  << std::endl;
+        
         return true;
     }
 

@@ -52,7 +52,7 @@ namespace KingOfNewYork
                     {
                         std::size_t Position1 = Text.find(',');
                         std::string Name = Text.substr(0, Position1++);
-                        FBorough *Borough = Graph.InsertVertex(Name);
+                        std::shared_ptr<FBorough> Borough = Graph.InsertVertex(Name);
                         if (Borough)
                         {
                             Borough->Name = Name;
@@ -137,14 +137,12 @@ namespace KingOfNewYork
 
         for (int i = 0; i < BoroughCount(); ++i)
         {
-            FBorough &CurrentBorough = GetBorough(i);
-            OuputStream << CurrentBorough.Name
+            std::shared_ptr<FBorough> CurrentBorough = GetBorough(i);
+            OuputStream << CurrentBorough->Name
                         << ","
-                        << (CurrentBorough.bStartingLocation ?
-                            "StartingLocation" : " ")
+                        << (CurrentBorough->bStartingLocation ? "StartingLocation" : " ")
                         << ","
-                        << (CurrentBorough.bInManhattan ?
-                            "InManhattan" : " ")
+                        << (CurrentBorough->bInManhattan ? "InManhattan" : " ")
                         << ","
                         << std::endl;
         }
@@ -155,11 +153,11 @@ namespace KingOfNewYork
         for (int i = 0; i < BoroughCount(); ++i)
         {
             std::vector<int> Neighbourgs = GetNeighbourgs(i);
-            OuputStream << GetBorough(i).Name
+            OuputStream << GetBorough(i)->Name
                         << ":";
             for (int j = 0; j < Neighbourgs.size(); ++j)
             {
-                OuputStream << GetBorough(j).Name
+                OuputStream << GetBorough(j)->Name
                             << ",";
             }
             OuputStream << std::endl;

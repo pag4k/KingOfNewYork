@@ -2,6 +2,7 @@
 #define BOROUGH_H
 
 #include <memory>
+#include "tile.h"
 
 namespace KingOfNewYork
 {
@@ -10,13 +11,15 @@ namespace KingOfNewYork
     //This will be used as the elements for the vertices of the map graph.
     struct FBorough
     {
+        FBorough() = default;
+        FBorough(const FBorough& Other) = delete;
+        //~FBorough() { TileStacks.clear(); }
         std::string Name;
         bool bStartingLocation;
         bool bInManhattan;
         //TODO: Decide how to work with Manhattan.
         //int Level;
-        //TODO: Get this to work with unique_ptr.
-        //std::vector<std::unique_ptr<FTile>> TileStacks;
+        std::vector<std::unique_ptr<FTileStack>> TileStacks;
         std::vector<std::shared_ptr<FPlayer>> Players;
     };
 }

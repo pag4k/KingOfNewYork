@@ -53,6 +53,11 @@ namespace KingOfNewYork
         Durability++;
     }
 
+    const std::string FTile::GetTileInfo()
+    {
+        return GetTileTypeString(GetTileType()) + ": Drability: " + std::to_string(GetDurability()) + " Reward: " + std::to_string(GetReward());
+    }
+
     FTileStack::FTileStack(const std::string FileName)
     {
         GenerateFromFile(FileName);
@@ -84,6 +89,18 @@ namespace KingOfNewYork
                       << "Reward: "
                       << Tile->GetReward()
                       << std::endl;
+        }
+    }
+
+    std::string FTileStack::GetTopCardInfo()
+    {
+        if (TileStack.empty())
+        {
+            return "";
+        }
+        else
+        {
+            return TileStack.front()->GetTileInfo();
         }
     }
 

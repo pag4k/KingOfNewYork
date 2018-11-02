@@ -12,6 +12,7 @@
 #include <set>
 #include <string>
 #include <iostream>
+#include <memory>
 
 namespace KingOfNewYork
 {
@@ -40,7 +41,7 @@ namespace KingOfNewYork
 
         const int ElementCount() const { return VertexVector.size(); }
 
-        T &GetElement(int n)
+        std::shared_ptr<T> GetElement(int n)
         {
             assert(0 <= n && n < VertexVector.size());
             return VertexVector[n]->Element;
@@ -80,7 +81,7 @@ namespace KingOfNewYork
                 GetVertexWithName(Name2));
         }
 
-        T *InsertVertex(const std::string VertexName)
+        std::shared_ptr<T> InsertVertex(const std::string VertexName)
         {
             if (VertexName == "")
             {
@@ -102,7 +103,7 @@ namespace KingOfNewYork
             FVertex *NewVertex = new FVertex;
             NewVertex->Name = VertexName;
             FVertex *InsertedVertex = InsertVertex(NewVertex);
-            return &NewVertex->Element;
+            return NewVertex->Element;
         }
 
         void RemoveVertex(const std::string VertexName)
@@ -333,7 +334,8 @@ namespace KingOfNewYork
 
         struct FVertex
         {
-            T Element;
+            FVertex() : Element(std::make_shared<T>()), Name("") {};
+            std::shared_ptr<T> Element;
             std::string Name;
             std::vector<FEdge *> IncidentEdgeVector;
         };

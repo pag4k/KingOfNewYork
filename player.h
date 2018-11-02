@@ -9,6 +9,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include "common.h"
 #include "diceroller.h"
 #include "borough.h"
@@ -50,7 +51,7 @@ namespace KingOfNewYork
         const bool ResolveOuch(const int NumberOfDice);
         std::string PlayerName;
         EMonsterName MonsterName;
-        std::shared_ptr<FBorough> Position;
+        std::shared_ptr<FBorough> Borough;
         FDiceRoller DiceRoller;
         std::vector<EDiceFace> CurrentDiceResult;
         int TokenInventory[TOKEN_TYPE_COUNT];
