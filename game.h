@@ -28,10 +28,10 @@ namespace KingOfNewYork
         const bool IsValid() const { return bIsValid; }
         void Print() const;
         void ShuffleAndPrintDeck();
-        void ShuffleAndPrintTileStack();
     private:
         const bool InitializationPhase();
         const bool SelectMap();
+        const bool DistributeTiles(FTileStack &TileStack);
         const bool GetPlayerCount();
         void CreatePlayers();
         const bool StartupPhase();
@@ -43,14 +43,14 @@ namespace KingOfNewYork
         int TokenInventory[TOKEN_TYPE_COUNT];
         int EnergyCubes = -1;
         int PlayerCount = -1;
-        FMap *Map =  nullptr;
+        std::shared_ptr<FMap> Map =  nullptr;
         std::vector<std::shared_ptr<FPlayer>> Players;
         std::vector<std::shared_ptr<FPlayer>> PlayersInManhattan;
         std::shared_ptr<FPlayer> Superstar;
         std::shared_ptr<FPlayer> StatusOfLiberty;
         FDeck Deck;
         FDeck DiscardDeck;
-        FTileStack TileStack;
+        
         //TODO: ADD CARD BUYING CODE.
         std::unique_ptr<FCard> AvailableCards[MAXIMUM_AVAILABLE_CARDS];
         int CurrentPlayer = -1;

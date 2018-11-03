@@ -30,10 +30,6 @@ namespace KingOfNewYork
 
     FGame::~FGame()
     {
-        if (Map)
-        {
-            delete Map;
-        }
         Players.clear();
         Superstar = nullptr;
         StatusOfLiberty = nullptr;
@@ -112,12 +108,6 @@ namespace KingOfNewYork
         Deck.Print();
     }
 
-    void FGame::ShuffleAndPrintTileStack()
-    {
-        TileStack.Shuffle();
-        TileStack.Print();
-    }
-
     const bool FGame::InitializationPhase()
     {
         if (!SelectMap())
@@ -136,7 +126,10 @@ namespace KingOfNewYork
         StatusOfLiberty = nullptr;
 
         Deck = FDeck("cards.txt");
-        TileStack = FTileStack("tiles.txt");
+
+        FTileStack TileStack = FTileStack("tiles.txt");
+        TileStack.Shuffle();
+        //DistributeTiles(TileStack);
 
         for (int i = 0; i < TOKEN_TYPE_COUNT; ++i)
         {
@@ -144,6 +137,26 @@ namespace KingOfNewYork
         }
 
         EnergyCubes = MAXIMUM_ENERGY_CUBES;
+        return true;
+    }
+
+    const bool FGame::DistributeTiles(FTileStack &MasterTileStack)
+    {
+        assert(Map != nullptr);
+        while (!MasterTileStack.IsEmpty())
+        {
+            for (int i = 0; i < Map->BoroughCount(); ++i)
+            {
+                for (std::unique_ptr<FTileStack> &CurrentTileStack : Map->GetBorough(i)->TileStacks)
+                {
+                    CurrentTileStack->AddTileOnTop(MasterTileStack.Draw());
+                    if (MasterTileStack.IsEmpty())
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
         return true;
     }
 
@@ -178,14 +191,16 @@ namespace KingOfNewYork
             }
             else if (1 <= FileNumber && FileNumber <= MapFiles.size())
             {
-                Map = new FMap(MAP_PATH + MapFiles[FileNumber - 1]);
+                Map = std::make_shared<FMap>(MAP_PATH + MapFiles[FileNumber - 1]);
                 if (Map->IsValid())
                 {
                     isValid = true;
                 }
                 else
                 {
-                    delete Map;
+                    //TODO: Not sure if I need that. I think it should force the
+                    //cleaning of the memory since at that point, it is the only pointer to map.
+                    Map.reset();
                     Map = nullptr;
                 }
             }
@@ -274,44 +289,47 @@ namespace KingOfNewYork
 
     void FGame::GetFirstPlayer()
     {
-        int MaxAttack = -1;
-        std::vector<int> AttackCount;
-        AttackCount.resize(PlayerCount);
-        for (int& Attack : AttackCount)
+        std::vector<bool> StillRolling;
+        for (int i = 0; i < PlayerCount; ++i)
         {
-            Attack = -1;
+            StillRolling.push_back(true);
         }
 
         std::cout << "In order to see who goes first, each player rolls the 6 black dice and the 2 green dice, and whoever rolls the most Attacks starts the game."
                   << std::endl;
         while (CurrentPlayer == -1)
         {
-            int NewMaxAttack = MaxAttack;
+            int MaxAttack = -1;
             for (int i = 0; i < PlayerCount; ++i)
             {
-                if (AttackCount[i] == MaxAttack)
+                if (StillRolling[i])
                 {
                     std::cout << Players[i]->GetPlayerAndMonsterNames()
                               << ": Press enter to roll the dice.";
                     std::string Trash;
                     std::getline(std::cin, Trash);
                     Players[i]->RollDice(BLACK_DICE_COUNT + GREEN_DICE_COUNT, 1);
-                    AttackCount[i] = Players[i]->GetAttackCount();
+                    int AttackCount = Players[i]->GetAttackCount();
                     std::cout << "Number of attacks: "
-                              << AttackCount[i]
+                              << AttackCount
                               << std::endl;
-                    if (AttackCount[i] > NewMaxAttack)
+                    if (AttackCount > MaxAttack)
                     {
-                        NewMaxAttack = AttackCount[i];
+                        for (int j = 0; j < i; ++j)
+                        {
+                            StillRolling[j] = false;
+                        }
+                        StillRolling[i] = true;
+                        MaxAttack = AttackCount;
                         CurrentPlayer = i;
                     }
-                    else if (AttackCount[i] == NewMaxAttack)
+                    else if (AttackCount == MaxAttack)
                     {
+                        StillRolling[i] = true;
                         CurrentPlayer = -1;
                     }
                 }
             }
-            MaxAttack = NewMaxAttack;
             if (CurrentPlayer > -1)
             {
                 std::cout << Players[CurrentPlayer]->GetPlayerAndMonsterNames()

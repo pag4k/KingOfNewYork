@@ -141,43 +141,44 @@ namespace KingOfNewYork
             {
                 if (DiceSums[Input] > 0)
                 {
+                    Input--;
                     std::cout << "Resolving "
                             << GetDiceFaceString(EDiceFace(Input))
                             << " dice:"
                             << std::endl;
-                    switch (Input + 1)
+                    switch (Input)
                     {
-                        case 1:
+                        case 0:
                             if (ResolveAttack(DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
                             break;
-                        case 2:
+                        case 1:
                             if (ResolveCelebrity(DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
                             break;
-                        case 3:
+                        case 2:
                             if (ResolveDestruction(DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
                             break;
-                        case 4:
+                        case 3:
                             if (ResolveEnergy(DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
                             break;
-                        case 5:
+                        case 4:
                             if (ResolveHeal(DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
                             break;
-                        case 6:
+                        case 5:
                             if (ResolveOuch(DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
@@ -494,12 +495,13 @@ namespace KingOfNewYork
     {
         assert(Borough != nullptr);
         bool bAllEmptyStack = true;
+        int MinimumDurability = MAXIMUM_TILE_DURABILITY;
         for (std::unique_ptr<FTileStack> &TileStack : Borough->TileStacks)
         {
-            if (!TileStack->IsEmpty())
+            if (!TileStack->IsEmpty() && TileStack->GetTopTileInfo()->GetDurability() < MinimumDurability)
             {
                 bAllEmptyStack = false;
-                break;
+                MinimumDurability = TileStack->GetTopTileInfo()->GetDurability();
             }
         }
         if (bAllEmptyStack)
@@ -508,10 +510,71 @@ namespace KingOfNewYork
                       << std::endl;
             return true;
         }
+        if (MinimumDurability > NumberOfDice)
+        {
+            std::cout << "You only have "
+                      << NumberOfDice
+                      << "dice left and the weakest building/unit has "
+                      << MinimumDurability
+                      << " durability. You cannot do anything."
+                      << std::endl;
+            return true;
+        }
+        int SelectedStack = -1;
+        do {
+            std::cout << "The following buildings/units are in your borough. Select the number of the one you want to destruct (you have "
+                      << NumberOfDice
+                      << " left):"
+                      << std::endl;
+            for (int i = 0; i < Borough->TileStacks.size(); ++i)
+            {
+                std::cout << (i + 1)
+                          << ". "
+                          << (Borough->TileStacks[i]->IsEmpty()
+                             ? "Tile stack is empty"
+                             : Borough->TileStacks[i]->GetTopTileInfo()->GetTileInfo())
+                          << "."
+                          << std::endl;
+            }
+            std::cout << ">";
+            int Input = InputSingleDigit() - 1;
+            if (0 <= Input && Input <= Borough->TileStacks.size() - 1)
+            {
+                if (Borough->TileStacks[Input]->IsEmpty())
+                {
+                    std::cout << "Tile stack is empty. Please try again."
+                              << std::endl;
+                }
+                else{
+                    if (Borough->TileStacks[Input]->GetTopTileInfo()->GetDurability() <= NumberOfDice)
+                    {
+                        SelectedStack = Input;
+                    }
+                    else
+                    {
+                        std::cout << "You need "
+                                  << Borough->TileStacks[Input]->GetTopTileInfo()->GetDurability()
+                                  << " destruction dice, but you only have "
+                                  << NumberOfDice
+                                  << ". Please try again."
+                                  << std::endl;
+                    }
+                }
+                
+            }
+            else
+            {
+                std::cout << "Invalid input. Please try again."
+                          << std::endl;
+            }
+        } while (SelectedStack == -1);
 
-        std::cout << "The following buildings/units are in your borough. Select the number of the one you want to destruct:"
-                  << std::endl;
-        
+        int NewNumberOfDice = NumberOfDice - Borough->TileStacks[SelectedStack]->GetTopTileInfo()->GetDurability();
+        Borough->TileStacks[SelectedStack]->DestructTopTile();
+        if (NewNumberOfDice > 0)
+        {
+            ResolveDestruction(NewNumberOfDice);
+        }
         return true;
     }
 

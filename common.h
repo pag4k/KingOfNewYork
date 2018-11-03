@@ -77,6 +77,7 @@ namespace KingOfNewYork
     };
     const std::string GetHowToPlayString(const EHowToPlay HowToPlay);
 
+    const int MAXIMUM_TILE_DURABILITY = 4;
     enum class ETileType
     {
         None = -1,

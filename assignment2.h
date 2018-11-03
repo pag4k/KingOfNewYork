@@ -196,7 +196,6 @@ namespace KingOfNewYork
                 }
                 case 3:
                 {
-                    Game->ShuffleAndPrintTileStack();
                     break;
                 }
             }

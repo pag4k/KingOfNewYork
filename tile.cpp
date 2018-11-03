@@ -71,9 +71,9 @@ namespace KingOfNewYork
     std::unique_ptr<FTile> FTileStack::Draw()
     {
         assert(!IsEmpty());
-        std::unique_ptr<FTile> Card = std::move(TileStack.back());
+        std::unique_ptr<FTile> Tile = std::move(TileStack.back());
         TileStack.pop_back();
-        return nullptr;
+        return Tile;
     }
 
     void FTileStack::Print() const
@@ -92,15 +92,27 @@ namespace KingOfNewYork
         }
     }
 
-    std::string FTileStack::GetTopCardInfo()
+    std::unique_ptr<FTile> &FTileStack::GetTopTileInfo()
     {
-        if (TileStack.empty())
+        assert(TileStack.empty() == false);
+        return TileStack.back();
+    }
+
+    void FTileStack::AddTileOnTop(std::unique_ptr<FTile> Tile)
+    {
+        assert(Tile != nullptr);
+        TileStack.push_back(std::move(Tile));
+    }
+
+    void FTileStack::DestructTopTile()
+    {
+        if (GetTopTileInfo()->IsBuilding())
         {
-            return "";
+            GetTopTileInfo()->Flip();
         }
         else
         {
-            return TileStack.front()->GetTileInfo();
+            TileStack.pop_back();
         }
     }
 
