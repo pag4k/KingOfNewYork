@@ -11,7 +11,12 @@ namespace KingOfNewYork
     //This will be used as the elements for the vertices of the map graph.
     struct FBorough
     {
-        FBorough() = default;
+        FBorough(): bStartingLocation(false), bInManhattan(false) {
+            for (int i = 0; i < TILESTACK_IN_BOROUGH_COUNT; ++i)
+            {
+                TileStacks.push_back(std::make_unique<FTileStack>());
+            }
+        };
         FBorough(const FBorough& Other) = delete;
         //~FBorough() { TileStacks.clear(); }
         std::string Name;

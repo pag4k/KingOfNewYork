@@ -49,7 +49,7 @@ namespace KingOfNewYork
 
     std::string GetFileName(const std::string &FullPath)
     {
-        int Position = FullPath.length() - 1;
+        int Position = (int)FullPath.length() - 1;
         while (FullPath[Position] != '/')
         {
             --Position;
@@ -58,7 +58,7 @@ namespace KingOfNewYork
                 return "";
             }
         }
-        return FullPath.substr(Position + 1, FullPath.length() - Position);
+        return FullPath.substr(static_cast<unsigned long>(Position + 1), FullPath.length() - Position);
     }
 
     const std::vector<std::string> GetMapFiles(const std::string &Folder)

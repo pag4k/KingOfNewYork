@@ -4,14 +4,14 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
-#include <assert.h>
+#include <cassert>
 #include "common.h"
 
 namespace KingOfNewYork
 {
     const std::string GetDiceFaceString(const EDiceFace DiceFace)
     {
-        std::string FaceName = "";
+        std::string FaceName;
         switch (DiceFace)
         {
         case EDiceFace::Attack:
@@ -33,13 +33,13 @@ namespace KingOfNewYork
             FaceName = "Ouch";
             break;
         }
-        assert(FaceName != "");
+        assert(!FaceName.empty());
         return FaceName;
     }
 
     const std::string GetMonsterNameString(const EMonsterName MonsterName)
     {
-        std::string MonsterNameString = "";
+        std::string MonsterNameString;
         switch (MonsterName)
         {
         case EMonsterName::CaptainFish:
@@ -61,13 +61,13 @@ namespace KingOfNewYork
             MonsterNameString = "Sherrif";
             break;
         }
-        assert(MonsterNameString != "");
+        assert(!MonsterNameString.empty());
         return MonsterNameString;
     }
 
     const std::string GetTokenTypeString(const ETokenType TokenType)
     {
-        std::string TokenTypeString = "";
+        std::string TokenTypeString;
         switch (TokenType)
         {
         case ETokenType::Carapace:
@@ -83,13 +83,13 @@ namespace KingOfNewYork
             TokenTypeString = "Web";
             break;
         }
-        assert(TokenTypeString != "");
+        assert(!TokenTypeString.empty());
         return TokenTypeString;
     }
 
     const std::string GetHowToPlayString(const EHowToPlay HowToPlay)
     {
-        std::string HowToPlayString = "";
+        std::string HowToPlayString;
         switch (HowToPlay)
         {
         case EHowToPlay::Discard:
@@ -99,13 +99,13 @@ namespace KingOfNewYork
             HowToPlayString = "Keep";
             break;
         }
-        assert(HowToPlayString != "");
+        assert(!HowToPlayString.empty());
         return HowToPlayString;
     }
 
     const std::string GetTileTypeString(const ETileType TileType)
     {
-        std::string FileTypeString = "";
+        std::string FileTypeString;
         switch (TileType)
         {
         case ETileType::HighRise:
@@ -127,14 +127,14 @@ namespace KingOfNewYork
             FileTypeString = "Infantry";
             break;
         }
-        assert(FileTypeString != "");
+        assert(!FileTypeString.empty());
         return FileTypeString;
     }
 
     const std::string GetMonsterResourceString(
         const EMonsterResource MonsterResource)
     {
-        std::string MonsterResourceString = "";
+        std::string MonsterResourceString;
         switch (MonsterResource)
         {
         case EMonsterResource::EnergyCube:
@@ -147,7 +147,7 @@ namespace KingOfNewYork
             MonsterResourceString = "Victory Point";
             break;
         }
-        assert(MonsterResourceString != "");
+        assert(!MonsterResourceString.empty());
         return MonsterResourceString;
     };
 }

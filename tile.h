@@ -34,10 +34,10 @@ namespace KingOfNewYork
     class FTileStack
     {
     public:
-        FTileStack() {}
-        FTileStack(const std::string FileName);
+        FTileStack() = default;
+        explicit FTileStack(const std::string FileName);
         void Shuffle();
-        const int Size() const { return TileStack.size(); }
+        const unsigned long Size() const { return TileStack.size(); }
         const bool IsEmpty() const { return TileStack.empty(); }
         std::unique_ptr<FTile> Draw();
         void Print() const;

@@ -4,7 +4,7 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
-#include <assert.h>
+#include <cassert>
 #include <iostream>
 
 #include "game.h"
@@ -90,12 +90,12 @@ namespace KingOfNewYork
                     << std::endl;
 
         std::cout << "Available cards:" << std::endl;
-        for (int i = 0; i < MAXIMUM_AVAILABLE_CARDS; ++i)
+        for (std::unique_ptr<FCard> &Card : AvailableCards)
         {
-            if (AvailableCards[i])
+            if (Card)
             {
                 std::cout << "\t-"
-                        << AvailableCards[i]->GetName()
+                        << Card->GetName()
                         << std::endl;
             }
             
@@ -129,11 +129,11 @@ namespace KingOfNewYork
 
         FTileStack TileStack = FTileStack("tiles.txt");
         TileStack.Shuffle();
-        //DistributeTiles(TileStack);
+        DistributeTiles(TileStack);
 
-        for (int i = 0; i < TOKEN_TYPE_COUNT; ++i)
+        for (int &Token : TokenInventory)
         {
-            TokenInventory[i] = STARTING_TOKENS;
+            Token = STARTING_TOKENS;
         }
 
         EnergyCubes = MAXIMUM_ENERGY_CUBES;
@@ -256,13 +256,13 @@ namespace KingOfNewYork
     {
         assert(MINIMUM_PLAYER <= PlayerCount &&
                PlayerCount <= MAXIMUM_PLAYER);
-        Players.reserve(PlayerCount);
+        Players.reserve(static_cast<unsigned long>(PlayerCount));
         std::vector<std::string> PlayerNames;
-        PlayerNames.reserve(PlayerCount);
+        PlayerNames.reserve(static_cast<unsigned long>(PlayerCount));
         bool bAvailableMonsters[MONSTER_COUNT];
-        for (int i = 0; i < MONSTER_COUNT; ++i)
+        for (bool &bAvailableMonster : bAvailableMonsters)
         {
-            bAvailableMonsters[i] = true;
+            bAvailableMonster = true;
         }
 
         for (int i = 0; i < PlayerCount; ++i)

@@ -16,11 +16,11 @@ namespace KingOfNewYork
     class FMap
     {
     public:
-        FMap() {}
-        FMap(const std::string FileName);
-        bool LoadMap(const std::string FileName);
-        bool SaveMap(const std::string FileName);
-        const int BoroughCount() const { return Graph.ElementCount(); }
+        FMap(): bIsValid(false) {}
+        explicit FMap(const std::string &FileName);
+        bool LoadMap(const std::string &FileName);
+        bool SaveMap(const std::string &FileName);
+        const unsigned int BoroughCount() const { return (unsigned int)Graph.ElementCount(); }
         std::shared_ptr<FBorough> GetBorough(const int n) { return Graph.GetElement(n); }
         const std::vector<int> GetNeighbourgs(const int n) const;
         const bool IsValid() const { return bIsValid; }

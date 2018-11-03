@@ -16,8 +16,8 @@ namespace KingOfNewYork
     {
         if (CurrentEdge)
         {
-            OutOriginVertex = CurrentEdge.OriginVertex;
-            OutDestinationVertex = CurrentEdge.DestinationVertex;
+            OutOriginVertex = CurrentEdge->Origin;
+            OutDestinationVertex = CurrentEdge->Destination;
         }
         else
         {
@@ -44,7 +44,7 @@ namespace KingOfNewYork
     {
         if (OldEdge && NewEdge)
         {
-            OldEdge->Name = NewEdge->Name;
+            //OldEdge->Name = NewEdge->Name;
         }
     }
 

@@ -1,13 +1,15 @@
 #include <fstream>
 #include <iostream>
-#include <assert.h>
+#include <cassert>
 #include <algorithm>
+#include <random>
+#include <chrono>
 #include "card.h"
 #include "helper.h"
 
 namespace KingOfNewYork
 {
-    FDeck::FDeck(const std::string FileName)
+    FDeck::FDeck(const std::string &FileName)
     {
         GenerateFromFile(FileName);
     }
@@ -35,10 +37,11 @@ namespace KingOfNewYork
 
     void FDeck::Shuffle()
     {
-        std::random_shuffle(Deck.begin(), Deck.end());
+        std::shuffle(Deck.begin(), Deck.end(), std::default_random_engine(
+                static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count())));
     }
 
-    void FDeck::GenerateFromFile(std::string FileName)
+    void FDeck::GenerateFromFile(const std::string &FileName)
     {
         std::ifstream InputStream;
         InputStream.open(FileName);
@@ -51,20 +54,20 @@ namespace KingOfNewYork
 
         std::string Text;
         int Id = -1;
-        std::string Name = "";
+        std::string Name;
         EHowToPlay HowToPlay = EHowToPlay::None;
         int EnergyCost = -1;
-        std::string Effect = "";
+        std::string Effect;
 
         while (!std::getline(InputStream, Text).eof())
         {
             if (Text.substr(0,3) == "Id:")
             {
                 if (Id != -1 &&
-                    Name != "" &&
+                    !Name.empty() &&
                     HowToPlay != EHowToPlay::None &&
                     EnergyCost != -1 &&
-                    Effect != "")
+                    !Effect.empty())
                 {
                     Deck.push_back(
                         std::make_unique<FCard>(
@@ -129,7 +132,7 @@ namespace KingOfNewYork
             {
                 Effect = Text.substr(7, Text.length() - 7);
             }
-            else if (Text == "")
+            else if (Text.empty())
             {
                 continue;
             }
@@ -147,10 +150,10 @@ namespace KingOfNewYork
         }
 
         if (Id != -1 &&
-            Name != "" &&
+            !Name.empty() &&
             HowToPlay != EHowToPlay::None &&
             EnergyCost != -1 &&
-            Effect != "")
+            !Effect.empty())
         {
             Deck.push_back(
                 std::make_unique<FCard>(

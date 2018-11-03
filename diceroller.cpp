@@ -5,23 +5,22 @@
 // ----------------------------------------------------------------------------
 
 #include <iostream>
-#include <assert.h>
+#include <cassert>
 #include <cstdlib>
 #include <ctime>
 
 #include "diceroller.h"
-#include "common.h"
 
 namespace KingOfNewYork
 {
     FDiceRoller::FDiceRoller()
     {
         //Use current time as seed for the random generator.
-        std::srand(std::time(nullptr));
+        std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-        for (int i = 0; i < FACE_ON_DICE_COUNT; i++)
+        for (int &Face : RollHistory)
         {
-            RollHistory[i] = 0;
+            Face = 0;
         }
     }
 
@@ -81,7 +80,7 @@ namespace KingOfNewYork
             
             std::string input;
             std::getline(std::cin, input);
-            if (input == "")
+            if (input.empty())
             {
                 std::cout << "Ending rolling phase..." << std::endl;
                 break;

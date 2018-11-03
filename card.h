@@ -2,6 +2,7 @@
 #define CARD_H
 
 #include <string>
+#include <utility>
 #include <vector>
 #include <memory>
 #include "common.h"
@@ -18,12 +19,12 @@ namespace KingOfNewYork
             HowToPlay(EHowToPlay::None),
             EnergyCost(-1),
             Effect("") {}
-        FCard(int Id, std::string Name, EHowToPlay HowToPlay, int EnergyCost, std::string Effect) :
+        FCard(int Id, std::string &Name, EHowToPlay HowToPlay, int EnergyCost, std::string &Effect) :
             Id(Id),
-            Name(Name),
+            Name(std::move(Name)),
             HowToPlay(HowToPlay),
             EnergyCost(EnergyCost),
-            Effect(Effect) {}
+            Effect(std::move(Effect)) {}
         const int GetId() const { return Id; }
         const std::string GetName() const { return Name; };
         const EHowToPlay GetHowToPlay() const { return HowToPlay; };
@@ -41,15 +42,15 @@ namespace KingOfNewYork
     //Note: The cards in it are unique_ptr and that they are handled as such.
     class FDeck{
     public:
-        FDeck() {}
-        FDeck(const std::string FileName);
+        FDeck() = default {}
+        explicit FDeck(const std::string &FileName);
         void Shuffle();
-        const int Size() const { return Deck.size(); };
+        const unsigned int Size() const { return (unsigned int)Deck.size(); };
         const bool IsEmpty() const { return Deck.empty(); };
         std::unique_ptr<FCard> Draw();
         void Print() const;
     private:
-        void GenerateFromFile(const std::string FileName);
+        void GenerateFromFile(const std::string &FileName);
         std::vector<std::unique_ptr<FCard>> Deck;
     };
 }

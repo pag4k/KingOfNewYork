@@ -7,7 +7,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include <assert.h>
+#include <cassert>
 #include <vector>
 #include <set>
 #include <string>
@@ -23,8 +23,8 @@ namespace KingOfNewYork
         struct FEdge;
         struct FVertex;
     public:
-        FGraph() {}
-        
+        FGraph() = default;
+
         ~FGraph()
         {
             for (FEdge *Edge : EdgeVector)
@@ -39,7 +39,7 @@ namespace KingOfNewYork
             VertexVector.clear();
         }
 
-        const int ElementCount() const { return VertexVector.size(); }
+        const unsigned long ElementCount() const { return VertexVector.size(); }
 
         std::shared_ptr<T> GetElement(int n)
         {
@@ -73,17 +73,17 @@ namespace KingOfNewYork
         }
 
         const bool AreAdjacent(
-            const std::string Name1,
-            const std::string Name2) const
+            const std::string &Name1,
+            const std::string &Name2) const
         {
             return AreAdjacent(
                 GetVertexWithName(Name1),
                 GetVertexWithName(Name2));
         }
 
-        std::shared_ptr<T> InsertVertex(const std::string VertexName)
+        std::shared_ptr<T> InsertVertex(const std::string &VertexName)
         {
-            if (VertexName == "")
+            if (VertexName.empty())
             {
                 std::cout << "Error: You need to provide a non-empy string."
                           << std::endl;
@@ -100,15 +100,15 @@ namespace KingOfNewYork
                     return nullptr;
                 }
             }
-            FVertex *NewVertex = new FVertex;
+            auto *NewVertex = new FVertex;
             NewVertex->Name = VertexName;
             FVertex *InsertedVertex = InsertVertex(NewVertex);
             return NewVertex->Element;
         }
 
-        void RemoveVertex(const std::string VertexName)
+        void RemoveVertex(const std::string &VertexName)
         {
-            if (VertexName == "")
+            if (VertexName.empty())
             {
                 std::cout << "Error: You need to provide a non-empy string."
                           << std::endl;
@@ -118,16 +118,16 @@ namespace KingOfNewYork
         }
 
         void InsertEdge(
-            const std::string OriginName,
-            const std::string DestinationName)
+            const std::string &OriginName,
+            const std::string &DestinationName)
         {
-            if (OriginName == "" || DestinationName == "")
+            if (OriginName.empty() || DestinationName.empty())
             {
                 std::cout << "Error: You need to provide two non-empy strings."
                           << std::endl;
                 return;
             }
-            FEdge *NewEdge = new FEdge;
+            auto *NewEdge = new FEdge;
             InsertEdge(
                 GetVertexWithName(OriginName),
                 GetVertexWithName(DestinationName),

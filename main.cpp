@@ -6,7 +6,6 @@
 
 #include <iostream>
 #include "assignment2.h"
-#include "helper.h"
 
 using namespace KingOfNewYork;
 

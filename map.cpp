@@ -11,7 +11,7 @@
 
 namespace KingOfNewYork
 {
-    FMap::FMap(const std::string FileName)
+    FMap::FMap(const std::string &FileName)
     {
         bIsValid = LoadMap(FileName);
         if (bIsValid)
@@ -24,7 +24,7 @@ namespace KingOfNewYork
         }
     }
 
-    bool FMap::LoadMap(const std::string FileName)
+    bool FMap::LoadMap(const std::string &FileName)
     {
         std::ifstream InputStream;
         InputStream.open(FileName);
@@ -44,7 +44,7 @@ namespace KingOfNewYork
             {
                 while (!std::getline(InputStream, Text).eof())
                 {
-                    if (Text == "")
+                    if (Text.empty())
                     {
                         break;
                     }
@@ -76,7 +76,7 @@ namespace KingOfNewYork
             {
                 while (!std::getline(InputStream, Text).eof())
                 {
-                    if (Text == "")
+                    if (Text.empty())
                     {
                         break;
                     }
@@ -120,7 +120,7 @@ namespace KingOfNewYork
         return true;
     }
 
-    bool FMap::SaveMap(const std::string FileName)
+    bool FMap::SaveMap(const std::string &FileName)
     {
         std::ofstream OuputStream;
         OuputStream.open(FileName);

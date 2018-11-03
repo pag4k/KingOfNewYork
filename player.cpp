@@ -5,7 +5,6 @@
 // ----------------------------------------------------------------------------
 
 #include <iostream>
-#include <assert.h>
 
 #include "player.h"
 #include "helper.h"
@@ -25,9 +24,10 @@ namespace KingOfNewYork
 
         DiceRoller = FDiceRoller();
 
-        for (int i = 0; i < TOKEN_TYPE_COUNT; ++i)
+
+        for (int &Token : TokenInventory)
         {
-            TokenInventory[i] = 0;
+            Token = 0;
         }
 
         EnergyCubes = 0;
@@ -111,9 +111,8 @@ namespace KingOfNewYork
     {
         assert(!CurrentDiceResult.empty());
         int DiceSums[FACE_ON_DICE_COUNT];
-        for (int i = 0; i < FACE_ON_DICE_COUNT; ++i)
-        {
-            DiceSums[i] = 0;
+        for (int &DiceSum : DiceSums) {
+            DiceSum = 0;
         }
         for (EDiceFace DiceFace: CurrentDiceResult)
         {
@@ -136,12 +135,11 @@ namespace KingOfNewYork
             std::cout << "Enter the number of the action you want to resolve:"
                     << std::endl
                     << ">";
-            int Input = InputSingleDigit();
-            if (0 <= Input && Input <= FACE_ON_DICE_COUNT)
+            int Input = InputSingleDigit()-1;
+            if (0 <= Input && Input <= FACE_ON_DICE_COUNT-1)
             {
                 if (DiceSums[Input] > 0)
                 {
-                    Input--;
                     std::cout << "Resolving "
                             << GetDiceFaceString(EDiceFace(Input))
                             << " dice:"
@@ -184,11 +182,12 @@ namespace KingOfNewYork
                                 DiceSums[Input] = 0;
                             }
                             break;
+                        default:
+                            assert(true);
                     }
                     Done = true;
-                    for (int i = 0; i < FACE_ON_DICE_COUNT; ++i)
-                    {
-                        if (DiceSums[i] > 0)
+                    for (int &DiceSum : DiceSums) {
+                        if (DiceSum > 0)
                         {
                             Done = false;
                             break;
@@ -244,12 +243,11 @@ namespace KingOfNewYork
         DiceRoller.PrintRollHistory();
 
         std::cout << "Number of cards: " << Cards.size() << std::endl;
-        for (int i = 0; i < Cards.size(); ++i)
-        {
-            if (Cards[i])
+        for (const std::unique_ptr<FCard> &Card : Cards) {
+            if (Card)
             {
                 std::cout << "\t-"
-                        << Cards[i]->GetName()
+                        << Card->GetName()
                         << std::endl;
             }
         }
@@ -295,7 +293,7 @@ namespace KingOfNewYork
 
     void FPlayer::EnterPlayerName(std::vector<std::string> &PlayerNames)
     {
-        while (PlayerName == "")
+        while (PlayerName.empty())
         {
             std::cout   << "Player "
                         << PlayerNames.size() + 1
@@ -303,15 +301,14 @@ namespace KingOfNewYork
             std::cout << ">";
             bool bError = false;
             const std::string Input = InputString();
-            if (Input == "")
+            if (Input.empty())
             {
                 std::cout << "Invalid input, please try again."
                           << std::endl
                           << std::endl;
-                bError = true;
                 continue;
             }
-            for (std::string Name: PlayerNames)
+            for (const std::string &Name: PlayerNames)
             {
                 if (Input == Name)
                 {
@@ -514,7 +511,7 @@ namespace KingOfNewYork
         {
             std::cout << "You only have "
                       << NumberOfDice
-                      << "dice left and the weakest building/unit has "
+                      << " dice left and the weakest building/unit has "
                       << MinimumDurability
                       << " durability. You cannot do anything."
                       << std::endl;

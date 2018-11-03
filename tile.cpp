@@ -4,10 +4,12 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
-#include <assert.h>
+#include <cassert>
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <random>
+#include <chrono>
 #include "tile.h"
 #include "helper.h"
 
@@ -48,6 +50,8 @@ namespace KingOfNewYork
         case 3:
             TileType = ETileType::Tank;
             break;
+        default:
+            assert(true);
         }
         Reward = Durability;
         Durability++;
@@ -65,7 +69,8 @@ namespace KingOfNewYork
 
     void FTileStack::Shuffle()
     {
-        std::random_shuffle(TileStack.begin(), TileStack.end());
+        std::shuffle(TileStack.begin(), TileStack.end(), std::default_random_engine(
+                static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count())));
     }
 
     std::unique_ptr<FTile> FTileStack::Draw()
@@ -94,7 +99,7 @@ namespace KingOfNewYork
 
     std::unique_ptr<FTile> &FTileStack::GetTopTileInfo()
     {
-        assert(TileStack.empty() == false);
+        assert(!TileStack.empty());
         return TileStack.back();
     }
 
@@ -193,7 +198,7 @@ namespace KingOfNewYork
             {
                 Reward = ParseIntFromChar(Text[7]);
             }
-            else if (Text == "")
+            else if (Text.empty())
             {
                 continue;
             }
