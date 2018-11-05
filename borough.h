@@ -1,3 +1,9 @@
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 2
+// Due date: November 4, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
+
 #ifndef BOROUGH_H
 #define BOROUGH_H
 
@@ -14,7 +20,6 @@ namespace KingOfNewYork
     public:
         FBorough();
         FBorough(const FBorough& Other) = delete;
-        //~FBorough() { TileStacks.clear(); }
         const std::string &GetName() const { return Name; }
         void SetName(const std::string &Name) { this->Name = Name; }
         const bool IsStartingLocation() const { return bStartingLocation; }

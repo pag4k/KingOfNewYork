@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 1
-// Due date: October 12, 2018
+// COMP345 Assignment 2
+// Due date: November 4, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -24,13 +24,10 @@ namespace KingOfNewYork
   {
   public:
       FGame();
-      ~FGame();
-      const bool IsValid() const { return bIsValid; }
-      void Print() const;
-      void ShuffleAndPrintDeck();
       std::unique_ptr<FCard> GetCard(const int Index);
       std::vector<std::shared_ptr<FPlayer>> &GetPlayers() { return Players; }
       std::vector<std::unique_ptr<FCard>> &GetAvailableCards() { return AvailableCards; }
+      void Print() const;
       void DistributeCard();
       void CheckDeadPlayer();
       void CleanDeadPlayer(std::shared_ptr<FPlayer> DeadPlayer);

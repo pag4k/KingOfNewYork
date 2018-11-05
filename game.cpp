@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 1
-// Due date: October 12, 2018
+// COMP345 Assignment 2
+// Due date: November 4, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -26,13 +26,6 @@ namespace KingOfNewYork
                       << std::endl;
         }
         MainPhase();
-    }
-
-    FGame::~FGame()
-    {
-        Players.clear();
-        Superstar = nullptr;
-        StatusOfLiberty = nullptr;
     }
 
     void FGame::Print() const
@@ -100,12 +93,6 @@ namespace KingOfNewYork
             }
             
         }
-    }
-
-    void FGame::ShuffleAndPrintDeck()
-    {
-        Deck.Shuffle();
-        Deck.Print();
     }
 
     std::unique_ptr<FCard> FGame::GetCard(const int Index) {
@@ -235,8 +222,7 @@ namespace KingOfNewYork
                 }
                 else
                 {
-                    //TODO: Not sure if I need that. I think it should force the
-                    //cleaning of the memory since at that point, it is the only pointer to map.
+                    //TODO: Not sure if I need that. I think it should force the cleaning of the memory since at that point, it is the only pointer to map.
                     Map.reset();
                     Map = nullptr;
                 }
@@ -254,7 +240,7 @@ namespace KingOfNewYork
     const int FGame::GetPlayerCount()
     {
         bool isValid = false;
-        int PlayerCount;
+        int PlayerCount = 0;
         while (!isValid)
         {
             std::cout << std::endl

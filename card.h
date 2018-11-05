@@ -1,3 +1,9 @@
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 2
+// Due date: November 4, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
+
 #ifndef CARD_H
 #define CARD_H
 
@@ -25,7 +31,6 @@ namespace KingOfNewYork
             HowToPlay(HowToPlay),
             EnergyCost(EnergyCost),
             Effect(std::move(Effect)) {}
-        const int GetId() const { return Id; }
         const std::string GetName() const { return Name; };
         const EHowToPlay GetHowToPlay() const { return HowToPlay; };
         const int GetEnergyCost() const { return EnergyCost; };

@@ -1,12 +1,11 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 1
-// Due date: October 12, 2018
+// COMP345 Assignment 2
+// Due date: November 4, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
 #include <iostream>
 #include <cassert>
-#include <cstdlib>
 #include <ctime>
 
 #include "diceroller.h"
@@ -105,18 +104,5 @@ namespace KingOfNewYork
         assert(0 <= Roll && Roll <= FaceNumber - 1);
         RollHistory[Roll]++;
         return EDiceFace(Roll);
-    }
-
-    void FDiceRoller::PrintRollHistory() const
-    {
-        std::cout << "### Roll History ###" << std::endl;
-        for (int i = 0; i < FACE_ON_DICE_COUNT; i++)
-        {
-            std::cout << GetDiceFaceString(EDiceFace(i))
-                      << ": "
-                      << RollHistory[i]
-                      << std::endl;
-        }
-        std::cout << "####################" << std::endl;
     }
 }

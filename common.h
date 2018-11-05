@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 1
-// Due date: October 12, 2018
+// COMP345 Assignment 2
+// Due date: November 4, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -19,7 +19,6 @@ namespace KingOfNewYork
 
     const int MAXIMUM_PLAYERS_IN_BOROUGH = 2;
 
-    //TODO: I think part of the code assumes it is 2.
     const int MAXIMUM_MONSTERS_IN_CENTER = 1;
     const int LEVEL_IN_CENTER_COUNT = 3;
     const std::string CENTER_LEVEL_NAMES[LEVEL_IN_CENTER_COUNT+1] =
@@ -101,7 +100,6 @@ namespace KingOfNewYork
     };
     const std::string GetTileTypeString(const ETileType TileType);
 
-    int const MONSTER_RESOURCE_COUNT = 3;
     int const MAXIMUM_ENERGY_CUBES = 40; //TODO: Get the right amount.
     int const MAXIMUM_LIFE_POINTS = 10;
     int const VICTORY_POINTS_TO_WIN_COUNT = 20;

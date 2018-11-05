@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 1
-// Due date: October 12, 2018
+// COMP345 Assignment 2
+// Due date: November 4, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -79,22 +79,6 @@ namespace KingOfNewYork
         std::unique_ptr<FTile> Tile = std::move(TileStack.back());
         TileStack.pop_back();
         return Tile;
-    }
-
-    void FTileStack::Print() const
-    {
-        for (const auto &Tile : TileStack)
-        {
-            std::cout << "Type: "
-                      << GetTileTypeString(Tile->GetTileType())
-                      << std::endl
-                      << "Durability: "
-                      << Tile->GetDurability()
-                      << std::endl
-                      << "Reward: "
-                      << Tile->GetReward()
-                      << std::endl;
-        }
     }
 
     std::unique_ptr<FTile> &FTileStack::GetTopTileInfo()

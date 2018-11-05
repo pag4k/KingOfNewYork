@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 1
-// Due date: October 12, 2018
+// COMP345 Assignment 2
+// Due date: November 4, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 #include "game.h"
 #include "player.h"
 #include "helper.h"
-#include "card.h"
 
 namespace KingOfNewYork
 {
@@ -33,7 +32,7 @@ namespace KingOfNewYork
         }
 
         bAlive = true;
-        EnergyCubes = 20;
+        EnergyCubes = 0;
         LifePoints = MAXIMUM_LIFE_POINTS;
         VictoryPoints = 0;
 
@@ -66,14 +65,16 @@ namespace KingOfNewYork
                       << std::endl;
         }
 
-        std::cout << "Roll dice phase. Press enter to start:"
+        std::cout << GetPlayerAndMonsterNames()
+                  << ": Roll dice phase. Press enter to start:"
                   << std::endl;
 
         std::cin.get();
 
         RollDice(BLACK_DICE_COUNT, MAXIMUM_ROLL);
 
-        std::cout << "Resolve dice phase. Press enter to start:"
+        std::cout << GetPlayerAndMonsterNames()
+                  << ": Resolve dice phase. Press enter to start:"
                   << std::endl;
 
         std::cin.get();
@@ -86,21 +87,24 @@ namespace KingOfNewYork
             return;
         }
 
-        std::cout << "Move phase. Press enter to start:"
+        std::cout << GetPlayerAndMonsterNames()
+                  << ": Move phase. Press enter to start:"
                   << std::endl;
 
         std::cin.get();
 
         Move(Map);
 
-        std::cout << "Buy card phase. Press enter to start:"
+        std::cout << GetPlayerAndMonsterNames()
+                  << ": Buy card phase. Press enter to start:"
                   << std::endl;
 
         std::cin.get();
 
         BuyCards(Game);
 
-        std::cout << "Turn over. Press enter to end."
+        std::cout << GetPlayerAndMonsterNames()
+                  << ": Turn over. Press enter to end."
                   << std::endl;
 
         std::cin.get();
@@ -339,15 +343,11 @@ namespace KingOfNewYork
 
     void FPlayer::BuyCards(FGame &Game)
     {
-        std::cout << "Please enter the number of the card you want to buy (or 0 to stop buying or 9 to spend "
-                  << ENERGY_CUBE_FOR_NEW_CARDS_COUNT
-                  << " Energy Cubes to discard the three available cards and reveal three new ones."
-                  << std::endl;
         int Input;
         do {
             std::cout << "Please enter the number of the card you want to buy (or 0 to stop buying or 9 to spend "
                       << ENERGY_CUBE_FOR_NEW_CARDS_COUNT
-                      << " Energy Cubes to discard the three available cards and reveal three new ones. You currently have "
+                      << " Energy Cubes to discard the 3 available cards and reveal new ones). You currently have "
                       << EnergyCubes
                       << " Energy Cubes."
                       << std::endl;
@@ -574,20 +574,31 @@ namespace KingOfNewYork
                 std::shared_ptr<FBorough> CurrentBorough = Map.GetBorough(i);
                 const std::vector<std::shared_ptr<FPlayer>> &CurrentPlayers =
                         CurrentBorough->GetConstPlayers();
-                //TODO: This assumes that MAXIMUM_PLAYERS_IN_BOROUGH = 2.
-                if (CurrentPlayers.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
+                const int Offset = CurrentBorough == Borough ? 1 : 0;
+                if (CurrentPlayers.size() - Offset < MAXIMUM_PLAYERS_IN_BOROUGH &&
                         (!bOnlyStartingLocation || CurrentBorough->IsStartingLocation()) &&
                         (!CurrentBorough->IsCenter() || bIncludeCenter))
                 {
                     std::cout << (i + 1)
                               << ". "
-                              << CurrentBorough->GetName()
-                              << (CurrentPlayers.size() == 1 ?
-                                  " (" +
-                                  GetMonsterNameString(
-                                          CurrentPlayers[0]->GetMonsterName()) +
-                                  " is already there)" : "")
-                              << std::endl;
+                              << CurrentBorough->GetName();
+                    if (CurrentPlayers.size() > 0)
+                    {
+                        std::cout << " (already there: ";
+                        for (int j = 0; j < CurrentPlayers.size(); ++j)
+                        {
+                            if (CurrentPlayers[j] == shared_from_this())
+                            {
+                                std::cout << "you";
+                            }
+                            else
+                            {
+                                std::cout << CurrentPlayers[j]->GetPlayerAndMonsterNames();
+                            }
+                            std::cout << (j + 1 != CurrentPlayers.size() ? ", " : ")");
+                        }
+                    }
+                    std::cout << std::endl;
                 }
             }
             std::cout << ">";
@@ -735,6 +746,8 @@ namespace KingOfNewYork
                     Player->SetCelebrity(false);
                 }
                 SetCelebrity(true);
+                std::cout << "You are now a Celebrity!"
+                          << std::endl;
                 NewVictoryPoints = NumberOfDice -
                                    (DICE_FOR_CELEBRITY_COUNT - 1);
             }
