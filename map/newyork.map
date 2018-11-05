@@ -3,7 +3,7 @@ Bronx,StartingLocation, ,
 Brooklyn,StartingLocation, ,
 Queens,StartingLocation, ,
 StatenIsland,StartingLocation, ,
-Manhattan, ,InManhattan,
+Manhattan, ,Center,
 
 EDGE
 Bronx:Brooklyn,Queens,StatenIsland,Manhattan,

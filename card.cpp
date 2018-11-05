@@ -9,6 +9,15 @@
 
 namespace KingOfNewYork
 {
+    void FCard::Print()
+    {
+        std::cout << "\tName: " << GetName() << std::endl
+                  << "\tHow to Play: "
+                  << GetHowToPlayString(GetHowToPlay()) << std::endl
+                  << "\tEnergy Cost: " << GetEnergyCost() << std::endl
+                  << "\tEffect: " << GetEffect() << std::endl;
+    }
+
     FDeck::FDeck(const std::string &FileName)
     {
         GenerateFromFile(FileName);
@@ -16,22 +25,30 @@ namespace KingOfNewYork
 
     std::unique_ptr<FCard> FDeck::Draw()
     {
-        assert(!IsEmpty());
-        std::unique_ptr<FCard> Card = std::move(Deck.back());
-        Deck.pop_back();
-        return Card;
+        if (IsEmpty())
+        {
+            return nullptr;
+        }
+        else
+        {
+            std::unique_ptr<FCard> Card = std::move(Deck.back());
+            Deck.pop_back();
+            return Card;
+        }
     }
+
+    void FDeck::AddCard(std::unique_ptr<FCard> &Card)
+    {
+        assert(Card);
+        Deck.push_back(std::move(Card));
+    }
+
 
     void FDeck::Print() const
     { 
         for (const auto& Card : Deck)
         {
-            std::cout << "Id: " << Card->GetId() << std::endl
-                      << "Name: " << Card->GetName() << std::endl
-                      << "How to Play: "
-                      << GetHowToPlayString(Card->GetHowToPlay()) << std::endl
-                      << "Energy Cost: " << Card->GetEnergyCost() << std::endl
-                      << "Effect: " << Card->GetEffect() << std::endl;
+
         }
     }
 

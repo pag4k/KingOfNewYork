@@ -59,7 +59,7 @@ namespace KingOfNewYork
 
     const std::string FTile::GetTileInfo()
     {
-        return GetTileTypeString(GetTileType()) + ": Drability: " + std::to_string(GetDurability()) + " Reward: " + std::to_string(GetReward());
+        return GetTileTypeString(GetTileType()) + ": Durability: " + std::to_string(GetDurability()) + " Reward: " + std::to_string(GetReward()) + " " + GetMonsterResourceString(EMonsterResource(static_cast<int>(GetTileType())/2));
     }
 
     FTileStack::FTileStack(const std::string FileName)

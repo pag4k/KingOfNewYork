@@ -5,7 +5,9 @@
 // ----------------------------------------------------------------------------
 
 #include <iostream>
+#include <algorithm>
 
+#include "game.h"
 #include "player.h"
 #include "helper.h"
 #include "card.h"
@@ -21,7 +23,7 @@ namespace KingOfNewYork
         MonsterName = EMonsterName::None;
         SelectMonster(bAvailableMonsters);
         Borough = nullptr;
-
+        LevelInCenter = 0;
         DiceRoller = FDiceRoller();
 
 
@@ -30,7 +32,8 @@ namespace KingOfNewYork
             Token = 0;
         }
 
-        EnergyCubes = 0;
+        bAlive = true;
+        EnergyCubes = 20;
         LifePoints = MAXIMUM_LIFE_POINTS;
         VictoryPoints = 0;
 
@@ -43,11 +46,25 @@ namespace KingOfNewYork
         return GetPlayerName() + "(" + GetMonsterNameString(GetMonsterName()) + ")";
     }
 
-    void FPlayer::TakeTurn(FMap &Map)
+    void FPlayer::TakeTurn(FMap &Map, FGame &Game)
     {
         std::cout << GetPlayerAndMonsterNames()
                   << " turn:"
                   << std::endl;
+
+        PrintLong();
+
+        if (Borough->IsCenter())
+        {
+            std::cout << "Since you are in "
+                      << CENTER_LEVEL_NAMES[LevelInCenter]
+                      << " Manhattan, you earn "
+                      << EarnVictoryPoints(CENTER_VICTORY_POINT_REWARDS[LevelInCenter])
+                      << " and "
+                      << EarnEnergyCubes(CENTER_ENERGY_CUBE_REWARDS[LevelInCenter])
+                      << "."
+                      << std::endl;
+        }
 
         std::cout << "Roll dice phase. Press enter to start:"
                   << std::endl;
@@ -61,7 +78,13 @@ namespace KingOfNewYork
 
         std::cin.get();
 
-        ResolveDice();
+        ResolveDice(Game, Map);
+
+        Game.CheckDeadPlayer();
+        if (!bAlive)
+        {
+            return;
+        }
 
         std::cout << "Move phase. Press enter to start:"
                   << std::endl;
@@ -75,7 +98,7 @@ namespace KingOfNewYork
 
         std::cin.get();
 
-        BuyCards();
+        BuyCards(Game);
 
         std::cout << "Turn over. Press enter to end."
                   << std::endl;
@@ -86,6 +109,21 @@ namespace KingOfNewYork
     void FPlayer::SetCelebrity(const bool bCelebrity)
     {
         this->bCelebrity = bCelebrity;
+    }
+
+    void FPlayer::SetStatueOfLiberty(const bool bStatueOfLiberty) {
+        if (bStatueOfLiberty)
+        {
+            assert(!this->bStatueOfLiberty);
+            this->bStatueOfLiberty = bStatueOfLiberty;
+            VictoryPoints += STATUS_OF_LIBERTY_VICTORY_POINTS;
+        }
+        else
+        {
+            assert(this->bStatueOfLiberty);
+            this->bStatueOfLiberty = bStatueOfLiberty;
+            VictoryPoints -= STATUS_OF_LIBERTY_VICTORY_POINTS;
+        }
     }
 
     void FPlayer::RollDice(const int DiceCount, const int RollCount)
@@ -107,7 +145,7 @@ namespace KingOfNewYork
         return AttackCount;
     }
 
-    void FPlayer::ResolveDice()
+    void FPlayer::ResolveDice(FGame &Game, FMap &Map)
     {
         assert(!CurrentDiceResult.empty());
         int DiceSums[FACE_ON_DICE_COUNT];
@@ -122,6 +160,12 @@ namespace KingOfNewYork
         bool Done = false;
         do
         {
+            Game.CheckDeadPlayer();
+            if (!bAlive)
+            {
+                return;
+            }
+
             std::cout << "### Resolve the dice ###" << std::endl;
             for (int i = 0; i < FACE_ON_DICE_COUNT; ++i)
             {
@@ -147,13 +191,13 @@ namespace KingOfNewYork
                     switch (Input)
                     {
                         case 0:
-                            if (ResolveAttack(DiceSums[Input]))
+                            if (ResolveAttack(Game, Map, DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
                             break;
                         case 1:
-                            if (ResolveCelebrity(DiceSums[Input]))
+                            if (ResolveCelebrity(Game, DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
@@ -177,7 +221,7 @@ namespace KingOfNewYork
                             }
                             break;
                         case 5:
-                            if (ResolveOuch(DiceSums[Input]))
+                            if (ResolveOuch(Game, Map, DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
@@ -212,11 +256,152 @@ namespace KingOfNewYork
 
     void FPlayer::Move(FMap &Map)
     {
+        if (Borough->IsCenter())
+        {
+            std::cout << "Since you were already in Manhattan, you must advance to the next zone up there."
+                      << std::endl;
+            if (LevelInCenter < LEVEL_IN_CENTER_COUNT)
+            {
+                assert(0 < LevelInCenter && LevelInCenter < LEVEL_IN_CENTER_COUNT);
+                LevelInCenter++;
+                std::cout << "You moved from "
+                          << CENTER_LEVEL_NAMES[LevelInCenter-1]
+                          << " Manhattan to "
+                          << CENTER_LEVEL_NAMES[LevelInCenter]
+                          << " Manhattan."
+                          << std::endl;
+            }
+            else
+            {
+                std::cout << "However, since you are in Upper Manhattan, you no longer move during this phase."
+                          << std::endl;
+            }
+        }
+        else
+        {
+            int MonsterInCenterCount = 0;
+            std::shared_ptr<FBorough> CenterBorough = nullptr;
+            for (int i = 0; i < Map.BoroughCount(); ++i) {
+                if (Map.GetBorough(i)->IsCenter()) {
+                    CenterBorough = Map.GetBorough(i);
+                    MonsterInCenterCount = static_cast<int>(CenterBorough->GetConstPlayers().size());
+                    break;
+                }
+            }
+            assert(CenterBorough);
+            if (MonsterInCenterCount == MAXIMUM_MONSTERS_IN_CENTER)
+            {
+                std::string OldBorough = Borough->GetName();
+                std::cout << "Since there is already "
+                          << MAXIMUM_MONSTERS_IN_CENTER
+                          << " Monsters in any zone of Manhattan, you have two options: You can move to any borough that doesn’t already have 2 Monsters in it (except Manhattan), or you can just stay in your borough. Please enter the number of the borough you want to move to:"
+                          << std::endl;
+                SelectBorough(Map, false, false);
+                if (OldBorough == Borough->GetName())
+                {
+                    std::cout << "You stayed in "
+                              << Borough->GetName()
+                              << "."
+                              << std::endl;
+                }
+                else
+                {
+                    std::cout << "You moved from "
+                              << OldBorough
+                              << " to "
+                              << Borough->GetName()
+                              << "."
+                              << std::endl;
+                }
+            }
+            else
+            {
+                std::string OldBorough = Borough->GetName();
+                std::cout << "Since are less than "
+                          << MAXIMUM_MONSTERS_IN_CENTER
+                          << " Monsters in any zone of Manhattan, you must move there."
+                          << "You earn "
+                          << EarnVictoryPoints(ENTER_CENTER_VICTORY_POINT_REWARD)
+                          << " for doing so."
+                          << std::endl;
+                MoveTo(CenterBorough);
+                LevelInCenter = 1;
+                std::cout << "You moved from "
+                          << OldBorough
+                          << " to "
+                          << CENTER_LEVEL_NAMES[LevelInCenter]
+                          << " Manhattan."
+                          << std::endl;
 
+            }
+        }
     }
 
-    void FPlayer::BuyCards()
+    void FPlayer::BuyCards(FGame &Game)
     {
+        std::cout << "Please enter the number of the card you want to buy (or 0 to stop buying or 9 to spend "
+                  << ENERGY_CUBE_FOR_NEW_CARDS_COUNT
+                  << " Energy Cubes to discard the three available cards and reveal three new ones."
+                  << std::endl;
+        int Input;
+        do {
+            std::cout << "Please enter the number of the card you want to buy (or 0 to stop buying or 9 to spend "
+                      << ENERGY_CUBE_FOR_NEW_CARDS_COUNT
+                      << " Energy Cubes to discard the three available cards and reveal three new ones. You currently have "
+                      << EnergyCubes
+                      << " Energy Cubes."
+                      << std::endl;
+            std::vector<std::unique_ptr<FCard>> &AvailableCards = Game.GetAvailableCards();
+            for (int i = 0; i < AvailableCards.size(); ++i)
+            {
+                std::cout << (i+1);
+                AvailableCards[i]->Print();
+            }
+            std::cout << ">";
+            Input = InputSingleDigit();
+            if (Input == 0)
+            {
+                break;
+            }
+            if (Input == 9 && EnergyCubes >= ENERGY_CUBE_FOR_NEW_CARDS_COUNT)
+            {
+                std::cout << "You spend "
+                          << EarnEnergyCubes(-ENERGY_CUBE_FOR_NEW_CARDS_COUNT)
+                          << " to get new card."
+                          << std::endl;
+                Game.DistributeCard();
+                continue;
+            }
+            else if (Input == 9 && EnergyCubes < ENERGY_CUBE_FOR_NEW_CARDS_COUNT)
+            {
+                std::cout << "You do not have enough Energy Cubes to get new cards."
+                          << std::endl;
+                continue;
+            }
+            if (1 <= Input && Input <= MAXIMUM_AVAILABLE_CARDS)
+            {
+                if (AvailableCards[Input-1] && AvailableCards[Input-1]->GetEnergyCost() <= EnergyCubes)
+                {
+                    std::cout << "You bough "
+                              << AvailableCards[Input-1]->GetName()
+                              << " for "
+                              << EarnEnergyCubes(-AvailableCards[Input-1]->GetEnergyCost())
+                              << "."
+                              << std::endl;
+                    Cards.push_back(std::move(Game.GetCard(Input-1)));
+                }
+                else
+                {
+                    std::cout << "You cannot buy this card."
+                              << std::endl;
+                }
+            }
+            else
+            {
+                std::cout << "Invalid input."
+                          << std:: endl;
+            }
+        } while (Input != 0);
 
     }
 
@@ -230,25 +415,31 @@ namespace KingOfNewYork
 
     void FPlayer::PrintLong() const
     {
-        std::cout << "Name: " << PlayerName << std::endl;
-        std::cout << "Monster: "
-                  << GetMonsterNameString(MonsterName)
+        std::cout << "Current status: "
                   << std::endl;
 
         if (Borough)
         {
-            std::cout << "Position: " << Borough->Name << std::endl;
+            if (Borough->IsCenter())
+            {
+                std::cout << "Position: "
+                          << CENTER_LEVEL_NAMES[LevelInCenter]
+                          << " Manhattan"
+                          << std::endl;
+            }
+            else
+            {
+                std::cout << "Position: " << Borough->GetName() << std::endl;
+            }
         }
 
-        DiceRoller.PrintRollHistory();
+        //DiceRoller.PrintRollHistory();
 
         std::cout << "Number of cards: " << Cards.size() << std::endl;
         for (const std::unique_ptr<FCard> &Card : Cards) {
             if (Card)
             {
-                std::cout << "\t-"
-                        << Card->GetName()
-                        << std::endl;
+                Card->Print();
             }
         }
 
@@ -366,99 +557,169 @@ namespace KingOfNewYork
 
     void FPlayer::SelectStartingLocation(FMap &Map)
     {
-        while (!Borough)
-        {
-            {
-                std::cout << GetPlayerAndMonsterNames()
-                          << ", please select your starting borough:"
-                          << std::endl;
-                for (int i = 0; i < Map.BoroughCount(); ++i)
-                {
-                    std::shared_ptr<FBorough> CurrentBorough = Map.GetBorough(i);
-                    std::vector<std::shared_ptr<FPlayer>> &CurrentPlayers =
-                        CurrentBorough->Players;
-                    //TODO: This assumes that MAXIMUM_PLAYERS_IN_BOROUGH = 2.
-                    if (CurrentPlayers.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
-                        CurrentBorough->bStartingLocation)
-                    {
-                        std::cout << (i + 1)
-                                  << ". "
-                                  << CurrentBorough->Name
-                                  << (CurrentPlayers.size() == 1 ?
-                                      " (" +
-                                      GetMonsterNameString(
-                                          CurrentPlayers[0]->GetMonsterName()) +
-                                      " is already there)" : "")
-                                  << std::endl;
-                    }
-                }
-                std::cout << ">";
-                const int Input = InputSingleDigit();
-                std::cout << std::endl;
+        std::cout << GetPlayerAndMonsterNames()
+                  << ", please select your starting borough:"
+                  << std::endl;
+        SelectBorough(Map, true, false);
 
-                if (1 <= Input && Input <= Map.BoroughCount())
+    }
+
+    void FPlayer::SelectBorough(FMap &Map, const bool bOnlyStartingLocation, const bool bIncludeCenter)
+    {
+        int bDone = false;
+        while (!bDone)
+        {
+            for (int i = 0; i < Map.BoroughCount(); ++i)
+            {
+                std::shared_ptr<FBorough> CurrentBorough = Map.GetBorough(i);
+                const std::vector<std::shared_ptr<FPlayer>> &CurrentPlayers =
+                        CurrentBorough->GetConstPlayers();
+                //TODO: This assumes that MAXIMUM_PLAYERS_IN_BOROUGH = 2.
+                if (CurrentPlayers.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
+                        (!bOnlyStartingLocation || CurrentBorough->IsStartingLocation()) &&
+                        (!CurrentBorough->IsCenter() || bIncludeCenter))
                 {
-                    std::shared_ptr<FBorough> SelectedBorough = Map.GetBorough(Input - 1);
-                    std::vector<std::shared_ptr<FPlayer>> &SelectedPlayers =
-                        SelectedBorough->Players;
-                    if (SelectedPlayers.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
-                        SelectedBorough->bStartingLocation)
-                    {
-                        //Removing player from prevous borough list.
-                        if (Borough)
-                        {
-                            for (auto it = Borough->Players.begin();
-                                 it != Borough->Players.end();
-                                 ++it)
-                            {
-                                if (*it == shared_from_this())
-                                {
-                                    Borough->Players.erase(it);
-                                }
-                            }
-                        }
-                        //Setting player position to selected borough.
-                        Borough = SelectedBorough;
-                        //Put player in the borough player list.
-                        SelectedBorough->Players.push_back(shared_from_this());
-                    }
-                    else
-                    {
-                        std::cout << "Invalid borough, please try again."
-                                  << std::endl
-                                  << std::endl;
-                    }
+                    std::cout << (i + 1)
+                              << ". "
+                              << CurrentBorough->GetName()
+                              << (CurrentPlayers.size() == 1 ?
+                                  " (" +
+                                  GetMonsterNameString(
+                                          CurrentPlayers[0]->GetMonsterName()) +
+                                  " is already there)" : "")
+                              << std::endl;
+                }
+            }
+            std::cout << ">";
+            const int Input = InputSingleDigit();
+            std::cout << std::endl;
+
+            if (1 <= Input && Input <= Map.BoroughCount())
+            {
+                std::shared_ptr<FBorough> SelectedBorough = Map.GetBorough(Input - 1);
+                const std::vector<std::shared_ptr<FPlayer>> &SelectedPlayers =
+                        SelectedBorough->GetConstPlayers();
+                if (SelectedPlayers.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
+                        (!bOnlyStartingLocation || SelectedBorough->IsStartingLocation()))
+                {
+                    bDone = true;
+                    MoveTo(SelectedBorough);
                 }
                 else
                 {
-                    std::cout << "Invalid input, please try again."
+                    std::cout << "Invalid borough, please try again."
                               << std::endl
                               << std::endl;
                 }
             }
+            else
+            {
+                std::cout << "Invalid input, please try again."
+                          << std::endl
+                          << std::endl;
+            }
         }
     }
 
-    const bool FPlayer::ResolveAttack(const int NumberOfDice)
+    void FPlayer::MoveTo(std::shared_ptr<FBorough> NewBorough)
+    {
+        assert(NewBorough);
+        if (Borough == NewBorough)
+        {
+            return;
+        }
+        //Removing player from previous borough list.
+        if (Borough)
+        {
+            bool Erased = false;
+            for (auto it = Borough->GetConstPlayers().begin();
+                 it != Borough->GetConstPlayers().end();
+                 ++it)
+            {
+                if (*it == shared_from_this())
+                {
+                    Borough->GetMutablePlayers().erase(it);
+                    Erased = true;
+                    break;
+                }
+            }
+            assert(Erased);
+        }
+        //Setting player position to selected borough.
+        Borough = NewBorough;
+        //Put player in the borough player list.
+        Borough->GetMutablePlayers().push_back(shared_from_this());
+    }
+
+    const bool FPlayer::ResolveAttack(FGame &Game, FMap &Map, const int NumberOfDice)
     {
         assert(Borough != nullptr);
-        if (Borough->bInManhattan)
-        {
-            std::cout << "Since you are in Manhattan, each Attack inflicts damage to all Monsters outside Manhattan:"
-                      << std::endl;
-                      //TODO: Need to add access to other players via the Game or something.
-        }
-        else
+        const bool bAttackCenter = !Borough->IsCenter();
+        if (bAttackCenter)
         {
             std::cout << "Since you are not in Manhattan, each Attack inflicts damage to all Monsters in Manhattan:"
                       << std::endl;
-            //TODO: Need to add access to other players via the Game or something.
+            for (int i = 0; i < Map.BoroughCount(); ++i)
+            {
+                if (Map.GetBorough(i)->IsCenter() && !Map.GetBorough(i)->GetConstPlayers().empty())
+                {
+                    assert(Map.GetBorough(i)->GetConstPlayers().size() == 1);
+                    std::shared_ptr<FPlayer> &Player = Map.GetBorough(i)->GetMutablePlayers().back();
+                    Player->TakeDamage(Game, NumberOfDice);
+
+                    if (!Player->IsAlive())
+                    {
+                        break;
+                    }
+
+                    std::cout << "Since "
+                              << Player->GetPlayerAndMonsterNames()
+                              <<" was attacked while being in Manhattan, he/she may flee Manhattan. Please, let him/her select the borough to move to:"
+                              << std::endl;
+                    std::string OldBorough = Player->Borough->GetName();
+                    Player->SelectBorough(Map, false, true);
+                    if (OldBorough == Player->Borough->GetName())
+                    {
+                        std::cout << Player->GetPlayerAndMonsterNames()
+                                  << " stayed in "
+                                  << Player->Borough->GetName()
+                                  << "."
+                                  << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << Player->GetPlayerAndMonsterNames()
+                                  << " moved from "
+                                  << OldBorough
+                                  << " to "
+                                  << Player->Borough->GetName()
+                                  << "."
+                                  << std::endl;
+                    }
+                    break;
+                }
+            }
         }
-        //COULD USE THE MAP!
+        else
+        {
+            std::cout << "Since you are in Manhattan, each Attack inflicts damage to all Monsters outside Manhattan:"
+                      << std::endl;
+            for (int i = 0; i < Map.BoroughCount(); ++i)
+            {
+                if (!Map.GetBorough(i)->IsCenter())
+                {
+                    for (std::shared_ptr<FPlayer> &Player : Map.GetBorough(i)->GetMutablePlayers())
+                    {
+                        Player->TakeDamage(Game, NumberOfDice);
+                    }
+                }
+            }
+        }
+
         return true;
     }
 
-    const bool FPlayer::ResolveCelebrity(const int NumberOfDice)
+    const bool FPlayer::ResolveCelebrity(FGame &Game, const int NumberOfDice)
     {
         int NewVictoryPoints = 0;
         if (bCelebrity)
@@ -469,22 +730,28 @@ namespace KingOfNewYork
         {
             if (NumberOfDice >= DICE_FOR_CELEBRITY_COUNT)
             {
-                bCelebrity = true;
+                for (std::shared_ptr<FPlayer> &Player : Game.GetPlayers())
+                {
+                    Player->SetCelebrity(false);
+                }
+                SetCelebrity(true);
                 NewVictoryPoints = NumberOfDice -
                                    (DICE_FOR_CELEBRITY_COUNT - 1);
             }
         }
-        VictoryPoints += NewVictoryPoints;
-        std::cout << "Earned "
-                  << NewVictoryPoints
-                  << " victory point"
-                  << (NumberOfDice == 1 ? ". " : "s. ")
-                  << "New total: "
-                  << VictoryPoints
-                  << "."
-                  << std::endl;
-        //TODO: NOT SURE HOW TO DEAL WITH VICTORY.
-        //WITH A SETTER OR A CHECK AFTER TURN.
+        //VictoryPoints += NewVictoryPoints;
+        if (NewVictoryPoints > 0)
+        {
+            std::cout << "Earned "
+                      << EarnVictoryPoints(NewVictoryPoints)
+                      << "."
+                      << std::endl;
+        }
+        else
+        {
+            std::cout << "You did not roll enough Celebrity to earn any Victory Points."
+                      << std::endl;
+        }
         return true;
     }
 
@@ -493,7 +760,7 @@ namespace KingOfNewYork
         assert(Borough != nullptr);
         bool bAllEmptyStack = true;
         int MinimumDurability = MAXIMUM_TILE_DURABILITY;
-        for (std::unique_ptr<FTileStack> &TileStack : Borough->TileStacks)
+        for (const std::unique_ptr<FTileStack> &TileStack : Borough->GetConstTileStacks())
         {
             if (!TileStack->IsEmpty() && TileStack->GetTopTileInfo()->GetDurability() < MinimumDurability)
             {
@@ -523,34 +790,34 @@ namespace KingOfNewYork
                       << NumberOfDice
                       << " left):"
                       << std::endl;
-            for (int i = 0; i < Borough->TileStacks.size(); ++i)
+            for (int i = 0; i < Borough->GetConstTileStacks().size(); ++i)
             {
                 std::cout << (i + 1)
                           << ". "
-                          << (Borough->TileStacks[i]->IsEmpty()
+                          << (Borough->GetConstTileStacks()[i]->IsEmpty()
                              ? "Tile stack is empty"
-                             : Borough->TileStacks[i]->GetTopTileInfo()->GetTileInfo())
+                             : Borough->GetConstTileStacks()[i]->GetTopTileInfo()->GetTileInfo())
                           << "."
                           << std::endl;
             }
             std::cout << ">";
             int Input = InputSingleDigit() - 1;
-            if (0 <= Input && Input <= Borough->TileStacks.size() - 1)
+            if (0 <= Input && Input <= Borough->GetConstTileStacks().size() - 1)
             {
-                if (Borough->TileStacks[Input]->IsEmpty())
+                if (Borough->GetConstTileStacks()[Input]->IsEmpty())
                 {
                     std::cout << "Tile stack is empty. Please try again."
                               << std::endl;
                 }
                 else{
-                    if (Borough->TileStacks[Input]->GetTopTileInfo()->GetDurability() <= NumberOfDice)
+                    if (Borough->GetConstTileStacks()[Input]->GetTopTileInfo()->GetDurability() <= NumberOfDice)
                     {
                         SelectedStack = Input;
                     }
                     else
                     {
                         std::cout << "You need "
-                                  << Borough->TileStacks[Input]->GetTopTileInfo()->GetDurability()
+                                  << Borough->GetConstTileStacks()[Input]->GetTopTileInfo()->GetDurability()
                                   << " destruction dice, but you only have "
                                   << NumberOfDice
                                   << ". Please try again."
@@ -566,8 +833,16 @@ namespace KingOfNewYork
             }
         } while (SelectedStack == -1);
 
-        int NewNumberOfDice = NumberOfDice - Borough->TileStacks[SelectedStack]->GetTopTileInfo()->GetDurability();
-        Borough->TileStacks[SelectedStack]->DestructTopTile();
+        //Make a copy of the tile for convenience.
+        FTile DestructedTile = FTile(*(Borough->GetConstTileStacks()[SelectedStack]->GetTopTileInfo()));
+        Borough->GetConstTileStacks()[SelectedStack]->DestructTopTile();
+        std::cout << "Destructed "
+                  << GetTileTypeString(DestructedTile.GetTileType())
+                  << " and earned "
+                  << EarnMonsterResources(EMonsterResource(static_cast<int>(DestructedTile.GetTileType())/2), DestructedTile.GetReward())
+                  << "."
+                  << std::endl;
+        int NewNumberOfDice = NumberOfDice - DestructedTile.GetDurability();
         if (NewNumberOfDice > 0)
         {
             ResolveDestruction(NewNumberOfDice);
@@ -578,13 +853,9 @@ namespace KingOfNewYork
     const bool FPlayer::ResolveEnergy(const int NumberOfDice)
     {
         assert(NumberOfDice>0);
-        EnergyCubes += NumberOfDice;
+        //EnergyCubes += NumberOfDice;
         std::cout   << "Earned "
-                    << NumberOfDice
-                    << " energy cube"
-                    << (NumberOfDice == 1 ? ". " : "s. ")
-                    << "New total: "
-                    << EnergyCubes
+                    << EarnEnergyCubes(NumberOfDice)
                     << "."
                     << std::endl;
         return true;
@@ -593,21 +864,136 @@ namespace KingOfNewYork
     const bool FPlayer::ResolveHeal(const int NumberOfDice)
     {
         assert(NumberOfDice > 0);
-        LifePoints += NumberOfDice;
-        LifePoints = (LifePoints > MAXIMUM_LIFE_POINTS ? 10 : LifePoints);
-        std::cout << "Earned "
-                << NumberOfDice
-                << " life point"
-                << (NumberOfDice == 1 ? ". " : "s. ")
-                << "New total: "
-                << LifePoints
-                << "."
-                << std::endl;
+        if (Borough->IsCenter())
+        {
+            std::cout << "Since you are in Manhattan, you cannot use Heal rolls to heal."
+                      << std::endl;
+        }
+        else
+        {
+            //LifePoints += NumberOfDice;
+            //LifePoints = (LifePoints > MAXIMUM_LIFE_POINTS ? 10 : LifePoints);
+            std::cout << "Earned "
+                      << EarnLifePoints(NumberOfDice)
+                      << "."
+                    << std::endl;
+        }
         return true;
     }
 
-    const bool FPlayer::ResolveOuch(const int NumberOfDice)
+    const bool FPlayer::ResolveOuch(FGame &Game, FMap &Map, const int NumberOfDice)
     {
+        assert(NumberOfDice > 0);
+        switch (NumberOfDice)
+        {
+            case 1:
+            {
+                std::cout << "Since you rolled 1 Ouch, the Units in your borough attack you; you suffer 1 damage per Unit tile in your borough."
+                          << std::endl;
+                int Damage = Borough->GetUnitCount();
+                if (Damage > 0)
+                {
+                    TakeDamage(Game, Damage);
+                }
+                break;
+            }
+            case 2:
+            {
+                std::cout << "Since you rolled 2 Ouch, the Units in your borough attack all the Monsters in your borough; each Monster in your borough suffers 1 damage per Unit tile in your borough."
+                          << std::endl;
+                int Damage = Borough->GetUnitCount();
+                if (Damage > 0)
+                {
+                    for (std::shared_ptr<FPlayer> &Player : Borough->GetMutablePlayers())
+                    {
+                            Player->TakeDamage(Game, Damage);
+                    }
+                }
+                break;
+            }
+            default:
+            {
+                std::cout << "Since you rolled 3 Ouch or more, all Units in the entire city attack; each Monster suffers 1 damage per Unit tile in his borough."
+                          << std::endl;
+                for (int i = 0; i < Map.BoroughCount(); ++i)
+                {
+                    int Damage = Map.GetBorough(i)->GetUnitCount();
+                    for (std::shared_ptr<FPlayer> &Player : Map.GetBorough(i)->GetMutablePlayers()) {
+                        //Do the check inside the loop to make sure the Status of Liberty is properly removed.
+                        if (Damage > 0) {
+                            Player->TakeDamage(Game, Damage);
+                        }
+                        if (Player->GetStatueOfLiberty()) {
+                            Player->SetStatueOfLiberty(false);
+                        }
+                    }
+                }
+                std::cout << "Moreover, you trigger a counterattack by the entire army, and you become the defender of the city: The Statue of Liberty comes to life and teams up with you."
+                          << std::endl;
+                SetStatueOfLiberty(true);
+            }
+
+        }
+
         return true;
+    }
+
+    void FPlayer::TakeDamage(FGame &Game, const int Damage)
+    {
+        assert(Damage > 0);
+        assert(bAlive);
+        std::cout << GetPlayerAndMonsterNames()
+                   << " loses "
+                   << EarnLifePoints(-Damage)
+                   << "."
+                   << std::endl;
+        if (LifePoints == 0)
+        {
+            bAlive = false;
+            bStatueOfLiberty = false;
+            bCelebrity = false;
+            std::cout << GetPlayerAndMonsterNames()
+                      << " died!"
+                      << std::endl
+                      << std::endl;
+        }
+    }
+
+    const std::string FPlayer::EarnMonsterResources(const EMonsterResource MonsterResource, const int Number)
+    {
+        assert(Number != 0);
+        switch (MonsterResource)
+        {
+            case EMonsterResource::EnergyCube:
+                return EarnEnergyCubes(Number);
+            case EMonsterResource::LifePoint:
+                return EarnLifePoints(Number);
+            case EMonsterResource::VictoryPoint:
+                return EarnVictoryPoints(Number);
+        }
+        assert(true);
+        return "ERROR";
+    }
+
+    const std::string FPlayer::EarnEnergyCubes(const int Number)
+    {
+        assert(Number != 0);
+        EnergyCubes += Number;
+        return std::to_string(std::abs(Number)) + " Energy Cubes (new total: " + std::to_string(EnergyCubes) + ")";
+    }
+
+    const std::string FPlayer::EarnLifePoints(const int Number)
+    {
+        assert(Number != 0);
+        LifePoints += Number;
+        LifePoints = std::clamp(LifePoints, 0, MAXIMUM_LIFE_POINTS);
+        return std::to_string(std::abs(Number)) + " Life Points (new total: " + std::to_string(LifePoints) + ")";
+    }
+
+    const std::string FPlayer::EarnVictoryPoints(const int Number)
+    {
+        assert(Number != 0);
+        VictoryPoints += Number;
+        return std::to_string(std::abs(Number))+ " Victory Points (new total: " + std::to_string(VictoryPoints) + ")";
     }
 }

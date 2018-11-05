@@ -55,13 +55,11 @@ namespace KingOfNewYork
                         std::shared_ptr<FBorough> Borough = Graph.InsertVertex(Name);
                         if (Borough)
                         {
-                            Borough->Name = Name;
+                            Borough->SetName(Name);
                             std::size_t Position2 = Text.find(',', Position1);
-                            Borough->bStartingLocation =
-                                Text.substr(Position1, Position2++ - Position1) == "StartingLocation";
+                            Borough->SetStartingLocation(Text.substr(Position1, Position2++ - Position1) == "StartingLocation");
                             std::size_t Position3 = Text.find(',', Position2);
-                            Borough->bInManhattan =
-                                Text.substr(Position2, Position3 - Position2) == "InManhattan";
+                            Borough->SetCenter(Text.substr(Position2, Position3 - Position2) == "Center");
                         }
                         else
                         {
@@ -138,11 +136,11 @@ namespace KingOfNewYork
         for (int i = 0; i < BoroughCount(); ++i)
         {
             std::shared_ptr<FBorough> CurrentBorough = GetBorough(i);
-            OuputStream << CurrentBorough->Name
+            OuputStream << CurrentBorough->GetName()
                         << ","
-                        << (CurrentBorough->bStartingLocation ? "StartingLocation" : " ")
+                        << (CurrentBorough->IsStartingLocation() ? "StartingLocation" : " ")
                         << ","
-                        << (CurrentBorough->bInManhattan ? "InManhattan" : " ")
+                        << (CurrentBorough->IsCenter() ? "Center" : " ")
                         << ","
                         << std::endl;
         }
@@ -153,11 +151,11 @@ namespace KingOfNewYork
         for (int i = 0; i < BoroughCount(); ++i)
         {
             std::vector<int> Neighbourgs = GetNeighbourgs(i);
-            OuputStream << GetBorough(i)->Name
+            OuputStream << GetBorough(i)->GetName()
                         << ":";
             for (int j = 0; j < Neighbourgs.size(); ++j)
             {
-                OuputStream << GetBorough(j)->Name
+                OuputStream << GetBorough(j)->GetName()
                             << ",";
             }
             OuputStream << std::endl;

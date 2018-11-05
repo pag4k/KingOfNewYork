@@ -37,7 +37,7 @@ namespace KingOfNewYork
 
     void FGame::Print() const
     {
-        std::cout << "Number of players: " << PlayerCount << std::endl;
+        std::cout << "Number of players: " << static_cast<int>(Players.size()) << std::endl;
         for (const std::shared_ptr<FPlayer> &Player : Players)
         {
             std::cout << "\t-";
@@ -45,7 +45,7 @@ namespace KingOfNewYork
         }
         
         std::cout << "Monster in Manhattam: ";
-        if (PlayersInManhattan.empty())
+        if (PlayersInCenter.empty())
         {
             std::cout << "No one." << std::endl;
         }
@@ -90,7 +90,7 @@ namespace KingOfNewYork
                     << std::endl;
 
         std::cout << "Available cards:" << std::endl;
-        for (std::unique_ptr<FCard> &Card : AvailableCards)
+        for (const std::unique_ptr<FCard> &Card : AvailableCards)
         {
             if (Card)
             {
@@ -108,6 +108,21 @@ namespace KingOfNewYork
         Deck.Print();
     }
 
+    std::unique_ptr<FCard> FGame::GetCard(const int Index) {
+        assert(AvailableCards[Index]);
+        std::unique_ptr<FCard> Card = std::move(AvailableCards[Index]);
+        assert(AvailableCards[Index] == nullptr);
+        AvailableCards[Index] = Deck.Draw();
+        if (AvailableCards[Index])
+        {
+            std::cout << "New card available:"
+                      << std::endl;
+            AvailableCards[Index]->Print();
+
+        }
+        return Card;
+    }
+
     const bool FGame::InitializationPhase()
     {
         if (!SelectMap())
@@ -115,17 +130,25 @@ namespace KingOfNewYork
             return false;
         }
 
-        if (!GetPlayerCount())
+        const int PlayerCount = GetPlayerCount();
+
+        if (PlayerCount == -1)
         {
             return false;
         }
 
-        CreatePlayers();
+        CreatePlayers(PlayerCount);
 
         Superstar = nullptr;
         StatusOfLiberty = nullptr;
 
         Deck = FDeck("cards.txt");
+        Deck.Shuffle();
+        for (int i = 0; i < MAXIMUM_AVAILABLE_CARDS; ++i)
+        {
+            AvailableCards.push_back(nullptr);
+        }
+        DistributeCard();
 
         FTileStack TileStack = FTileStack("tiles.txt");
         TileStack.Shuffle();
@@ -140,6 +163,20 @@ namespace KingOfNewYork
         return true;
     }
 
+    void FGame::DistributeCard()
+    {
+        for (std::unique_ptr<FCard> &Card : AvailableCards)
+        {
+            if (Card)
+            {
+                DiscardDeck.AddCard(Card);
+                assert(Card == nullptr);
+            }
+            Card = Deck.Draw();
+        }
+
+    }
+
     const bool FGame::DistributeTiles(FTileStack &MasterTileStack)
     {
         assert(Map != nullptr);
@@ -147,7 +184,7 @@ namespace KingOfNewYork
         {
             for (int i = 0; i < Map->BoroughCount(); ++i)
             {
-                for (std::unique_ptr<FTileStack> &CurrentTileStack : Map->GetBorough(i)->TileStacks)
+                for (const std::unique_ptr<FTileStack> &CurrentTileStack : Map->GetBorough(i)->GetConstTileStacks())
                 {
                     CurrentTileStack->AddTileOnTop(MasterTileStack.Draw());
                     if (MasterTileStack.IsEmpty())
@@ -214,9 +251,10 @@ namespace KingOfNewYork
         return true;
     }
 
-    const bool FGame::GetPlayerCount()
+    const int FGame::GetPlayerCount()
     {
         bool isValid = false;
+        int PlayerCount;
         while (!isValid)
         {
             std::cout << std::endl
@@ -227,16 +265,15 @@ namespace KingOfNewYork
                     << " or 0 to exit):"
                     << std::endl
                     << ">";
-            const int PlayerCount = InputSingleDigit();
+            PlayerCount = InputSingleDigit();
             if (PlayerCount == 0)
             {
-                return false;
+                return -1;
             }
             else if (MINIMUM_PLAYER <= PlayerCount &&
                 PlayerCount <= MAXIMUM_PLAYER)
             {
                 std::cout << std::endl;
-                this->PlayerCount = PlayerCount;
                 isValid = true;
             }
             else
@@ -249,10 +286,10 @@ namespace KingOfNewYork
                         << std::endl;
             }
         }
-        return true;
+        return PlayerCount;
     }
 
-    void FGame::CreatePlayers()
+    void FGame::CreatePlayers(const int PlayerCount)
     {
         assert(MINIMUM_PLAYER <= PlayerCount &&
                PlayerCount <= MAXIMUM_PLAYER);
@@ -290,7 +327,7 @@ namespace KingOfNewYork
     void FGame::GetFirstPlayer()
     {
         std::vector<bool> StillRolling;
-        for (int i = 0; i < PlayerCount; ++i)
+        for (int i = 0; i < static_cast<int>(Players.size()); ++i)
         {
             StillRolling.push_back(true);
         }
@@ -300,7 +337,7 @@ namespace KingOfNewYork
         while (CurrentPlayer == -1)
         {
             int MaxAttack = -1;
-            for (int i = 0; i < PlayerCount; ++i)
+            for (int i = 0; i < static_cast<int>(Players.size()); ++i)
             {
                 if (StillRolling[i])
                 {
@@ -328,6 +365,10 @@ namespace KingOfNewYork
                         StillRolling[i] = true;
                         CurrentPlayer = -1;
                     }
+                    else
+                    {
+                        StillRolling[i] = false;
+                    }
                 }
             }
             if (CurrentPlayer > -1)
@@ -351,30 +392,100 @@ namespace KingOfNewYork
     {
         std::cout << "Starting with the first player, and going clockwise: Place your Monster in the borough of your choice, except Manhattan. There can be no more than 2 Monsters in any borough."
                   << std::endl;
-        for (int i = 0; i < PlayerCount; ++i)
+        for (int i = 0; i < Players.size(); ++i)
         {
-            CurrentPlayer = (CurrentPlayer + 1) % PlayerCount;
             Players[CurrentPlayer]->SelectStartingLocation(*Map);
+            CurrentPlayer = (CurrentPlayer + 1) % static_cast<int>(Players.size());
         }
-        CurrentPlayer = (CurrentPlayer + 1) % PlayerCount;
+        //CurrentPlayer = (CurrentPlayer + 1) % static_cast<int>(Players.size());
     }
 
     void FGame::MainPhase()
     {
-        while (VictoriousPlayer() == -1)
+        while (VictoriousPlayer() == nullptr)
         {
-            Players[CurrentPlayer]->TakeTurn(*Map);
-            CurrentPlayer = (CurrentPlayer + 1) % PlayerCount;
+            Players[CurrentPlayer]->TakeTurn(*Map, *this);
+            CurrentPlayer = (CurrentPlayer + 1) % static_cast<int>(Players.size());
         }
     }
 
-    const int FGame::VictoriousPlayer()
+    void FGame::CheckDeadPlayer()
     {
-        //TODO: Implement this.
-        for (int i = 0; i < PlayerCount; ++i)
+        bool bNewDead = true;
+        while (bNewDead)
         {
+            bNewDead = false;
+            bool bDeadAfterCurrent = true;
+            for (auto it = Players.begin(); it != Players.end(); ++it)
+            {
+                std::shared_ptr<FPlayer> Player = *it;
+                if (!Player->IsAlive())
+                {
+                    if (bDeadAfterCurrent)
+                    {
+                        CurrentPlayer--;
+                    }
+                    CleanDeadPlayer(Player);
+                    Players.erase(it);
+                    bNewDead = true;
+                    break;
+                }
+                if (Player == Players[CurrentPlayer])
+                {
+                    bDeadAfterCurrent = false;
+                }
 
+            }
         }
-        return -1;
+
+    }
+
+    void FGame::CleanDeadPlayer(std::shared_ptr<FPlayer> DeadPlayer)
+    {
+        assert(DeadPlayer);
+        if (static_cast<int>(Players.size()) == 1)
+        {
+            std::cout << "Everybody died! Nobody win!"
+                      << std::endl;
+            std::cin.get();
+            exit(0);
+        }
+        //Remove player from Borough
+        for (auto it = DeadPlayer->GetBorough()->GetConstPlayers().begin();
+             it != DeadPlayer->GetBorough()->GetConstPlayers().end();
+             ++it)
+        {
+            if (*it == DeadPlayer)
+            {
+                DeadPlayer->GetBorough()->GetMutablePlayers().erase(it);
+                break;
+            }
+        }
+    }
+
+    std::shared_ptr<FPlayer> FGame::VictoriousPlayer()
+    {
+        if (static_cast<int>(Players.size()) == 1)
+        {
+            std::cout << Players[0]->GetPlayerAndMonsterNames()
+                      << " is the only one alive and has won the game!"
+                      << std::endl;
+            std::cin.get();
+            exit(0);
+        }
+        for (std::shared_ptr<FPlayer> &Player : Players)
+        {
+            if (Player->IsVictorious())
+            {
+                std::cout << Player->GetPlayerAndMonsterNames()
+                          << " has at least "
+                          << VICTORY_POINTS_TO_WIN_COUNT
+                          <<" Victory Points and has won the game!"
+                          << std::endl;
+                std::cin.get();
+                exit(0);
+            }
+        }
+        return nullptr;
     }
 }

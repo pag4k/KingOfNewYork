@@ -17,6 +17,7 @@
 
 namespace KingOfNewYork
 {
+    class FGame;
     class FDiceRoller;
     class FCard;
 
@@ -30,32 +31,46 @@ namespace KingOfNewYork
         const std::string GetPlayerName() const { return PlayerName; }
         const EMonsterName GetMonsterName() const { return MonsterName; }
         const std::string GetPlayerAndMonsterNames();
-        void TakeTurn(FMap &Map);
+        const std::shared_ptr<FBorough> GetBorough() { return Borough; }
+        void RollDice(const int DiceCount, const int RollCount);
+        void TakeTurn(FMap &Map, FGame &Game);
+        const bool IsVictorious() { return VictoryPoints >= VICTORY_POINTS_TO_WIN_COUNT; }
         const bool GetCelebrity() const { return bCelebrity; }
         void SetCelebrity(const bool bCelebrity);
-        void RollDice(const int DiceCount, const int RollCount);
+        const bool GetStatueOfLiberty() const { return bStatueOfLiberty; }
+        void SetStatueOfLiberty(const bool bStatueOfLiberty);
         const int GetAttackCount() const;
-        void ResolveDice();
-        void Move(FMap &Map);
-        void BuyCards();
         void PrintShort() const;
         void PrintLong() const;
+        const bool IsAlive() { return bAlive; }
     private :
         void EnterPlayerName(std::vector<std::string> &PlayerNames);
         void SelectMonster(bool AvailableMonsters[]);
-        const bool ResolveAttack(const int NumberOfDice);
-        const bool ResolveCelebrity(const int NumberOfDice);
+        void SelectBorough(FMap &Map, const bool bOnlyStartingLocation, const bool bIncludeCenter);
+        void ResolveDice(FGame &Game, FMap &Map);
+        const bool ResolveAttack(FGame &Game, FMap &Map, const int NumberOfDice);
+        const bool ResolveCelebrity(FGame &Game, const int NumberOfDice);
         const bool ResolveDestruction(const int NumberOfDice);
         const bool ResolveEnergy(const int NumberOfDice);
         const bool ResolveHeal(const int NumberOfDice);
-        const bool ResolveOuch(const int NumberOfDice);
+        const bool ResolveOuch(FGame &Game, FMap &Map, const int NumberOfDice);
+        void Move(FMap &Map);
+        void MoveTo(std::shared_ptr<FBorough> NewBorough);
+        void BuyCards(FGame &Game);
+        void TakeDamage(FGame &Game, const int Damage);
+        const std::string EarnMonsterResources(const EMonsterResource MonsterResource, const int Number);
+        const std::string EarnEnergyCubes(const int Number);
+        const std::string EarnLifePoints(const int Number);
+        const std::string EarnVictoryPoints(const int Number);
         std::string PlayerName;
         EMonsterName MonsterName;
         std::shared_ptr<FBorough> Borough;
+        int LevelInCenter;
         FDiceRoller DiceRoller;
         std::vector<EDiceFace> CurrentDiceResult;
         int TokenInventory[TOKEN_TYPE_COUNT];
         std::vector<std::unique_ptr<FCard>> Cards;
+        bool bAlive;
         int EnergyCubes;
         int LifePoints;
         int VictoryPoints;

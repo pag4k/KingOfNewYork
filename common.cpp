@@ -138,13 +138,13 @@ namespace KingOfNewYork
         switch (MonsterResource)
         {
         case EMonsterResource::EnergyCube:
-            MonsterResourceString = "Energy Cube";
+            MonsterResourceString = "Energy Cubes";
             break;
         case EMonsterResource::LifePoint:
-            MonsterResourceString = "Life Point";
+            MonsterResourceString = "Life Points";
             break;
         case EMonsterResource::VictoryPoint:
-            MonsterResourceString = "Victory Point";
+            MonsterResourceString = "Victory Points";
             break;
         }
         assert(!MonsterResourceString.empty());

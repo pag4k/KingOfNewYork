@@ -14,7 +14,7 @@ namespace KingOfNewYork
 
     class FDiceRoller {
     public :
-        FDiceRoller() = default;
+        FDiceRoller();
         ~FDiceRoller() = default;
         const std::vector<EDiceFace> BeginRolling() const
             { return BeginRolling(BLACK_DICE_COUNT, MAXIMUM_ROLL); }

@@ -216,7 +216,7 @@ namespace KingOfNewYork
             if (NewVertex)
             {
                 VertexVector.push_back(NewVertex);
-                std::cout << "Added Vertex: " << NewVertex->Name << std::endl;
+                //std::cout << "Added Vertex: " << NewVertex->Name << std::endl;
                 return VertexVector.back();
             }
             std::cout << "Error: Invalid vertex."
@@ -237,11 +237,11 @@ namespace KingOfNewYork
                 CreatedEdge->Destination = DestinationVertex;
                 OriginVertex->IncidentEdgeVector.push_back(CreatedEdge);
                 DestinationVertex->IncidentEdgeVector.push_back(CreatedEdge);
-                std::cout << "Added Node from "
-                          << OriginVertex->Name
-                          << " to "
-                          << DestinationVertex->Name
-                          << std::endl;
+                //std::cout << "Added Node from "
+                //          << OriginVertex->Name
+                //          << " to "
+                //          << DestinationVertex->Name
+                //          << std::endl;
                 return CreatedEdge;
             }
             std::cout << "Error: Invalid vertex and/or edge."

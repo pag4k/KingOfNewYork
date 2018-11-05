@@ -1,7 +1,7 @@
-COMP345 Assignment 1
+COMP345 Assignment 2
 ====================
 
-Due date: October 12, 2018
+Due date: November 4, 2018
 --------------------------
 
 Written by: Pierre-Andre Gagnon - 40067198
@@ -13,7 +13,7 @@ The design of this project is straightforward. Four categories of files can be i
 
 Driver files
 
-- main.cpp and assignment1.h are strictly used to demonstrate the state of the project for assignment 1.
+- main.cpp and assignment2.h are strictly used to demonstrate the state of the project for assignment 2.
 
 Library files
 
@@ -42,7 +42,7 @@ The project only uses the C++ Standard Library.
 
 The command I use to build the project on my machine is:
 
-    g++ main.cpp diceroller.cpp graph.cpp player.cpp game.cpp helper.cpp common.cpp card.cpp tile.cpp map.cpp -I. -g -o kingofnewyork
+    g++ main.cpp diceroller.cpp graph.cpp player.cpp game.cpp helper.cpp common.cpp card.cpp tile.cpp map.cpp borough.cpp -I. -g -o kingofnewyork
 
 The flags are:
 
