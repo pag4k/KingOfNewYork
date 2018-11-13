@@ -12,7 +12,7 @@
 namespace KingOfNewYork
 {
     extern std::string Path;
-
+    void PrintHeader(const std::string Header);
     const int InputSingleDigit();
     const std::string InputString();
     const int ParseIntFromChar(const char Char);

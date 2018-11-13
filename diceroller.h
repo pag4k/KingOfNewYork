@@ -4,6 +4,9 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
+#ifndef DICEROLLER_H
+#define DICEROLLER_H
+
 #include <vector>
 #include <string>
 #include "common.h"
@@ -21,3 +24,5 @@ namespace KingOfNewYork
         mutable int RollHistory[FACE_ON_DICE_COUNT];
     };
 }
+
+#endif

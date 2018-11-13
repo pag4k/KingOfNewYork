@@ -29,6 +29,8 @@ namespace KingOfNewYork
       std::vector<std::unique_ptr<FCard>> &GetAvailableCards() { return AvailableCards; }
       void Print() const;
       void DistributeCard();
+      void ChangeCelebrity(std::shared_ptr<FPlayer> NewCelebrityPlayer);
+      void ChangeStatueOfLiberty(std::shared_ptr<FPlayer> NewStatueOfLibertyPlayer);
       void CheckDeadPlayer();
       void CleanDeadPlayer(std::shared_ptr<FPlayer> DeadPlayer);
   private:

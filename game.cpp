@@ -164,6 +164,43 @@ namespace KingOfNewYork
 
     }
 
+    void FGame::ChangeCelebrity(std::shared_ptr<FPlayer> NewCelebrityPlayer)
+    {
+        for (std::shared_ptr<FPlayer> &Player : Players)
+        {
+            std::cout << Player->GetPlayerAndMonsterNames()
+                      << " is no longer a Celebrity."
+                      << std::endl;
+            if (Player->IsCelebrity()) {
+
+                Player->SetCelebrity(false);
+            }
+        }
+        NewCelebrityPlayer->SetCelebrity(true);
+        std::cout << "You are now a Celebrity!"
+                  << std::endl;
+    }
+
+    void FGame::ChangeStatueOfLiberty(std::shared_ptr<FPlayer> NewStatueOfLibertyPlayer)
+    {
+        for (std::shared_ptr<FPlayer> &Player : Players) {
+            if (Player->IsStatueOfLiberty()) {
+                std::cout << "The Statue of Liberty no longer teams up with "
+                          << Player->GetPlayerAndMonsterNames()
+                          << " and that player loses "
+                          << Player->EarnVictoryPoints(-STATUS_OF_LIBERTY_VICTORY_POINTS)
+                          << "."
+                          << std::endl;
+                Player->SetStatueOfLiberty(false);
+            }
+        }
+        std::cout << "Moreover, you trigger a counterattack by the entire army, and you become the defender of the city: The Statue of Liberty comes to life and teams up with you. You also earn "
+                  << NewStatueOfLibertyPlayer->EarnVictoryPoints(STATUS_OF_LIBERTY_VICTORY_POINTS)
+                  << "."
+                  << std::endl;
+        NewStatueOfLibertyPlayer->SetStatueOfLiberty(true);
+    }
+
     const bool FGame::DistributeTiles(FTileStack &MasterTileStack)
     {
         assert(Map != nullptr);

@@ -12,6 +12,15 @@
 namespace KingOfNewYork
 {
     std::string Path;
+
+    void PrintHeader(const std::string Header)
+    {
+        std::cout << "##### "
+                  << Header
+                  << " #####"
+                  << std::endl;
+    }
+
     //If invalid, returns -1.
     const int InputSingleDigit()
     {

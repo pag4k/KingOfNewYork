@@ -1,3 +1,6 @@
+#ifndef ROLLDICESTRATEGY_H
+#define ROLLDICESTRATEGY_H
+
 #include "diceroller.h"
 
 namespace KingOfNewYork
@@ -5,28 +8,30 @@ namespace KingOfNewYork
     class IRollDiceStrategy
     {
     public:
-        virtual FDiceResult RollDice(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount) = 0;
+        virtual std::vector<EDiceFace> Execute(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount) = 0;
       //virtual void ResolveDice() = 0;
       //virtual void Move() = 0;
       //virtual void BuyCards() = 0;
     };
 
-    class HumanRollDice : public IRollDiceStrategy
+    class HumanRollDiceStrategy : public IRollDiceStrategy
     {
     public:
-        FDiceResult RollDice(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount);
+        std::vector<EDiceFace> Execute(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount);
     };
 
-    class AggressiveRollDice : public IRollDiceStrategy
+    class AggressiveRollDiceStrategy : public IRollDiceStrategy
     {
     public:
-        FDiceResult RollDice(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount);
+        std::vector<EDiceFace> Execute(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount);
     };
 
-    class ModerateRollDice : public IRollDiceStrategy
+    class ModerateRollDiceStrategy : public IRollDiceStrategy
     {
     public:
-        FDiceResult RollDice(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount);
+        std::vector<EDiceFace> Execute(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount);
     };
 
 }
+
+#endif
