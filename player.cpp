@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 2
-// Due date: November 4, 2018
+// COMP345 Assignment 3
+// Due date: November 18, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -295,6 +295,7 @@ namespace KingOfNewYork
 
         Move(Map, true);
     }
+
 
     void FPlayer::TakeDamage(FGame &Game, const int Damage)
     {

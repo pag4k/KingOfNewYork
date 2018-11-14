@@ -1,6 +1,8 @@
-//
-// Created by oscar on 13/11/18.
-//
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 3
+// Due date: November 18, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
 
 #ifndef MOVESTRATEGY_H
 #define MOVESTRATEGY_H
