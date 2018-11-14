@@ -38,15 +38,14 @@ namespace KingOfNewYork
         const EMonsterName GetMonsterName() const { return MonsterName; }
         const std::string GetPlayerAndMonsterNames();
         const std::shared_ptr<FBorough> GetBorough() { return Borough; }
+        void SetBorough(const std::shared_ptr<FBorough> &Borough) { this->Borough = Borough; }
         const bool IsVictorious() { return VictoryPoints >= VICTORY_POINTS_TO_WIN_COUNT; }
         const bool IsCelebrity() const { return bCelebrity; }
         void SetCelebrity(const bool bCelebrity) { this->bCelebrity = bCelebrity; }
         const bool IsStatueOfLiberty() const { return bStatueOfLiberty; }
         void SetStatueOfLiberty(const bool bStatueOfLiberty) { this->bStatueOfLiberty = bStatueOfLiberty; }
-        const int GetAttackCount() const;
         const int GetEnergyCubes() { return EnergyCubes; }
         void SetEnergyCubes(const int EnergyCubes) { this->EnergyCubes = EnergyCubes; }
-        const std::vector<EDiceFace> &GetCurrentDiceResult() { return CurrentDiceResult; }
         const int GetLevelInCenter() { return LevelInCenter; }
         void SetLevelInCenter(const int LevelInCenter) { this->LevelInCenter = LevelInCenter; }
         const bool IsAlive() { return bAlive; }
@@ -57,14 +56,13 @@ namespace KingOfNewYork
         //Turn methods
         void TakeTurn(FMap &Map, FGame &Game);
         void TakeDamage(FGame &Game, const int Damage);
+        void Move(FMap &Map, bool bOnlyStartingLocation);
         const std::string EarnMonsterResources(const EMonsterResource MonsterResource, const int Number);
         const std::string EarnEnergyCubes(const int Number);
         const std::string EarnLifePoints(const int Number);
         const std::string EarnVictoryPoints(const int Number);
-        void SelectBorough(FMap &Map, const bool bOnlyStartingLocation, const bool bIncludeCenter);
-        void MoveTo(std::shared_ptr<FBorough> NewBorough);
         void BuyCard(std::unique_ptr<FCard> Card);
-        void RollDice(const int DiceCount, const int RollCount);
+        std::vector<EDiceFace> RollStartDice(const int DiceCount);
 
         //Output methods
         void PrintShort() const;
@@ -75,9 +73,10 @@ namespace KingOfNewYork
         void SelectMonster(bool AvailableMonsters[]);
 
         //Turn methods
-        void ResolveDice(FGame &Game, FMap &Map);
-        void Move(FMap &Map);
-        void BuyCards(FGame &Game);
+        void RollDicePhase(const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult);
+        void ResolveDicePhase(FGame &Game, FMap &Map, std::vector<EDiceFace> &DiceResult);
+        void MovePhase(FMap &Map);
+        void BuyCardsPhase(FGame &Game);
 
         //Strategy pointers
         IRollDiceStrategy *RollDiceStrategy;
@@ -91,7 +90,6 @@ namespace KingOfNewYork
         std::shared_ptr<FBorough> Borough;
         int LevelInCenter;
         FDiceRoller DiceRoller;
-        std::vector<EDiceFace> CurrentDiceResult;
         int TokenInventory[TOKEN_TYPE_COUNT];
         std::vector<std::unique_ptr<FCard>> Cards;
         bool bAlive;

@@ -39,10 +39,10 @@ namespace KingOfNewYork
         bCelebrity = false;
         bStatueOfLiberty = false;
 
-        RollDiceStrategy = new HumanRollDiceStrategy();
-        ResolveDiceStrategy = new HumanResolveDiceStrategy;
-        MoveStrategy = new HumanMoveStrategy;
-        BuyCardsStrategy = new HumanBuyCardsStrategy;
+        RollDiceStrategy = new AggressiveRollDiceStrategy();
+        ResolveDiceStrategy = new AggressiveResolveDiceStrategy;
+        MoveStrategy = new AggressiveMoveStrategy;
+        BuyCardsStrategy = new AggressiveBuyCardsStrategy;
     }
 
     FPlayer::~FPlayer()
@@ -81,10 +81,12 @@ namespace KingOfNewYork
         }
 
         PrintHeader(GetPlayerAndMonsterNames() + " roll dice phase");
-        RollDice(BLACK_DICE_COUNT, MAXIMUM_ROLL);
+        std::vector<EDiceFace> DiceResult = DiceRoller.BeginRolling(BLACK_DICE_COUNT);
+
+        RollDicePhase(BLACK_DICE_COUNT, MAXIMUM_ROLL, DiceResult);
 
         PrintHeader(GetPlayerAndMonsterNames() + " resolve dice phase");
-        ResolveDice(Game, Map);
+        ResolveDicePhase(Game, Map, DiceResult);
 
         Game.CheckDeadPlayer();
         if (!bAlive)
@@ -94,12 +96,20 @@ namespace KingOfNewYork
         }
 
         PrintHeader(GetPlayerAndMonsterNames() + " move phase");
-        Move(Map);
+        MovePhase(Map);
 
         PrintHeader(GetPlayerAndMonsterNames() + " buy cards phase");
-        BuyCards(Game);
+        BuyCardsPhase(Game);
 
         PrintHeader(GetPlayerAndMonsterNames() + " turn over");
+    }
+
+    std::vector<EDiceFace> FPlayer::RollStartDice(const int DiceCount)
+    {
+        std::vector<EDiceFace> DiceResult = DiceRoller.BeginRolling(DiceCount);
+        DiceRoller.RollDice(DiceCount, DiceResult);
+        return DiceResult;
+
     }
 
     void FPlayer::BuyCard(std::unique_ptr<FCard> Card)
@@ -107,36 +117,22 @@ namespace KingOfNewYork
         Cards.push_back(std::move(Card));
     }
 
-    void FPlayer::RollDice(const int DiceCount, const int RollCount)
+    void FPlayer::RollDicePhase(const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
     {
-        CurrentDiceResult = RollDiceStrategy->Execute(DiceRoller, DiceCount, RollCount);
+        RollDiceStrategy->Execute(DiceRoller, DiceCount, RollCount, OutDiceResult);
     }
 
-    const int FPlayer::GetAttackCount() const
+    void FPlayer::ResolveDicePhase(FGame &Game, FMap &Map, std::vector<EDiceFace> &DiceResult)
     {
-        assert(!CurrentDiceResult.empty());
-        int AttackCount = 0;
-        for (EDiceFace DiceFace : CurrentDiceResult)
-        {
-            if (DiceFace == EDiceFace::Attack)
-            {
-                AttackCount++;
-            }
-        }
-        return AttackCount;
+        ResolveDiceStrategy->Execute(Game, Map, shared_from_this(), DiceResult);
     }
 
-    void FPlayer::ResolveDice(FGame &Game, FMap &Map)
+    void FPlayer::MovePhase(FMap &Map)
     {
-        ResolveDiceStrategy->Execute(Game, Map, shared_from_this());
+        MoveStrategy->Execute(Map, shared_from_this(), true, false);
     }
 
-    void FPlayer::Move(FMap &Map)
-    {
-        MoveStrategy->Execute(Map, shared_from_this());
-    }
-
-    void FPlayer::BuyCards(FGame &Game)
+    void FPlayer::BuyCardsPhase(FGame &Game)
     {
         BuyCardsStrategy->Execute(Game, shared_from_this());
     }
@@ -296,108 +292,9 @@ namespace KingOfNewYork
         std::cout << GetPlayerAndMonsterNames()
                   << ", please select your starting borough:"
                   << std::endl;
-        SelectBorough(Map, true, false);
 
+        Move(Map, true);
     }
-
-    void FPlayer::SelectBorough(FMap &Map, const bool bOnlyStartingLocation, const bool bIncludeCenter)
-    {
-        int bDone = false;
-        while (!bDone)
-        {
-            for (int i = 0; i < Map.BoroughCount(); ++i)
-            {
-                std::shared_ptr<FBorough> CurrentBorough = Map.GetBorough(i);
-                const std::vector<std::shared_ptr<FPlayer>> &CurrentPlayers =
-                        CurrentBorough->GetConstPlayers();
-                const int Offset = CurrentBorough == Borough ? 1 : 0;
-                if (CurrentPlayers.size() - Offset < MAXIMUM_PLAYERS_IN_BOROUGH &&
-                        (!bOnlyStartingLocation || CurrentBorough->IsStartingLocation()) &&
-                        (!CurrentBorough->IsCenter() || bIncludeCenter))
-                {
-                    std::cout << (i + 1)
-                              << ". "
-                              << CurrentBorough->GetName();
-                    if (CurrentPlayers.size() > 0)
-                    {
-                        std::cout << " (already there: ";
-                        for (int j = 0; j < CurrentPlayers.size(); ++j)
-                        {
-                            if (CurrentPlayers[j] == shared_from_this())
-                            {
-                                std::cout << "you";
-                            }
-                            else
-                            {
-                                std::cout << CurrentPlayers[j]->GetPlayerAndMonsterNames();
-                            }
-                            std::cout << (j + 1 != CurrentPlayers.size() ? ", " : ")");
-                        }
-                    }
-                    std::cout << std::endl;
-                }
-            }
-            std::cout << ">";
-            const int Input = InputSingleDigit();
-            std::cout << std::endl;
-
-            if (1 <= Input && Input <= Map.BoroughCount())
-            {
-                std::shared_ptr<FBorough> SelectedBorough = Map.GetBorough(Input - 1);
-                const std::vector<std::shared_ptr<FPlayer>> &SelectedPlayers =
-                        SelectedBorough->GetConstPlayers();
-                if (SelectedPlayers.size() < MAXIMUM_PLAYERS_IN_BOROUGH &&
-                        (!bOnlyStartingLocation || SelectedBorough->IsStartingLocation()))
-                {
-                    bDone = true;
-                    MoveTo(SelectedBorough);
-                }
-                else
-                {
-                    std::cout << "Invalid borough, please try again."
-                              << std::endl
-                              << std::endl;
-                }
-            }
-            else
-            {
-                std::cout << "Invalid input, please try again."
-                          << std::endl
-                          << std::endl;
-            }
-        }
-    }
-
-    void FPlayer::MoveTo(std::shared_ptr<FBorough> NewBorough)
-    {
-        assert(NewBorough);
-        if (Borough == NewBorough)
-        {
-            return;
-        }
-        //Removing player from previous borough list.
-        if (Borough)
-        {
-            bool Erased = false;
-            for (auto it = Borough->GetConstPlayers().begin();
-                 it != Borough->GetConstPlayers().end();
-                 ++it)
-            {
-                if (*it == shared_from_this())
-                {
-                    Borough->GetMutablePlayers().erase(it);
-                    Erased = true;
-                    break;
-                }
-            }
-            assert(Erased);
-        }
-        //Setting player position to selected borough.
-        Borough = NewBorough;
-        //Put player in the borough player list.
-        Borough->GetMutablePlayers().push_back(shared_from_this());
-    }
-
 
     void FPlayer::TakeDamage(FGame &Game, const int Damage)
     {
@@ -419,6 +316,12 @@ namespace KingOfNewYork
                       << std::endl;
         }
     }
+
+    void FPlayer::Move(FMap &Map, bool bOnlyStartingLocation)
+    {
+        MoveStrategy->Execute(Map, shared_from_this(), false, bOnlyStartingLocation);
+    }
+
 
     const std::string FPlayer::EarnMonsterResources(const EMonsterResource MonsterResource, const int Number)
     {

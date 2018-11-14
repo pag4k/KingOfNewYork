@@ -18,9 +18,10 @@ namespace KingOfNewYork
     class FDiceRoller {
     public :
         FDiceRoller();
-        const std::vector<EDiceFace> BeginRolling(const int DiceCount, const int RollCount) const;
+        std::vector<EDiceFace> BeginRolling(const int DiceCount) const;
+        void RollDice(const int DiceCount, std::vector<EDiceFace> &OutDiceResult) const;
     private :
-        const EDiceFace RollDice(const int FaceNumber) const;
+        const EDiceFace RollSingleDice(const int FaceNumber) const;
         mutable int RollHistory[FACE_ON_DICE_COUNT];
     };
 }

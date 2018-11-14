@@ -7,17 +7,9 @@
 
 namespace KingOfNewYork
 {
-    void HumanResolveDiceStrategy::Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player)
+    void HumanResolveDiceStrategy::Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult)
     {
-        assert(!Player->GetCurrentDiceResult().empty());
-        int DiceSums[FACE_ON_DICE_COUNT];
-        for (int &DiceSum : DiceSums) {
-            DiceSum = 0;
-        }
-        for (EDiceFace DiceFace: Player->GetCurrentDiceResult())
-        {
-            DiceSums[static_cast<int>(DiceFace)]++;
-        }
+        std::vector<int> DiceSums = GetDiceSums(DiceResult);
 
         bool Done = false;
         do
@@ -50,6 +42,7 @@ namespace KingOfNewYork
                               << GetDiceFaceString(EDiceFace(Input))
                               << " dice:"
                               << std::endl;
+                    Done = true;
                     switch (Input)
                     {
                         case 0:
@@ -65,7 +58,7 @@ namespace KingOfNewYork
                             }
                             break;
                         case 2:
-                            if (ResolveDestruction(Player, DiceSums[Input]))
+                            if (HumanResolveDestruction(Player, DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
@@ -91,7 +84,6 @@ namespace KingOfNewYork
                         default:
                             assert(true);
                     }
-                    Done = true;
                     for (int &DiceSum : DiceSums) {
                         if (DiceSum > 0)
                         {
@@ -115,18 +107,69 @@ namespace KingOfNewYork
         } while (!Done);
     }
 
-    void AggressiveResolveDiceStrategy::Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player)
+    void AggressiveResolveDiceStrategy::Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult)
     {
+        std::vector<int> DiceSums = GetDiceSums(DiceResult);
 
+        //1. Celebrity
+        if (DiceSums[1] > 0)
+        {
+            ResolveCelebrity(Game, Player, DiceSums[1]);
+            DiceSums[1] = 0;
+        }
+
+        //2. Energy
+        if (DiceSums[3] > 0)
+        {
+            ResolveEnergy(Player, DiceSums[3]);
+            DiceSums[3] = 0;
+        }
+
+        //3. Attack
+        if (DiceSums[0] > 0)
+        {
+            ResolveAttack(Game, Map, Player, DiceSums[0]);
+            DiceSums[0] = 0;
+        }
+
+        //4. Heal
+        if (DiceSums[4] > 0)
+        {
+            ResolveHeal(Player, DiceSums[4]);
+            DiceSums[4] = 0;
+        }
+
+        //5. Ouch
+        if (DiceSums[5] > 0)
+        {
+            ResolveOuch(Game, Map, Player, DiceSums[5]);
+            DiceSums[5] = 0;
+        }
+
+        //6. Destruction
+        if (DiceSums[2] > 0)
+        {
+            AIResolveDestruction(Player, DiceSums[2]);
+            DiceSums[2] = 0;
+        }
     }
 
-    void ModerateResolveDiceStrategy::Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player)
+    void ModerateResolveDiceStrategy::Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult)
     {
-
     }
 
     namespace
     {
+
+        std::vector<int> GetDiceSums(std::vector<EDiceFace> &DiceResult)
+        {
+            std::vector<int> DiceSums(DiceResult.size(), 0);
+            for (EDiceFace DiceFace: DiceResult)
+            {
+                DiceSums[static_cast<int>(DiceFace)]++;
+            }
+            return  DiceSums;
+        }
 
         const bool ResolveAttack(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, const int NumberOfDice)
         {
@@ -153,26 +196,7 @@ namespace KingOfNewYork
                                   << TargetPlayer->GetPlayerAndMonsterNames()
                                   <<" was attacked while being in Manhattan, he/she may flee Manhattan. Please, let him/her select the borough to move to:"
                                   << std::endl;
-                        std::string OldBorough = TargetPlayer->GetBorough()->GetName();
-                        TargetPlayer->SelectBorough(Map, false, true);
-                        if (OldBorough == TargetPlayer->GetBorough()->GetName())
-                        {
-                            std::cout << TargetPlayer->GetPlayerAndMonsterNames()
-                                      << " stayed in "
-                                      << TargetPlayer->GetBorough()->GetName()
-                                      << "."
-                                      << std::endl;
-                        }
-                        else
-                        {
-                            std::cout << TargetPlayer->GetPlayerAndMonsterNames()
-                                      << " moved from "
-                                      << OldBorough
-                                      << " to "
-                                      << TargetPlayer->GetBorough()->GetName()
-                                      << "."
-                                      << std::endl;
-                        }
+                        TargetPlayer->Move(Map, false);
                         break;
                     }
                 }
@@ -226,7 +250,7 @@ namespace KingOfNewYork
             return true;
         }
 
-        const bool ResolveDestruction(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
+        const bool HumanResolveDestruction(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
         {
             assert(Player->GetBorough() != nullptr);
             bool bAllEmptyStack = true;
@@ -316,10 +340,73 @@ namespace KingOfNewYork
             int NewNumberOfDice = NumberOfDice - DestructedTile.GetDurability();
             if (NewNumberOfDice > 0)
             {
-                ResolveDestruction(Player, NewNumberOfDice);
+                HumanResolveDestruction(Player, NewNumberOfDice);
             }
             return true;
         }
+
+        const bool AIResolveDestruction(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
+        {
+            assert(Player->GetBorough() != nullptr);
+            bool bAllEmptyStack = true;
+            int SelectedStack = -1;
+            for (int i = 0; i < Player->GetBorough()->GetConstTileStacks().size(); ++i)
+            {
+                if (!Player->GetBorough()->GetConstTileStacks()[i]->IsEmpty() &&
+                        Player->GetBorough()->GetConstTileStacks()[i]->GetTopTileInfo()->GetDurability() <= NumberOfDice)
+                {
+                    bAllEmptyStack = false;
+                    SelectedStack = i;
+                    break;
+                }
+            }
+
+            if (bAllEmptyStack)
+            {
+                std::cout << "There are no buildings or units to destruct."
+                          << std::endl;
+                return true;
+            }
+
+            std::cout << "The following buildings/units are in your borough:"
+                      << std::endl;
+            for (int i = 0; i < Player->GetBorough()->GetConstTileStacks().size(); ++i)
+            {
+                std::cout << (i + 1)
+                          << ". "
+                          << (Player->GetBorough()->GetConstTileStacks()[i]->IsEmpty()
+                              ? "Tile stack is empty"
+                              : Player->GetBorough()->GetConstTileStacks()[i]->GetTopTileInfo()->GetTileInfo())
+                          << "."
+                          << std::endl;
+            }
+
+            if (SelectedStack == -1)
+            {
+                std::cout << "No buildings can be deleted with "
+                          << NumberOfDice
+                          << " dice left."
+                          << std::endl;
+                return true;
+            }
+
+            //Make a copy of the tile for convenience.
+            FTile DestructedTile = FTile(*(Player->GetBorough()->GetConstTileStacks()[SelectedStack]->GetTopTileInfo()));
+            Player->GetBorough()->GetConstTileStacks()[SelectedStack]->DestructTopTile();
+            std::cout << "Destructed "
+                      << GetTileTypeString(DestructedTile.GetTileType())
+                      << " and earned "
+                      << Player->EarnMonsterResources(EMonsterResource(static_cast<int>(DestructedTile.GetTileType())/2), DestructedTile.GetReward())
+                      << "."
+                      << std::endl;
+            int NewNumberOfDice = NumberOfDice - DestructedTile.GetDurability();
+            if (NewNumberOfDice > 0)
+            {
+                AIResolveDestruction(Player, NewNumberOfDice);
+            }
+            return true;
+        }
+
 
         const bool ResolveEnergy(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
         {
@@ -342,8 +429,6 @@ namespace KingOfNewYork
             }
             else
             {
-                //LifePoints += NumberOfDice;
-                //LifePoints = (LifePoints > MAXIMUM_LIFE_POINTS ? 10 : LifePoints);
                 std::cout << "Earned "
                           << Player->EarnLifePoints(NumberOfDice)
                           << "."

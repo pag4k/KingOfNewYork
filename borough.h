@@ -25,6 +25,7 @@ namespace KingOfNewYork
         const bool IsStartingLocation() const { return bStartingLocation; }
         void SetStartingLocation(const bool bStartingLocation) { this->bStartingLocation = bStartingLocation; }
         const bool IsCenter() const { return bCenter; }
+        int GetPlayerCount() { return static_cast<int>(GetConstPlayers().size()); }
         void SetCenter(const bool bCenter) { this->bCenter = bCenter; }
         const std::vector<std::unique_ptr<FTileStack>> &GetConstTileStacks() const { return TileStacks; }
         std::vector<std::unique_ptr<FTileStack>> &GetMutableTileStacks() { return TileStacks; }

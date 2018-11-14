@@ -368,8 +368,17 @@ namespace KingOfNewYork
                               << ": Press enter to roll the dice.";
                     std::string Trash;
                     std::getline(std::cin, Trash);
-                    Players[i]->RollDice(BLACK_DICE_COUNT + GREEN_DICE_COUNT, 1);
-                    int AttackCount = Players[i]->GetAttackCount();
+                    std::vector<EDiceFace> DiceResult = Players[i]->RollStartDice(BLACK_DICE_COUNT + GREEN_DICE_COUNT);
+
+                    int AttackCount = 0;
+                    for (EDiceFace DiceFace : DiceResult)
+                    {
+                        if (DiceFace == EDiceFace::Attack)
+                        {
+                            AttackCount++;
+                        }
+                    }
+
                     std::cout << "Number of attacks: "
                               << AttackCount
                               << std::endl;

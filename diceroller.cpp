@@ -23,12 +23,9 @@ namespace KingOfNewYork
         }
     }
 
-    const std::vector<EDiceFace> FDiceRoller::BeginRolling(
-        const int DiceCount, const int RollCount) const
+    std::vector<EDiceFace> FDiceRoller::BeginRolling(const int DiceCount) const
     {
         assert(0 <= DiceCount && DiceCount <= BLACK_DICE_COUNT + GREEN_DICE_COUNT);
-
-        int CurrentRollCount = 0;
 
         std::vector<EDiceFace> DiceResult;
         for (int i = 0; i < DiceCount; i++)
@@ -36,68 +33,28 @@ namespace KingOfNewYork
             DiceResult.push_back(EDiceFace::None);
         }
 
-        while (CurrentRollCount < RollCount)
-        {
-            std::cout << "### Roll number "
-                      << (CurrentRollCount + 1)
-                      << " out of "
-                      << (RollCount)
-                      << " ###"
-                      << std::endl;
-
-            for (int i = 0; i < DiceCount; i++)
-            {
-                bool NewRoll = false;
-                if (DiceResult[i] == EDiceFace::None)
-                {
-                    NewRoll = true;
-                    DiceResult[i] = RollDice(FACE_ON_DICE_COUNT);
-                }
-                std::cout << (i + 1)
-                          << ": "
-                          << GetDiceFaceString(DiceResult[i])
-                          << (NewRoll ? " (new roll)" : "")
-                          << std::endl;
-            }
-
-            CurrentRollCount++;
-            if (CurrentRollCount >= RollCount)
-            {
-                break;
-            }
-
-            std::cout << "#############################"
-                      << std::endl;
-            std::cout << "Enter the numbers of the dice you want to reroll and"
-                      << " press enter."
-                      << std::endl;
-            std::cout << "Ex.: \"123\" (all other characters will be ignored)."
-                      << std::endl;
-            std::cout << "Write nothing to end the rolling phase)."
-                      << std::endl;
-            std::cout << "> ";
-            
-            std::string input;
-            std::getline(std::cin, input);
-            if (input.empty())
-            {
-                std::cout << "Ending rolling phase..." << std::endl;
-                break;
-            }
-
-            for (int i = 0; i < DiceCount; i++)
-            {
-                if (input.find((char)(i+1+48)) != std::string::npos)
-                {
-                    DiceResult[i] = EDiceFace::None;
-                }
-            }
-        }
-        
         return DiceResult;
     }
 
-    const EDiceFace FDiceRoller::RollDice(const int FaceNumber) const
+    void FDiceRoller::RollDice(const int DiceCount, std::vector<EDiceFace> &OutDiceResult) const
+    {
+        for (int i = 0; i < DiceCount; i++)
+        {
+            bool NewRoll = false;
+            if (OutDiceResult[i] == EDiceFace::None)
+            {
+                NewRoll = true;
+                OutDiceResult[i] = RollSingleDice(FACE_ON_DICE_COUNT);
+            }
+            std::cout << (i + 1)
+                      << ": "
+                      << GetDiceFaceString(OutDiceResult[i])
+                      << (NewRoll ? " (new roll)" : "")
+                      << std::endl;
+        }
+    }
+
+    const EDiceFace FDiceRoller::RollSingleDice(const int FaceNumber) const
     {
         assert(1 <= FaceNumber && FaceNumber <= FACE_ON_DICE_COUNT);
         int Roll = std::rand() / ((RAND_MAX + 1u) / FaceNumber);

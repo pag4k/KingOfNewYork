@@ -18,7 +18,7 @@ namespace KingOfNewYork {
         int UnitCount = 0;
         for (std::unique_ptr<FTileStack> &TileStack : TileStacks)
         {
-            if (!TileStack->GetTopTileInfo()->IsBuilding())
+            if (!TileStack->IsEmpty() && !TileStack->GetTopTileInfo()->IsBuilding())
             {
                 UnitCount++;
             }

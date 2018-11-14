@@ -168,4 +168,29 @@ namespace KingOfNewYork
     {
         return Graph.GetNeighbours(n);
     }
+
+    std::shared_ptr<FBorough> FMap::GetCenterBorough()
+    {
+        std::shared_ptr<FBorough> CenterBorough = nullptr;
+        for (int i = 0; i < BoroughCount(); ++i) {
+            if (GetBorough(i)->IsCenter()) {
+                if (CenterBorough == nullptr)
+                {
+                    CenterBorough = GetBorough(i);
+                }
+                else
+                {
+                    //There should not be more than one Center Borough.
+                    assert(true);
+                }
+            }
+        }
+        if (CenterBorough == nullptr)
+        {
+            //There should one Center Borough.
+            assert(true);
+        }
+
+        return CenterBorough;
+    }
 }
