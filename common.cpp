@@ -131,8 +131,7 @@ namespace KingOfNewYork
         return FileTypeString;
     }
 
-    const std::string GetMonsterResourceString(
-        const EMonsterResource MonsterResource)
+    const std::string GetMonsterResourceString(EMonsterResource MonsterResource)
     {
         std::string MonsterResourceString;
         switch (MonsterResource)
@@ -149,5 +148,33 @@ namespace KingOfNewYork
         }
         assert(!MonsterResourceString.empty());
         return MonsterResourceString;
+    };
+
+    const std::string GetTurnPhaseString(ETurnPhase TurnPhase)
+    {
+        std::string TurnPhaseString;
+        switch (TurnPhase)
+        {
+            case ETurnPhase::StartTurn:
+                TurnPhaseString = "Start Turn";
+                break;
+            case ETurnPhase::RollDice:
+                TurnPhaseString = "Roll Dice";
+                break;
+            case ETurnPhase::ResolveDice:
+                TurnPhaseString = "Resolve Dice";
+                break;
+            case ETurnPhase::Move:
+                TurnPhaseString = "Move";
+                break;
+            case ETurnPhase::BuyCards:
+                TurnPhaseString = "Buy Cards";
+                break;
+            case ETurnPhase::EndTurn:
+                TurnPhaseString = "End Turn";
+                break;
+        }
+        assert(!TurnPhaseString.empty());
+        return TurnPhaseString;
     };
 }

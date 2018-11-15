@@ -242,10 +242,7 @@ namespace KingOfNewYork
             }
             if (NewVictoryPoints > 0)
             {
-                std::cout << "Earned "
-                          << Player->EarnVictoryPoints(NewVictoryPoints)
-                          << "."
-                          << std::endl;
+                Player->ChangeVictoryPoints(NewVictoryPoints);
             }
             else
             {
@@ -338,10 +335,10 @@ namespace KingOfNewYork
             Player->GetBorough()->GetConstTileStacks()[SelectedStack]->DestructTopTile();
             std::cout << "Destructed "
                       << GetTileTypeString(DestructedTile.GetTileType())
-                      << " and earned "
-                      << Player->EarnMonsterResources(EMonsterResource(static_cast<int>(DestructedTile.GetTileType())/2), DestructedTile.GetReward())
                       << "."
                       << std::endl;
+            Player->EarnMonsterResources(EMonsterResource(static_cast<int>(DestructedTile.GetTileType())/2), DestructedTile.GetReward());
+
             int NewNumberOfDice = NumberOfDice - DestructedTile.GetDurability();
             if (NewNumberOfDice > 0)
             {
@@ -400,10 +397,10 @@ namespace KingOfNewYork
             Player->GetBorough()->GetConstTileStacks()[SelectedStack]->DestructTopTile();
             std::cout << "Destructed "
                       << GetTileTypeString(DestructedTile.GetTileType())
-                      << " and earned "
-                      << Player->EarnMonsterResources(EMonsterResource(static_cast<int>(DestructedTile.GetTileType())/2), DestructedTile.GetReward())
                       << "."
                       << std::endl;
+            Player->EarnMonsterResources(EMonsterResource(static_cast<int>(DestructedTile.GetTileType())/2), DestructedTile.GetReward());
+
             int NewNumberOfDice = NumberOfDice - DestructedTile.GetDurability();
             if (NewNumberOfDice > 0)
             {
@@ -416,11 +413,7 @@ namespace KingOfNewYork
         const bool ResolveEnergy(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
         {
             assert(NumberOfDice>0);
-            //EnergyCubes += NumberOfDice;
-            std::cout   << "Earned "
-                        << Player->EarnEnergyCubes(NumberOfDice)
-                        << "."
-                        << std::endl;
+            Player->ChangeEnergyCubes(NumberOfDice);
             return true;
         }
 
@@ -434,10 +427,7 @@ namespace KingOfNewYork
             }
             else
             {
-                std::cout << "Earned "
-                          << Player->EarnLifePoints(NumberOfDice)
-                          << "."
-                          << std::endl;
+                Player->ChangeLifePoints(NumberOfDice);
             }
             return true;
         }

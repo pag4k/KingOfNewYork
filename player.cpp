@@ -10,6 +10,7 @@
 #include "game.h"
 #include "player.h"
 #include "helper.h"
+#include "observerevent.h"
 
 namespace KingOfNewYork
 {
@@ -20,6 +21,7 @@ namespace KingOfNewYork
         PlayerName = "";
         EnterPlayerName(PlayerNames);
         MonsterName = EMonsterName::None;
+        TurnPhase = ETurnPhase ::None;
         SelectMonster(bAvailableMonsters);
         Borough = nullptr;
         LevelInCenter = 0;
@@ -65,27 +67,14 @@ namespace KingOfNewYork
 
     void FPlayer::TakeTurn(FMap &Map, FGame &Game)
     {
-        PrintHeader(GetPlayerAndMonsterNames() + " turn start");
-        PrintLong();
+        SetTurnPhase(ETurnPhase::StartTurn);
+        StartPhase();
 
-        if (Borough->IsCenter())
-        {
-            std::cout << "Since you are in "
-                      << CENTER_LEVEL_NAMES[LevelInCenter]
-                      << " Manhattan, you earn "
-                      << EarnVictoryPoints(CENTER_VICTORY_POINT_REWARDS[LevelInCenter])
-                      << " and "
-                      << EarnEnergyCubes(CENTER_ENERGY_CUBE_REWARDS[LevelInCenter])
-                      << "."
-                      << std::endl;
-        }
-
-        PrintHeader(GetPlayerAndMonsterNames() + " roll dice phase");
+        SetTurnPhase(ETurnPhase::RollDice);
         std::vector<EDiceFace> DiceResult = DiceRoller.BeginRolling(BLACK_DICE_COUNT);
-
         RollDicePhase(BLACK_DICE_COUNT, MAXIMUM_ROLL, DiceResult);
 
-        PrintHeader(GetPlayerAndMonsterNames() + " resolve dice phase");
+        SetTurnPhase(ETurnPhase::ResolveDice);
         ResolveDicePhase(Game, Map, DiceResult);
 
         Game.CheckDeadPlayer();
@@ -95,13 +84,14 @@ namespace KingOfNewYork
             return;
         }
 
-        PrintHeader(GetPlayerAndMonsterNames() + " move phase");
+        SetTurnPhase(ETurnPhase::Move);
         MovePhase(Map);
 
-        PrintHeader(GetPlayerAndMonsterNames() + " buy cards phase");
+        SetTurnPhase(ETurnPhase::BuyCards);
         BuyCardsPhase(Game);
 
-        PrintHeader(GetPlayerAndMonsterNames() + " turn over");
+        SetTurnPhase(ETurnPhase::EndTurn);
+        SetTurnPhase(ETurnPhase::None);
     }
 
     std::vector<EDiceFace> FPlayer::RollStartDice(const int DiceCount)
@@ -115,6 +105,28 @@ namespace KingOfNewYork
     void FPlayer::BuyCard(std::unique_ptr<FCard> Card)
     {
         Cards.push_back(std::move(Card));
+    }
+
+    void FPlayer::SetTurnPhase(ETurnPhase NewTurnPhae)
+    {
+        this->TurnPhase = NewTurnPhae;
+        if (TurnPhase != ETurnPhase::None)
+        {
+            Notify(shared_from_this(), std::make_shared<FStartTurnPhaseEvent>(EObserverEvent::StartTurnPhase, "", TurnPhase));
+        }
+    }
+
+    void FPlayer::StartPhase()
+    {
+        if (Borough->IsCenter())
+        {
+            std::cout << "Since you are in "
+                      << CENTER_LEVEL_NAMES[LevelInCenter]
+                      << " Manhattan, you get the following:"
+                      << std::endl;
+            ChangeVictoryPoints(CENTER_VICTORY_POINT_REWARDS[LevelInCenter]);
+            ChangeEnergyCubes(CENTER_ENERGY_CUBE_REWARDS[LevelInCenter]);
+        }
     }
 
     void FPlayer::RollDicePhase(const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
@@ -301,64 +313,72 @@ namespace KingOfNewYork
     {
         assert(Damage > 0);
         assert(bAlive);
-        std::cout << GetPlayerAndMonsterNames()
-                   << " loses "
-                   << EarnLifePoints(-Damage)
-                   << "."
-                   << std::endl;
+        ChangeLifePoints(-Damage);
         if (LifePoints == 0)
         {
             bAlive = false;
             bStatueOfLiberty = false;
             bCelebrity = false;
-            std::cout << GetPlayerAndMonsterNames()
-                      << " died!"
-                      << std::endl
-                      << std::endl;
+            //TODO: WRONG PLACE TO PUT THIS!
+            Notify(shared_from_this(), std::make_shared<FDeadPlayerEvent>(EObserverEvent::DeadPlayer, ""));
         }
     }
 
     void FPlayer::Move(FMap &Map, bool bOnlyStartingLocation)
     {
+        std::shared_ptr<FBorough> OldBorough = Borough;
+        int OldLevelInCenter = LevelInCenter;
         MoveStrategy->Execute(Map, shared_from_this(), false, bOnlyStartingLocation);
+        if (OldBorough && OldBorough->IsCenter() && Borough->IsCenter())
+        {
+            Notify(shared_from_this(), std::make_shared<FMoveInManhattanEvent>(EObserverEvent::MoveInManhattan, "", OldLevelInCenter, LevelInCenter));
+        }
+        else
+        {
+            Notify(shared_from_this(), std::make_shared<FChangeBoroughEvent>(EObserverEvent::ChangeBorough, "", OldBorough, Borough));
+        }
     }
 
 
-    const std::string FPlayer::EarnMonsterResources(const EMonsterResource MonsterResource, const int Number)
+    void FPlayer::EarnMonsterResources(const EMonsterResource MonsterResource, const int Number)
     {
         assert(Number != 0);
         switch (MonsterResource)
         {
             case EMonsterResource::EnergyCube:
-                return EarnEnergyCubes(Number);
+                ChangeEnergyCubes(Number);
             case EMonsterResource::LifePoint:
-                return EarnLifePoints(Number);
+                ChangeLifePoints(Number);
             case EMonsterResource::VictoryPoint:
-                return EarnVictoryPoints(Number);
+                ChangeVictoryPoints(Number);
         }
         assert(true);
-        return "ERROR";
     }
 
-    const std::string FPlayer::EarnEnergyCubes(const int Number)
+    void FPlayer::ChangeEnergyCubes(int Number)
     {
         assert(Number != 0);
         EnergyCubes += Number;
-        return std::to_string(std::abs(Number)) + " Energy Cubes (new total: " + std::to_string(EnergyCubes) + ")";
+        Notify(shared_from_this(), std::make_shared<FChangeEnergyCubesEvent>(EObserverEvent::ChangeEnergyCubes, "", Number, EnergyCubes));
     }
 
-    const std::string FPlayer::EarnLifePoints(const int Number)
+    void FPlayer::ChangeLifePoints(int Number)
     {
         assert(Number != 0);
         LifePoints += Number;
         LifePoints = std::clamp(LifePoints, 0, MAXIMUM_LIFE_POINTS);
-        return std::to_string(std::abs(Number)) + " Life Points (new total: " + std::to_string(LifePoints) + ")";
+        Notify(shared_from_this(), std::make_shared<FChangeLifePointsEvent>(EObserverEvent::ChangeLifePoints, "", Number, LifePoints));
     }
 
-    const std::string FPlayer::EarnVictoryPoints(const int Number)
+    void FPlayer::ChangeVictoryPoints(int Number)
     {
         assert(Number != 0);
         VictoryPoints += Number;
-        return std::to_string(std::abs(Number))+ " Victory Points (new total: " + std::to_string(VictoryPoints) + ")";
+        Notify(shared_from_this(), std::make_shared<FChangeVictoryPointsEvent>(EObserverEvent::ChangeVictoryPoints, "", Number, VictoryPoints));
+
     }
+//
+//    void FPlayer::SetTurnResult(std::string Message) {
+//        Notify(shared_from_this(), std::make_shared<FTurnResultEvent>(EObserverEvent::TurnResult, Message));
+//    }
 }

@@ -15,30 +15,33 @@
 #include "card.h"
 #include "tile.h"
 #include "borough.h"
+#include "subject.h"
 
 namespace KingOfNewYork
 {
   class FPlayer;
 
-  class FGame
+  class FGame: public FSubject
   {
   public:
       FGame();
-      std::unique_ptr<FCard> GetCard(const int Index);
+      std::unique_ptr<FCard> GetCard(int Index);
       std::vector<std::shared_ptr<FPlayer>> &GetPlayers() { return Players; }
       std::vector<std::unique_ptr<FCard>> &GetAvailableCards() { return AvailableCards; }
+      std::shared_ptr<FPlayer> GetCurrentPlayer() { assert(CurrentPlayer != -1); return Players[CurrentPlayer]; }
       void Print() const;
       void DistributeCard();
       void ChangeCelebrity(std::shared_ptr<FPlayer> NewCelebrityPlayer);
       void ChangeStatueOfLiberty(std::shared_ptr<FPlayer> NewStatueOfLibertyPlayer);
       void CheckDeadPlayer();
       void CleanDeadPlayer(std::shared_ptr<FPlayer> DeadPlayer);
+      void StartMainPhase();
   private:
       const bool InitializationPhase();
       const bool SelectMap();
       const bool DistributeTiles(FTileStack &TileStack);
       const int GetPlayerCount();
-      void CreatePlayers(const int PlayerCount);
+      void CreatePlayers(int PlayerCount);
       const bool StartupPhase();
       void GetFirstPlayer();
       void SelectStartingBoroughs();

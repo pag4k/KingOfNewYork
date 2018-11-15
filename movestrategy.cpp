@@ -1,8 +1,3 @@
-// ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
-// Written by: Pierre-Andre Gagnon - 40067198
-// ----------------------------------------------------------------------------
 
 #include "helper.h"
 #include "movestrategy.h"
@@ -220,11 +215,6 @@ namespace KingOfNewYork
             assert(NewBorough);
             if (Player->GetBorough() == NewBorough)
             {
-                std::cout << Player->GetPlayerAndMonsterNames()
-                          << " stayed in "
-                          << Player->GetBorough()->GetName()
-                          << "."
-                          << std::endl;
                 return;
             }
 
@@ -252,25 +242,6 @@ namespace KingOfNewYork
             //Put player in the borough player list.
             Player->GetBorough()->GetMutablePlayers().push_back(Player);
 
-            if (OldBorough == nullptr)
-            {
-                std::cout << Player->GetPlayerAndMonsterNames()
-                          << " moved to "
-                          << Player->GetBorough()->GetName()
-                          << "."
-                          << std::endl;
-            }
-            else
-            {
-                std::cout << Player->GetPlayerAndMonsterNames()
-                          << " moved from "
-                          << OldBorough->GetName()
-                          << " to "
-                          << Player->GetBorough()->GetName()
-                          << "."
-                          << std::endl;
-            }
-
         }
 
         void ForceMoveToCenter(FMap &Map, std::shared_ptr<FPlayer> Player)
@@ -281,10 +252,9 @@ namespace KingOfNewYork
                       << " Monsters in any zone of Manhattan,"
                       << Player->GetPlayerAndMonsterNames()
                       <<" must move there."
-                      << "He/she earns "
-                      << Player->EarnVictoryPoints(ENTER_CENTER_VICTORY_POINT_REWARD)
-                      << " for doing so."
                       << std::endl;
+            Player->ChangeVictoryPoints(ENTER_CENTER_VICTORY_POINT_REWARD);
+
             MoveTo(Player, Map.GetCenterBorough());
             Player->SetLevelInCenter(1);
         }
@@ -299,20 +269,6 @@ namespace KingOfNewYork
             {
                 assert(0 < Player->GetLevelInCenter() && Player->GetLevelInCenter() < LEVEL_IN_CENTER_COUNT);
                 Player->SetLevelInCenter(Player->GetLevelInCenter() + 1);
-                std::cout << Player->GetPlayerAndMonsterNames()
-                          << " moved from "
-                          << CENTER_LEVEL_NAMES[Player->GetLevelInCenter()-1]
-                          << " Manhattan to "
-                          << CENTER_LEVEL_NAMES[Player->GetLevelInCenter()]
-                          << " Manhattan."
-                          << std::endl;
-            }
-            else
-            {
-                std::cout << "However, since"
-                          << Player->GetPlayerAndMonsterNames()
-                          << " is in Upper Manhattan, he/she no longer move during this phase."
-                          << std::endl;
             }
         }
 

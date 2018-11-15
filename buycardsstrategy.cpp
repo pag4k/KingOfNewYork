@@ -36,10 +36,9 @@ namespace KingOfNewYork
             }
             if (Input == 9 && Player->GetEnergyCubes() >= ENERGY_CUBE_FOR_NEW_CARDS_COUNT)
             {
-                std::cout << "You spend "
-                          << Player->EarnEnergyCubes(-ENERGY_CUBE_FOR_NEW_CARDS_COUNT)
-                          << " to get new card."
+                std::cout << "You get new card."
                           << std::endl;
+                Player->ChangeEnergyCubes(-ENERGY_CUBE_FOR_NEW_CARDS_COUNT);
                 Game.DistributeCard();
                 continue;
             }
@@ -55,10 +54,10 @@ namespace KingOfNewYork
                 {
                     std::cout << "You bough "
                               << AvailableCards[Input-1]->GetName()
-                              << " for "
-                              << Player->EarnEnergyCubes(-AvailableCards[Input-1]->GetEnergyCost())
                               << "."
                               << std::endl;
+                    Player->ChangeEnergyCubes(-AvailableCards[Input - 1]->GetEnergyCost());
+
                     Player->BuyCard(Game.GetCard(Input-1));
                 }
                 else

@@ -25,6 +25,10 @@ namespace KingOfNewYork
             std::cout << "Error: There was a problem during the startup phase."
                       << std::endl;
         }
+    }
+
+    void FGame::StartMainPhase()
+    {
         MainPhase();
     }
 
@@ -95,7 +99,7 @@ namespace KingOfNewYork
         }
     }
 
-    std::unique_ptr<FCard> FGame::GetCard(const int Index) {
+    std::unique_ptr<FCard> FGame::GetCard(int Index) {
         assert(AvailableCards[Index]);
         std::unique_ptr<FCard> Card = std::move(AvailableCards[Index]);
         assert(AvailableCards[Index] == nullptr);
@@ -187,18 +191,16 @@ namespace KingOfNewYork
             if (Player->IsStatueOfLiberty()) {
                 std::cout << "The Statue of Liberty no longer teams up with "
                           << Player->GetPlayerAndMonsterNames()
-                          << " and that player loses "
-                          << Player->EarnVictoryPoints(-STATUS_OF_LIBERTY_VICTORY_POINTS)
                           << "."
                           << std::endl;
                 Player->SetStatueOfLiberty(false);
+                Player->ChangeVictoryPoints(-STATUS_OF_LIBERTY_VICTORY_POINTS);
             }
         }
-        std::cout << "Moreover, you trigger a counterattack by the entire army, and you become the defender of the city: The Statue of Liberty comes to life and teams up with you. You also earn "
-                  << NewStatueOfLibertyPlayer->EarnVictoryPoints(STATUS_OF_LIBERTY_VICTORY_POINTS)
-                  << "."
+        std::cout << "Moreover, you trigger a counterattack by the entire army, and you become the defender of the city: The Statue of Liberty comes to life and teams up with you."
                   << std::endl;
         NewStatueOfLibertyPlayer->SetStatueOfLiberty(true);
+        NewStatueOfLibertyPlayer->ChangeVictoryPoints(STATUS_OF_LIBERTY_VICTORY_POINTS);
     }
 
     const bool FGame::DistributeTiles(FTileStack &MasterTileStack)
@@ -312,7 +314,7 @@ namespace KingOfNewYork
         return PlayerCount;
     }
 
-    void FGame::CreatePlayers(const int PlayerCount)
+    void FGame::CreatePlayers(int PlayerCount)
     {
         assert(MINIMUM_PLAYER <= PlayerCount &&
                PlayerCount <= MAXIMUM_PLAYER);
@@ -457,6 +459,7 @@ namespace KingOfNewYork
                     {
                         CurrentPlayer--;
                     }
+
                     CleanDeadPlayer(Player);
                     Players.erase(it);
                     bNewDead = true;

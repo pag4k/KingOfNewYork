@@ -98,7 +98,7 @@ namespace KingOfNewYork
         HighRise = 4,
         Tank = 5
     };
-    const std::string GetTileTypeString(const ETileType TileType);
+    const std::string GetTileTypeString(ETileType TileType);
 
     int const MAXIMUM_ENERGY_CUBES = 40; //TODO: Get the right amount.
     int const MAXIMUM_LIFE_POINTS = 10;
@@ -111,8 +111,39 @@ namespace KingOfNewYork
         LifePoint = 1,
         VictoryPoint = 2
     };
-    const std::string GetMonsterResourceString(
-        const EMonsterResource MonsterResource);
+    const std::string GetMonsterResourceString(EMonsterResource MonsterResource);
+
+    enum class ETurnPhase
+    {
+        None = -1,
+        StartTurn = 0,
+        RollDice = 1,
+        ResolveDice = 2,
+        Move = 3,
+        BuyCards = 4,
+        EndTurn = 5
+    };
+
+    const std::string GetTurnPhaseString(ETurnPhase TurnPhase);
+
+    enum class EObserverEvent
+    {
+        None = -1,
+        StartTurnPhase,
+        ChangeVictoryPoints,
+        ChangeEnergyCubes,
+        ChangeLifePoints,
+//        Attack = 0,
+//        Celebrity = 1,
+//        Destruction = 2,
+//        Energy = 3,
+//        Heal = 4,
+//        Ouch = 5
+        ChangeBorough,
+        MoveInManhattan,
+        DeadPlayer
+    };
+
 }
 
 #endif

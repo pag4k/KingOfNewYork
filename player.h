@@ -18,6 +18,7 @@
 #include "resolvedicestrategy.h"
 #include "movestrategy.h"
 #include "buycardsstrategy.h"
+#include "subject.h"
 
 namespace KingOfNewYork
 {
@@ -25,13 +26,11 @@ namespace KingOfNewYork
     class FDiceRoller;
     class FCard;
 
-    class FPlayer : public std::enable_shared_from_this<FPlayer>
+    class FPlayer : public FSubject, public std::enable_shared_from_this<FPlayer>
     {
     public:
-        FPlayer(
-            std::vector<std::string> &PlayerNames,
-            bool bAvailableMonsters[]);
-        ~FPlayer();
+        FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[]);
+        ~FPlayer() override;
 
         //Getters and Setters
         const std::string GetPlayerName() const { return PlayerName; }
@@ -55,14 +54,15 @@ namespace KingOfNewYork
 
         //Turn methods
         void TakeTurn(FMap &Map, FGame &Game);
-        void TakeDamage(FGame &Game, const int Damage);
+        void TakeDamage(FGame &Game, int Damage);
         void Move(FMap &Map, bool bOnlyStartingLocation);
-        const std::string EarnMonsterResources(const EMonsterResource MonsterResource, const int Number);
-        const std::string EarnEnergyCubes(const int Number);
-        const std::string EarnLifePoints(const int Number);
-        const std::string EarnVictoryPoints(const int Number);
+        void EarnMonsterResources(EMonsterResource MonsterResource, int Number);
+        void ChangeEnergyCubes(int Number);
+        void ChangeLifePoints(int Number);
+        void ChangeVictoryPoints(int Number);
         void BuyCard(std::unique_ptr<FCard> Card);
-        std::vector<EDiceFace> RollStartDice(const int DiceCount);
+        std::vector<EDiceFace> RollStartDice(int DiceCount);
+        void SetTurnResult(std::string Message);
 
         //Output methods
         void PrintShort() const;
@@ -73,7 +73,9 @@ namespace KingOfNewYork
         void SelectMonster(bool AvailableMonsters[]);
 
         //Turn methods
-        void RollDicePhase(const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult);
+        void SetTurnPhase(ETurnPhase NewTurnPhase);
+        void StartPhase();
+        void RollDicePhase(int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult);
         void ResolveDicePhase(FGame &Game, FMap &Map, std::vector<EDiceFace> &DiceResult);
         void MovePhase(FMap &Map);
         void BuyCardsPhase(FGame &Game);
@@ -87,6 +89,7 @@ namespace KingOfNewYork
         //Player variables
         std::string PlayerName;
         EMonsterName MonsterName;
+        ETurnPhase  TurnPhase;
         std::shared_ptr<FBorough> Borough;
         int LevelInCenter;
         FDiceRoller DiceRoller;

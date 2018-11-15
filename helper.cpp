@@ -13,11 +13,18 @@ namespace KingOfNewYork
 {
     std::string Path;
 
-    void PrintHeader(const std::string Header)
+    void PrintHeader(std::string Header)
     {
-        std::cout << "##### "
+        std::cout << std::endl
+                  << "##### "
                   << Header
                   << " #####"
+                  << std::endl;
+    }
+
+    void PrintNormal(std::string Message)
+    {
+        std::cout << Message
                   << std::endl;
     }
 
@@ -43,7 +50,7 @@ namespace KingOfNewYork
         return Input;
     }
 
-    const int ParseIntFromChar(const char Char)
+    const int ParseIntFromChar(char Char)
     {
         int Digit = (int)Char - 48;
         if (0 <= Digit && Digit <= 9)

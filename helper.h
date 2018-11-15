@@ -12,10 +12,11 @@
 namespace KingOfNewYork
 {
     extern std::string Path;
-    void PrintHeader(const std::string Header);
+    void PrintHeader(std::string Header);
+    void PrintNormal(std::string Message);
     const int InputSingleDigit();
     const std::string InputString();
-    const int ParseIntFromChar(const char Char);
+    const int ParseIntFromChar(char Char);
     std::string GetFileName(const std::string &FullPath);
     const std::vector<std::string> GetMapFiles(const std::string &Folder);
 }

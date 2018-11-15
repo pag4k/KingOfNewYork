@@ -8,6 +8,7 @@
 #include <memory>
 #include "game.h"
 #include "helper.h"
+#include "gameview.h"
 
 using namespace KingOfNewYork;
 
@@ -21,6 +22,8 @@ using namespace KingOfNewYork;
                   << std::endl;
 
         std::shared_ptr<FGame> Game = std::make_shared<FGame>();
+        FGameView GameView(Game);
+        Game->StartMainPhase();
         //Game->Initialize();
         std::cout << std::endl;
 
