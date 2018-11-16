@@ -21,7 +21,7 @@ namespace KingOfNewYork
 {
   class FPlayer;
 
-  class FGame: public FSubject
+  class FGame: public FSubject, public std::enable_shared_from_this<FGame>
   {
   public:
       FGame();
@@ -29,6 +29,7 @@ namespace KingOfNewYork
       std::vector<std::shared_ptr<FPlayer>> &GetPlayers() { return Players; }
       std::vector<std::unique_ptr<FCard>> &GetAvailableCards() { return AvailableCards; }
       std::shared_ptr<FPlayer> GetCurrentPlayer() { assert(CurrentPlayer != -1); return Players[CurrentPlayer]; }
+      std::shared_ptr<FMap> GetMap() { return Map; }
       void Print() const;
       void DistributeCard();
       void ChangeCelebrity(std::shared_ptr<FPlayer> NewCelebrityPlayer);

@@ -60,6 +60,7 @@ namespace KingOfNewYork
                             Borough->SetStartingLocation(Text.substr(Position1, Position2++ - Position1) == "StartingLocation");
                             std::size_t Position3 = Text.find(',', Position2);
                             Borough->SetCenter(Text.substr(Position2, Position3 - Position2) == "Center");
+                            Boroughs.push_back(Borough);
                         }
                         else
                         {
@@ -164,7 +165,7 @@ namespace KingOfNewYork
         return true;
     }
 
-    const std::vector<int> FMap::GetNeighbourgs(const int n) const
+    const std::vector<int> FMap::GetNeighbourgs(int n) const
     {
         return Graph.GetNeighbours(n);
     }
@@ -172,11 +173,11 @@ namespace KingOfNewYork
     std::shared_ptr<FBorough> FMap::GetCenterBorough()
     {
         std::shared_ptr<FBorough> CenterBorough = nullptr;
-        for (int i = 0; i < BoroughCount(); ++i) {
-            if (GetBorough(i)->IsCenter()) {
+        for (auto Borough : GetBoroughs()) {
+            if (Borough->IsCenter()) {
                 if (CenterBorough == nullptr)
                 {
-                    CenterBorough = GetBorough(i);
+                    CenterBorough = Borough;
                 }
                 else
                 {

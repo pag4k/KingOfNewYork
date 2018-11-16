@@ -5,6 +5,7 @@
 #include "subject.h"
 #include <cassert>
 #include "observer.h"
+#include <iostream>
 
 namespace KingOfNewYork
 {
@@ -29,13 +30,24 @@ namespace KingOfNewYork
         Observers->remove(Observer);
     }
 
+    void FSubject::DetachAll()
+    {
+        Observers->clear();
+    }
+
     void FSubject::Notify(std::shared_ptr<FSubject> Subject, std::shared_ptr<IObserverEvent> Event)
     {
         assert(Observers);
+        //std::cout << Observers->size();
         for (auto Observer : *Observers)
         {
             assert(Observer);
             Observer->Update(Subject, Event);
+            //FIXME: This is not a good solution as since I'm not sure what happens if there is more than one element.
+            if (Observers->size() == 0)
+            {
+                break;
+            }
         }
     }
 

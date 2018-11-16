@@ -43,7 +43,9 @@ namespace KingOfNewYork
         void SetCelebrity(const bool bCelebrity) { this->bCelebrity = bCelebrity; }
         const bool IsStatueOfLiberty() const { return bStatueOfLiberty; }
         void SetStatueOfLiberty(const bool bStatueOfLiberty) { this->bStatueOfLiberty = bStatueOfLiberty; }
+        const int GetLifePoints() { return LifePoints; }
         const int GetEnergyCubes() { return EnergyCubes; }
+        const int GetVictoryPoints() { return VictoryPoints; }
         void SetEnergyCubes(const int EnergyCubes) { this->EnergyCubes = EnergyCubes; }
         const int GetLevelInCenter() { return LevelInCenter; }
         void SetLevelInCenter(const int LevelInCenter) { this->LevelInCenter = LevelInCenter; }
@@ -71,6 +73,7 @@ namespace KingOfNewYork
         //Initialization methods
         void EnterPlayerName(std::vector<std::string> &PlayerNames);
         void SelectMonster(bool AvailableMonsters[]);
+        void SelectStrategy();
 
         //Turn methods
         void SetTurnPhase(ETurnPhase NewTurnPhase);
@@ -81,10 +84,10 @@ namespace KingOfNewYork
         void BuyCardsPhase(FGame &Game);
 
         //Strategy pointers
-        IRollDiceStrategy *RollDiceStrategy;
-        IResolveDiceStrategy *ResolveDiceStrategy;
-        IMoveStrategy *MoveStrategy;
-        IBuyCardsStrategy *BuyCardsStrategy;
+        IRollDiceStrategy *RollDiceStrategy = nullptr;
+        IResolveDiceStrategy *ResolveDiceStrategy = nullptr;
+        IMoveStrategy *MoveStrategy = nullptr;
+        IBuyCardsStrategy *BuyCardsStrategy = nullptr;
 
         //Player variables
         std::string PlayerName;

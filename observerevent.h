@@ -85,6 +85,12 @@ namespace KingOfNewYork
         FDeadPlayerEvent(EObserverEvent ObserverEvent, std::string Message) : IObserverEvent(ObserverEvent, Message) {}
     };
 
+    class FBetweenTurnsEvent: public IObserverEvent
+    {
+    public:
+        FBetweenTurnsEvent(EObserverEvent ObserverEvent, std::string Message) : IObserverEvent(ObserverEvent, Message) {}
+    };
+
 //    class FTurnResultEvent: public IObserverEvent
 //    {
 //    public:

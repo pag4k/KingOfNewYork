@@ -76,6 +76,37 @@ namespace KingOfNewYork
     void ModerateMoveStrategy::Execute(FMap &Map, std::shared_ptr<FPlayer> Player, bool bMovePhase, bool bOnlyStartingLocation)
     {
         //Try to stay in Manhattan
+        if (bMovePhase)
+        {
+            if (Player->GetBorough()->IsCenter())
+            {
+                ForceProgressInCenter(Map, Player);
+            }
+            else
+            {
+                std::shared_ptr<FBorough> CenterBorough = Map.GetCenterBorough();
+
+                if (CenterBorough->GetPlayerCount() == MAXIMUM_MONSTERS_IN_CENTER)
+                {
+                    std::cout << "Since there is already "
+                              << MAXIMUM_MONSTERS_IN_CENTER
+                              << " Monsters in any zone of Manhattan, "
+                              << Player->GetPlayerAndMonsterNames()
+                              <<" has two options: He/she can move to any borough that does not already have 2 Monsters in it (except Manhattan), or can just stay in his/her borough."
+                              << std::endl;
+
+                    AISelectBorough(Map, Player, false, true);
+                }
+                else
+                {
+                    ForceMoveToCenter(Map, Player);
+                }
+            }
+        }
+        else
+        {
+            AISelectBorough(Map, Player, bOnlyStartingLocation, false);
+        }
 
     }
 
@@ -171,7 +202,7 @@ namespace KingOfNewYork
                 {
                     for (auto Borough : ValidBorough)
                     {
-                        if (Borough == CenterBorough)
+                        if (Borough == CenterBorough && Borough->GetPlayerCount() < MAXIMUM_MONSTERS_IN_CENTER)
                         {
                             MoveTo(Player, Borough);
                             break;

@@ -103,5 +103,40 @@ namespace KingOfNewYork
     void ModerateRollDiceStrategy::Execute(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
     {
         //focus on balancing the health, grabbing power-ups or storming Manhattan which quickly builds rewards
+        int CurrentRollCount = 0;
+
+        while (CurrentRollCount < RollCount)
+        {
+            std::cout << "### Roll number "
+                      << (CurrentRollCount + 1)
+                      << " out of "
+                      << (RollCount)
+                      << " ###"
+                      << std::endl;
+
+            DiceRoller.RollDice(DiceCount, OutDiceResult);
+
+            CurrentRollCount++;
+            if (CurrentRollCount >= RollCount)
+            {
+                break;
+            }
+
+            bool bReroll = false;
+            for (int i = 0; i < DiceCount; i++)
+            {
+                if (OutDiceResult[i] != EDiceFace::Ouch && OutDiceResult[i] != EDiceFace::Celebrity)
+                {
+                    OutDiceResult[i] = EDiceFace::None;
+                    bReroll = true;
+                }
+            }
+
+            if (!bReroll)
+            {
+                std::cout << "Ending rolling phase..." << std::endl;
+                break;
+            }
+        }
     }
 }

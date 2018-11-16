@@ -28,6 +28,7 @@ namespace KingOfNewYork
 
     void FGameView::Update(std::shared_ptr<FSubject> Subject, std::shared_ptr<IObserverEvent> Event)
     {
+        //TODO: Not sure if it will only observe players.
         auto Player = std::dynamic_pointer_cast<FPlayer>(Subject);
         assert(Player);
 
@@ -40,7 +41,9 @@ namespace KingOfNewYork
                 PrintHeader(Player->GetPlayerAndMonsterNames() + ": " + GetTurnPhaseString(StartTurnPhaseEvent->TurnPhase));
                 if (StartTurnPhaseEvent->TurnPhase == ETurnPhase::StartTurn)
                 {
-                    Player->PrintLong();
+                    std::cout << "################################################################################" << std::endl
+                              << "################################ Current Status ################################" << std::endl
+                              <<
                 }
                 return;
 
@@ -185,8 +188,12 @@ namespace KingOfNewYork
                 auto DeadPlayerEvent = std::dynamic_pointer_cast<FDeadPlayerEvent>(Event);
                 assert(DeadPlayerEvent);
                 std::cout << Player->GetPlayerAndMonsterNames()
-                          << " died!"
-                          << std::endl;
+                          << " died!";
+                if (Player == Game->GetCurrentPlayer())
+                {
+                    std::cout << " It's turn is over.";
+                }
+                std::cout << std::endl;
                 Player->Detach(this);
                 return;
             }

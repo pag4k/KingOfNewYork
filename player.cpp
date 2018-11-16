@@ -14,15 +14,14 @@
 
 namespace KingOfNewYork
 {
-    FPlayer::FPlayer(
-        std::vector<std::string> &PlayerNames,
-        bool bAvailableMonsters[])
+    FPlayer::FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[])
     {
         PlayerName = "";
         EnterPlayerName(PlayerNames);
         MonsterName = EMonsterName::None;
-        TurnPhase = ETurnPhase ::None;
         SelectMonster(bAvailableMonsters);
+        SelectStrategy();
+        TurnPhase = ETurnPhase ::None;
         Borough = nullptr;
         LevelInCenter = 0;
         DiceRoller = FDiceRoller();
@@ -40,11 +39,6 @@ namespace KingOfNewYork
 
         bCelebrity = false;
         bStatueOfLiberty = false;
-
-        RollDiceStrategy = new AggressiveRollDiceStrategy();
-        ResolveDiceStrategy = new AggressiveResolveDiceStrategy;
-        MoveStrategy = new AggressiveMoveStrategy;
-        BuyCardsStrategy = new AggressiveBuyCardsStrategy;
     }
 
     FPlayer::~FPlayer()
@@ -80,7 +74,6 @@ namespace KingOfNewYork
         Game.CheckDeadPlayer();
         if (!bAlive)
         {
-            PrintHeader(GetPlayerAndMonsterNames() + " died, so its turn is over");
             return;
         }
 
@@ -299,6 +292,55 @@ namespace KingOfNewYork
         std::cout << std::endl;
     }
 
+    void FPlayer::SelectStrategy()
+    {
+        while (RollDiceStrategy == nullptr)
+        {
+            std::cout   << GetPlayerAndMonsterNames()
+                        << ", please select your strategy:"
+                        << std::endl
+                        << "1. Human control"
+                        << std::endl
+                        << "2. Aggressive AI"
+                        << std::endl
+                        << "3. Moderate AI"
+                        << std::endl;
+            std::cout << ">";
+            const int Input = InputSingleDigit();
+            if (1 <= Input && Input <= 3)
+            {
+                switch (Input)
+                {
+                    case 1:
+                        RollDiceStrategy = new HumanRollDiceStrategy();
+                        ResolveDiceStrategy = new HumanResolveDiceStrategy;
+                        MoveStrategy = new HumanMoveStrategy;
+                        BuyCardsStrategy = new HumanBuyCardsStrategy;
+                        break;
+                    case 2:
+                        RollDiceStrategy = new AggressiveRollDiceStrategy();
+                        ResolveDiceStrategy = new AggressiveResolveDiceStrategy;
+                        MoveStrategy = new AggressiveMoveStrategy;
+                        BuyCardsStrategy = new AggressiveBuyCardsStrategy;
+                        break;
+                    case 3:
+                        RollDiceStrategy = new ModerateRollDiceStrategy();
+                        ResolveDiceStrategy = new ModerateResolveDiceStrategy;
+                        MoveStrategy = new ModerateMoveStrategy;
+                        BuyCardsStrategy = new ModerateBuyCardsStrategy;
+                        break;
+                }
+            }
+            else
+            {
+                std::cout << "Invalid input, please try again."
+                          << std::endl
+                          << std::endl;
+            }
+        }
+        std::cout << std::endl;
+    }
+
     void FPlayer::SelectStartingLocation(FMap &Map)
     {
         std::cout << GetPlayerAndMonsterNames()
@@ -347,10 +389,13 @@ namespace KingOfNewYork
         {
             case EMonsterResource::EnergyCube:
                 ChangeEnergyCubes(Number);
+                break;
             case EMonsterResource::LifePoint:
                 ChangeLifePoints(Number);
+                break;
             case EMonsterResource::VictoryPoint:
                 ChangeVictoryPoints(Number);
+                break;
         }
         assert(true);
     }

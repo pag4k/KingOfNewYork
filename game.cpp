@@ -208,9 +208,9 @@ namespace KingOfNewYork
         assert(Map != nullptr);
         while (!MasterTileStack.IsEmpty())
         {
-            for (int i = 0; i < Map->BoroughCount(); ++i)
+            for (auto Borough : Map->GetBoroughs())
             {
-                for (const std::unique_ptr<FTileStack> &CurrentTileStack : Map->GetBorough(i)->GetConstTileStacks())
+                for (const std::unique_ptr<FTileStack> &CurrentTileStack : Borough->GetConstTileStacks())
                 {
                     CurrentTileStack->AddTileOnTop(MasterTileStack.Draw());
                     if (MasterTileStack.IsEmpty())
@@ -329,10 +329,7 @@ namespace KingOfNewYork
 
         for (int i = 0; i < PlayerCount; ++i)
         {
-            Players.push_back(
-                std::make_shared<FPlayer>(
-                    PlayerNames, bAvailableMonsters));
-            //Players.back()->PrintLong();
+            Players.push_back(std::make_shared<FPlayer>(PlayerNames, bAvailableMonsters));
         }
     }
 
@@ -431,13 +428,13 @@ namespace KingOfNewYork
             Players[CurrentPlayer]->SelectStartingLocation(*Map);
             CurrentPlayer = (CurrentPlayer + 1) % static_cast<int>(Players.size());
         }
-        //CurrentPlayer = (CurrentPlayer + 1) % static_cast<int>(Players.size());
     }
 
     void FGame::MainPhase()
     {
         while (VictoriousPlayer() == nullptr)
         {
+            Notify(shared_from_this(), std::make_shared<FBetweenTurnsEvent>(EObserverEvent::BetweenTurns, ""));
             Players[CurrentPlayer]->TakeTurn(*Map, *this);
             CurrentPlayer = (CurrentPlayer + 1) % static_cast<int>(Players.size());
         }

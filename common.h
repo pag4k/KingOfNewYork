@@ -129,6 +129,7 @@ namespace KingOfNewYork
     enum class EObserverEvent
     {
         None = -1,
+        BetweenTurns,
         StartTurnPhase,
         ChangeVictoryPoints,
         ChangeEnergyCubes,

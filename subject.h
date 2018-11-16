@@ -19,6 +19,7 @@ namespace KingOfNewYork
     public:
         virtual void Attach(IObserver* Observer);
         virtual void Detach(IObserver* Observer);
+        virtual void DetachAll();
         virtual void Notify(std::shared_ptr<FSubject> Subject, std::shared_ptr<IObserverEvent> Event);
         FSubject();
         virtual ~FSubject();

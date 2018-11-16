@@ -151,6 +151,11 @@ namespace KingOfNewYork
             DiceSums[5] = 0;
         }
 
+        if (!Player->IsAlive())
+        {
+            return;
+        }
+
         //6. Destruction
         if (DiceSums[2] > 0)
         {
@@ -161,6 +166,54 @@ namespace KingOfNewYork
 
     void ModerateResolveDiceStrategy::Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult)
     {
+        std::vector<int> DiceSums = GetDiceSums(DiceResult);
+
+        //1. Celebrity
+        if (DiceSums[1] > 0)
+        {
+            ResolveCelebrity(Game, Player, DiceSums[1]);
+            DiceSums[1] = 0;
+        }
+
+        //2. Energy
+        if (DiceSums[3] > 0)
+        {
+            ResolveEnergy(Player, DiceSums[3]);
+            DiceSums[3] = 0;
+        }
+
+        //3. Attack
+        if (DiceSums[0] > 0)
+        {
+            ResolveAttack(Game, Map, Player, DiceSums[0]);
+            DiceSums[0] = 0;
+        }
+
+        //4. Heal
+        if (DiceSums[4] > 0)
+        {
+            ResolveHeal(Player, DiceSums[4]);
+            DiceSums[4] = 0;
+        }
+
+        //5. Ouch
+        if (DiceSums[5] > 0)
+        {
+            ResolveOuch(Game, Map, Player, DiceSums[5]);
+            DiceSums[5] = 0;
+        }
+
+        if (!Player->IsAlive())
+        {
+            return;
+        }
+
+        //6. Destruction
+        if (DiceSums[2] > 0)
+        {
+            AIResolveDestruction(Player, DiceSums[2]);
+            DiceSums[2] = 0;
+        }
     }
 
     namespace
@@ -184,12 +237,12 @@ namespace KingOfNewYork
             {
                 std::cout << "Since you are not in Manhattan, each Attack inflicts damage to all Monsters in Manhattan:"
                           << std::endl;
-                for (int i = 0; i < Map.BoroughCount(); ++i)
+                for (auto Borough : Map.GetBoroughs())
                 {
-                    if (Map.GetBorough(i)->IsCenter() && !Map.GetBorough(i)->GetConstPlayers().empty())
+                    if (Borough->IsCenter() && !Borough->GetConstPlayers().empty())
                     {
-                        assert(Map.GetBorough(i)->GetConstPlayers().size() == 1);
-                        std::shared_ptr<FPlayer> TargetPlayer = Map.GetBorough(i)->GetMutablePlayers().back();
+                        assert(Borough->GetConstPlayers().size() == MAXIMUM_MONSTERS_IN_CENTER);
+                        std::shared_ptr<FPlayer> TargetPlayer = Borough->GetMutablePlayers().back();
                         TargetPlayer->TakeDamage(Game, NumberOfDice);
 
                         if (!TargetPlayer->IsAlive())
@@ -210,11 +263,11 @@ namespace KingOfNewYork
             {
                 std::cout << "Since you are in Manhattan, each Attack inflicts damage to all Monsters outside Manhattan:"
                           << std::endl;
-                for (int i = 0; i < Map.BoroughCount(); ++i)
+                for (auto Borough : Map.GetBoroughs())
                 {
-                    if (!Map.GetBorough(i)->IsCenter())
+                    if (!Borough->IsCenter())
                     {
-                        for (std::shared_ptr<FPlayer> TargetPlayer : Map.GetBorough(i)->GetMutablePlayers())
+                        for (std::shared_ptr<FPlayer> TargetPlayer : Borough->GetMutablePlayers())
                         {
                             TargetPlayer->TakeDamage(Game, NumberOfDice);
                         }
@@ -466,10 +519,10 @@ namespace KingOfNewYork
                 {
                     std::cout << "Since you rolled 3 Ouch or more, all Units in the entire city attack; each Monster suffers 1 damage per Unit tile in his borough."
                               << std::endl;
-                    for (int i = 0; i < Map.BoroughCount(); ++i)
+                    for (auto Borough : Map.GetBoroughs())
                     {
-                        int Damage = Map.GetBorough(i)->GetUnitCount();
-                        for (std::shared_ptr<FPlayer> &Player : Map.GetBorough(i)->GetMutablePlayers()) {
+                        int Damage = Borough->GetUnitCount();
+                        for (std::shared_ptr<FPlayer> &Player : Borough->GetMutablePlayers()) {
                             //Do the check inside the loop to make sure the Status of Liberty is properly removed.
                             if (Damage > 0) {
                                 Player->TakeDamage(Game, Damage);

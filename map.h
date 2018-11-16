@@ -22,11 +22,13 @@ namespace KingOfNewYork
         bool SaveMap(const std::string &FileName);
         const unsigned int BoroughCount() const { return (unsigned int)Graph.ElementCount(); }
         std::shared_ptr<FBorough> GetBorough(const int n) { return Graph.GetElement(n); }
+        std::vector<std::shared_ptr<FBorough>>& GetBoroughs() { return Boroughs; }
         std::shared_ptr<FBorough> GetCenterBorough();
-        const std::vector<int> GetNeighbourgs(const int n) const;
+        const std::vector<int> GetNeighbourgs(int n) const;
         const bool IsValid() const { return bIsValid; }
     private:
         FGraph<FBorough> Graph;
+        std::vector<std::shared_ptr<FBorough>> Boroughs;
         bool bIsValid;
     };
 }
