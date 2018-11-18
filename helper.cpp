@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <filesystem>
-
+#include <cmath>
 #include "helper.h"
 
 namespace KingOfNewYork
@@ -15,10 +15,9 @@ namespace KingOfNewYork
 
     void PrintHeader(std::string Header)
     {
+        AddPadding(Header, 80, '#');
         std::cout << std::endl
-                  << "##### "
                   << Header
-                  << " #####"
                   << std::endl;
     }
 
@@ -26,6 +25,17 @@ namespace KingOfNewYork
     {
         std::cout << Message
                   << std::endl;
+    }
+
+    void AddPadding(std::string &OutString, int OutputLength, char Symbol) {
+        const unsigned long StringLength = OutString.length();
+        if (StringLength + 4 > OutputLength)
+        {
+            return;
+        }
+        OutString = std::string((OutputLength - StringLength - 2)/2, Symbol) + " " + OutString + " " + std::string(
+                static_cast<unsigned long>(std::ceil((OutputLength - StringLength - 2)/2.0)), Symbol);
+
     }
 
     //If invalid, returns -1.

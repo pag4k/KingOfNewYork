@@ -14,9 +14,9 @@ namespace KingOfNewYork
 {
 
     class FGame;
-    //class FMap;
     class FPlayer;
 
+    //Interface for the various buy cards strategies.
     class IBuyCardsStrategy
     {
     public:
@@ -26,19 +26,19 @@ namespace KingOfNewYork
     class HumanBuyCardsStrategy : public IBuyCardsStrategy
     {
     public:
-        void Execute(FGame &Game, std::shared_ptr<FPlayer> Player);
+        void Execute(FGame &Game, std::shared_ptr<FPlayer> Player) override;
     };
 
     class AggressiveBuyCardsStrategy : public IBuyCardsStrategy
     {
     public:
-        void Execute(FGame &Game, std::shared_ptr<FPlayer> Player);
+        void Execute(FGame &Game, std::shared_ptr<FPlayer> Player) override;
     };
 
     class ModerateBuyCardsStrategy : public IBuyCardsStrategy
     {
     public:
-        void Execute(FGame &Game, std::shared_ptr<FPlayer> Player);
+        void Execute(FGame &Game, std::shared_ptr<FPlayer> Player) override;
     };
 
 }

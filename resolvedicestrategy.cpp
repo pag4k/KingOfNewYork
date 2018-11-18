@@ -237,7 +237,7 @@ namespace KingOfNewYork
             {
                 std::cout << "Since you are not in Manhattan, each Attack inflicts damage to all Monsters in Manhattan:"
                           << std::endl;
-                for (auto Borough : Map.GetBoroughs())
+                for (const std::shared_ptr<FBorough> &Borough : Map.GetBoroughs())
                 {
                     if (Borough->IsCenter() && !Borough->GetConstPlayers().empty())
                     {
@@ -252,9 +252,9 @@ namespace KingOfNewYork
 
                         std::cout << "Since "
                                   << TargetPlayer->GetPlayerAndMonsterNames()
-                                  <<" was attacked while being in Manhattan, he/she may flee Manhattan. Please, let him/her select the borough to move to:"
+                                  <<" was attacked while being in Manhattan, he/she may flee Manhattan."
                                   << std::endl;
-                        TargetPlayer->Move(Map, false);
+                        TargetPlayer->Move(Map, false, false);
                         break;
                     }
                 }
@@ -263,11 +263,11 @@ namespace KingOfNewYork
             {
                 std::cout << "Since you are in Manhattan, each Attack inflicts damage to all Monsters outside Manhattan:"
                           << std::endl;
-                for (auto Borough : Map.GetBoroughs())
+                for (const std::shared_ptr<FBorough> &Borough : Map.GetBoroughs())
                 {
                     if (!Borough->IsCenter())
                     {
-                        for (std::shared_ptr<FPlayer> TargetPlayer : Borough->GetMutablePlayers())
+                        for (const std::shared_ptr<FPlayer> &TargetPlayer : Borough->GetMutablePlayers())
                         {
                             TargetPlayer->TakeDamage(Game, NumberOfDice);
                         }
@@ -519,13 +519,13 @@ namespace KingOfNewYork
                 {
                     std::cout << "Since you rolled 3 Ouch or more, all Units in the entire city attack; each Monster suffers 1 damage per Unit tile in his borough."
                               << std::endl;
-                    for (auto Borough : Map.GetBoroughs())
+                    for (const auto &Borough : Map.GetBoroughs())
                     {
                         int Damage = Borough->GetUnitCount();
-                        for (std::shared_ptr<FPlayer> &Player : Borough->GetMutablePlayers()) {
+                        for (std::shared_ptr<FPlayer> &CurrentPlayer : Borough->GetMutablePlayers()) {
                             //Do the check inside the loop to make sure the Status of Liberty is properly removed.
                             if (Damage > 0) {
-                                Player->TakeDamage(Game, Damage);
+                                CurrentPlayer->TakeDamage(Game, Damage);
                             }
                         }
                     }

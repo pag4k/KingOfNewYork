@@ -13,6 +13,7 @@
 
 namespace KingOfNewYork
 {
+    //A class that contains the game with with a graph.
     class FMap
     {
     public:

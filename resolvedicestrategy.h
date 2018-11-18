@@ -14,11 +14,11 @@
 
 namespace KingOfNewYork
 {
-
     class FGame;
     class FMap;
     class FPlayer;
 
+    //Interface for the various resolve dice strategies.
     class IResolveDiceStrategy
     {
     public:
@@ -28,31 +28,31 @@ namespace KingOfNewYork
     class HumanResolveDiceStrategy : public IResolveDiceStrategy
     {
     public:
-        void Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult);
+        void Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) override;
     };
 
     class AggressiveResolveDiceStrategy : public IResolveDiceStrategy
     {
     public:
-        void Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult);
+        void Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) override;
     };
 
     class ModerateResolveDiceStrategy : public IResolveDiceStrategy
     {
     public:
-        void Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult);
+        void Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) override;
     };
 
     namespace
     {
         std::vector<int> GetDiceSums(std::vector<EDiceFace> &DiceResult);
-        const bool ResolveAttack(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, const int NumberOfDice);
-        const bool ResolveCelebrity(FGame &Game, std::shared_ptr<FPlayer> Player, const int NumberOfDice);
-        const bool HumanResolveDestruction(std::shared_ptr<FPlayer> Player, const int NumberOfDice);
-        const bool AIResolveDestruction(std::shared_ptr<FPlayer> Player, const int NumberOfDice);
-        const bool ResolveEnergy(std::shared_ptr<FPlayer> Player, const int NumberOfDice);
-        const bool ResolveHeal(std::shared_ptr<FPlayer> Player, const int NumberOfDice);
-        const bool ResolveOuch(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, const int NumberOfDice);
+        const bool ResolveAttack(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        const bool ResolveCelebrity(FGame &Game, std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        const bool HumanResolveDestruction(std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        const bool AIResolveDestruction(std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        const bool ResolveEnergy(std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        const bool ResolveHeal(std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        const bool ResolveOuch(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, int NumberOfDice);
     }
 
 }

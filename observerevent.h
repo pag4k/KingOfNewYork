@@ -1,6 +1,8 @@
-//
-// Created by oscar on 15/11/18.
-//
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 3
+// Due date: November 18, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
 
 #ifndef OBSERVEREVENT_H
 #define OBSERVEREVENT_H
@@ -14,10 +16,11 @@ namespace KingOfNewYork
     class String;
     class FBorough;
 
+    //Interface for events that are used with the observer pattern.
     class IObserverEvent
     {
     public:
-        IObserverEvent(EObserverEvent ObserverEvent, std::string Message)
+        IObserverEvent(const EObserverEvent &ObserverEvent, const std::string &Message)
                 : ObserverEvent(ObserverEvent), Message(Message) {}
         virtual ~IObserverEvent() = default;
         EObserverEvent ObserverEvent;
@@ -27,7 +30,7 @@ namespace KingOfNewYork
     class FStartTurnPhaseEvent: public IObserverEvent
     {
     public:
-        FStartTurnPhaseEvent(EObserverEvent ObserverEvent, std::string Message, ETurnPhase TurnPhase)
+        FStartTurnPhaseEvent(const EObserverEvent &ObserverEvent, const std::string &Message, ETurnPhase TurnPhase)
                 : IObserverEvent(ObserverEvent, Message), TurnPhase(TurnPhase) {}
         ETurnPhase TurnPhase;
     };
@@ -35,7 +38,7 @@ namespace KingOfNewYork
     class FChangeVictoryPointsEvent: public IObserverEvent
     {
     public:
-        FChangeVictoryPointsEvent(EObserverEvent ObserverEvent, std::string Message, int Delta, int Total)
+        FChangeVictoryPointsEvent(const EObserverEvent &ObserverEvent, const std::string &Message, int Delta, int Total)
                 : IObserverEvent(ObserverEvent, Message), Delta(Delta), Total(Total) {}
         int Delta;
         int Total;
@@ -45,7 +48,7 @@ namespace KingOfNewYork
     class FChangeEnergyCubesEvent: public IObserverEvent
     {
     public:
-        FChangeEnergyCubesEvent(EObserverEvent ObserverEvent, std::string Message, int Delta, int Total)
+        FChangeEnergyCubesEvent(const EObserverEvent &ObserverEvent, const std::string &Message, int Delta, int Total)
                 : IObserverEvent(ObserverEvent, Message), Delta(Delta), Total(Total) {}
         int Delta;
         int Total;
@@ -55,7 +58,7 @@ namespace KingOfNewYork
     class FChangeLifePointsEvent: public IObserverEvent
     {
     public:
-        FChangeLifePointsEvent(EObserverEvent ObserverEvent, std::string Message, int Delta, int Total)
+        FChangeLifePointsEvent(const EObserverEvent &ObserverEvent, const std::string &Message, int Delta, int Total)
                 : IObserverEvent(ObserverEvent, Message), Delta(Delta), Total(Total) {}
         int Delta;
         int Total;
@@ -64,7 +67,7 @@ namespace KingOfNewYork
     class FChangeBoroughEvent: public IObserverEvent
     {
     public:
-        FChangeBoroughEvent(EObserverEvent ObserverEvent, std::string Message, std::shared_ptr<FBorough> OriginBorough, std::shared_ptr<FBorough> DestinationBorough)
+        FChangeBoroughEvent(const EObserverEvent &ObserverEvent, const std::string &Message, const std::shared_ptr<FBorough> &OriginBorough, const std::shared_ptr<FBorough> &DestinationBorough)
                 : IObserverEvent(ObserverEvent, Message), OriginBorough(OriginBorough), DestinationBorough(DestinationBorough) {}
         std::shared_ptr<FBorough> OriginBorough;
         std::shared_ptr<FBorough> DestinationBorough;
@@ -73,7 +76,7 @@ namespace KingOfNewYork
     class FMoveInManhattanEvent: public IObserverEvent
     {
     public:
-        FMoveInManhattanEvent(EObserverEvent ObserverEvent, std::string Message, int OriginLevel, int DestinationLevel)
+        FMoveInManhattanEvent(const EObserverEvent &ObserverEvent, const std::string &Message, int OriginLevel, int DestinationLevel)
                 : IObserverEvent(ObserverEvent, Message), OriginLevel(OriginLevel), DestinationLevel(DestinationLevel) {}
         int OriginLevel;
         int DestinationLevel;
@@ -82,21 +85,14 @@ namespace KingOfNewYork
     class FDeadPlayerEvent: public IObserverEvent
     {
     public:
-        FDeadPlayerEvent(EObserverEvent ObserverEvent, std::string Message) : IObserverEvent(ObserverEvent, Message) {}
+        FDeadPlayerEvent(const EObserverEvent &ObserverEvent, const std::string &Message) : IObserverEvent(ObserverEvent, Message) {}
     };
 
     class FBetweenTurnsEvent: public IObserverEvent
     {
     public:
-        FBetweenTurnsEvent(EObserverEvent ObserverEvent, std::string Message) : IObserverEvent(ObserverEvent, Message) {}
+        FBetweenTurnsEvent(const EObserverEvent &ObserverEvent, const std::string &Message) : IObserverEvent(ObserverEvent, Message) {}
     };
-
-//    class FTurnResultEvent: public IObserverEvent
-//    {
-//    public:
-//        FTurnResultEvent(EObserverEvent ObserverEvent, std::string Message) : IObserverEvent(ObserverEvent, Message) {}
-//    };
-
 }
 
 #endif

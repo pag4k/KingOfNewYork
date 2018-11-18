@@ -1,6 +1,8 @@
-//
-// Created by oscar on 15/11/18.
-//
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 3
+// Due date: November 18, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
 
 #include "gameview.h"
 #include "game.h"
@@ -19,14 +21,14 @@ namespace KingOfNewYork
 
     FGameView::~FGameView()
     {
-        //TODO: THIS DOES NOT WORK SINCE WHEN A PLAYER DIES, IT IS REMOVED FROM THE PLAYER LIST.
+        //TODO: There might be some corner cases when a player dies.
         for (auto& Player : Game->GetPlayers())
         {
             Player->Detach(this);
         }
     }
 
-    void FGameView::Update(std::shared_ptr<FSubject> Subject, std::shared_ptr<IObserverEvent> Event)
+    void FGameView::Update(const std::shared_ptr<FSubject> &Subject, const std::shared_ptr<IObserverEvent> &Event)
     {
         //TODO: Not sure if it will only observe players.
         auto Player = std::dynamic_pointer_cast<FPlayer>(Subject);
@@ -39,11 +41,57 @@ namespace KingOfNewYork
                 auto StartTurnPhaseEvent = std::dynamic_pointer_cast<FStartTurnPhaseEvent>(Event);
                 assert(StartTurnPhaseEvent);
                 PrintHeader(Player->GetPlayerAndMonsterNames() + ": " + GetTurnPhaseString(StartTurnPhaseEvent->TurnPhase));
-                if (StartTurnPhaseEvent->TurnPhase == ETurnPhase::StartTurn)
-                {
-                    std::cout << "################################################################################" << std::endl
-                              << "################################ Current Status ################################" << std::endl
-                              <<
+                if (StartTurnPhaseEvent->TurnPhase == ETurnPhase::StartTurn) {
+                    assert(Player->GetBorough());
+                    PrintHeader("Current Status");
+                    if (Player->GetBorough()->IsCenter())
+                    {
+                        PrintNormal("Position: " + CENTER_LEVEL_NAMES[Player->GetLevelInCenter()] + " Manhattan");
+                    }
+                    else
+                    {
+                        PrintNormal("Position: " + Player->GetBorough()->GetName());
+                    }
+
+                    PrintNormal("Number of cards: " + std::to_string(Player->GetCards().size()));
+                    for (const std::unique_ptr<FCard> &Card : Player->GetCards()) {
+                        if (Card)
+                        {
+                            PrintNormal(Card->GetCardInfo());
+                        }
+                    }
+
+                    std::cout << "Tokens:" << std::endl;
+                    for (int i = 0; i < TOKEN_TYPE_COUNT; ++i)
+                    {
+                        PrintNormal("\t-" + GetTokenTypeString(ETokenType(i)) + ": " + std::to_string(Player->GetTokenInventory()[i]));
+                    }
+
+                    PrintNormal("Energy cubes: " + std::to_string(Player->GetEnergyCubes()));
+                    PrintNormal("Life points: " + std::to_string(Player->GetLifePoints()));
+                    PrintNormal("Victory points: " + std::to_string(Player->GetVictoryPoints()));
+
+                    if (Player->IsCelebrity())
+                    {
+                        PrintNormal(Player->GetPlayerAndMonsterNames() + " is a Superstar!");
+                    }
+
+                    if (Player->IsStatueOfLiberty())
+                    {
+                        PrintNormal(Player->GetPlayerAndMonsterNames() + " has help from the Status of Liberty!");
+                    }
+
+                    std::cout << std::endl;
+
+                    if (Player->GetBorough()->IsCenter())
+                    {
+                        std::cout << "Since "
+                                  << Player->GetPlayerAndMonsterNames()
+                                  << " is in "
+                                  << CENTER_LEVEL_NAMES[Player->GetLevelInCenter()]
+                                  << " Manhattan, it gets the following:"
+                                  << std::endl;
+                    }
                 }
                 return;
 
@@ -164,7 +212,8 @@ namespace KingOfNewYork
                 auto MoveInManhattanEvent = std::dynamic_pointer_cast<FMoveInManhattanEvent>(Event);
                 assert(MoveInManhattanEvent);
                 assert(MoveInManhattanEvent->DestinationLevel != -1);
-                if (MoveInManhattanEvent->OriginLevel != 2)
+
+                if (MoveInManhattanEvent->OriginLevel != MoveInManhattanEvent->DestinationLevel)
                 {
                     std::cout << Player->GetPlayerAndMonsterNames()
                               << " moved from "
@@ -176,9 +225,10 @@ namespace KingOfNewYork
                 }
                 else
                 {
-                    std::cout << "Since"
-                              << Player->GetPlayerAndMonsterNames()
-                              << " is in Upper Manhattan, he/she no longer move during this phase."
+                    std::cout << Player->GetPlayerAndMonsterNames()
+                              << " stayed in "
+                              << CENTER_LEVEL_NAMES[MoveInManhattanEvent->OriginLevel]
+                              << " Manhattan to "
                               << std::endl;
                 }
                 return;

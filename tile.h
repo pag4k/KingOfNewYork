@@ -14,36 +14,37 @@
 
 namespace KingOfNewYork
 {
+    //Class representing a single tile.
     class FTile
     {
     public:
-        FTile(const ETileType TileType, const int Durability, const int Reward);
-        const bool IsBuilding() const;
-        const EMonsterResource GetMonsterResource() const;
+        FTile(ETileType TileType, int Durability, int Reward);
+        bool IsBuilding() const;
         void Flip();
-        const ETileType GetTileType() const { return TileType; }
-        const int GetDurability() const { return Durability; }
-        const int GetReward() const { return Reward; }
-        const std::string GetTileInfo();
+        ETileType GetTileType() const { return TileType; }
+        int GetDurability() const { return Durability; }
+        int GetReward() const { return Reward; }
+        std::string GetTileInfo() const;
     private:
         ETileType TileType;
         int Durability;
         int Reward;
     };
 
+    //Class representing a stack of tiles.
     class FTileStack
     {
     public:
         FTileStack() = default;
-        explicit FTileStack(const std::string FileName);
+        explicit FTileStack(std::string FileName);
         void Shuffle();
-        const bool IsEmpty() const { return TileStack.empty(); }
+        bool IsEmpty() const { return TileStack.empty(); }
         std::unique_ptr<FTile> Draw();
-        std::unique_ptr<FTile> &GetTopTileInfo();
+        const std::unique_ptr<FTile> &GetTopTileInfo() const;
         void AddTileOnTop(std::unique_ptr<FTile> Tile);
         void DestructTopTile();
     private:
-        void GenerateFromFile(const std::string FileName);
+        void GenerateFromFile(std::string FileName);
         std::vector<std::unique_ptr<FTile>> TileStack;
     };
 }

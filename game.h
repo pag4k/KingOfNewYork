@@ -19,48 +19,44 @@
 
 namespace KingOfNewYork
 {
-  class FPlayer;
+    class FPlayer;
 
-  class FGame: public FSubject, public std::enable_shared_from_this<FGame>
-  {
-  public:
-      FGame();
-      std::unique_ptr<FCard> GetCard(int Index);
-      std::vector<std::shared_ptr<FPlayer>> &GetPlayers() { return Players; }
-      std::vector<std::unique_ptr<FCard>> &GetAvailableCards() { return AvailableCards; }
-      std::shared_ptr<FPlayer> GetCurrentPlayer() { assert(CurrentPlayer != -1); return Players[CurrentPlayer]; }
-      std::shared_ptr<FMap> GetMap() { return Map; }
-      void Print() const;
-      void DistributeCard();
-      void ChangeCelebrity(std::shared_ptr<FPlayer> NewCelebrityPlayer);
-      void ChangeStatueOfLiberty(std::shared_ptr<FPlayer> NewStatueOfLibertyPlayer);
-      void CheckDeadPlayer();
-      void CleanDeadPlayer(std::shared_ptr<FPlayer> DeadPlayer);
-      void StartMainPhase();
-  private:
-      const bool InitializationPhase();
-      const bool SelectMap();
-      const bool DistributeTiles(FTileStack &TileStack);
-      const int GetPlayerCount();
-      void CreatePlayers(int PlayerCount);
-      const bool StartupPhase();
-      void GetFirstPlayer();
-      void SelectStartingBoroughs();
-      void MainPhase();
-      std::shared_ptr<FPlayer> VictoriousPlayer();
-      bool bIsValid;
-      int TokenInventory[TOKEN_TYPE_COUNT];
-      int EnergyCubes = -1;
-      std::shared_ptr<FMap> Map =  nullptr;
-      std::vector<std::shared_ptr<FPlayer>> Players;
-      std::vector<std::shared_ptr<FPlayer>> PlayersInCenter;
-      std::shared_ptr<FPlayer> Superstar;
-      std::shared_ptr<FPlayer> StatusOfLiberty;
-      FDeck Deck;
-      FDeck DiscardDeck;
-      std::vector<std::unique_ptr<FCard>> AvailableCards;
-      int CurrentPlayer = -1;
-  };
+    //The main class of the game that handles its basic functions.
+    class FGame: public FSubject, public std::enable_shared_from_this<FGame>
+    {
+    public:
+        FGame();
+        std::unique_ptr<FCard> GetCard(int Index);
+        std::vector<std::shared_ptr<FPlayer>> &GetPlayers() { return Players; }
+        std::vector<std::unique_ptr<FCard>> &GetAvailableCards() { return AvailableCards; }
+        std::shared_ptr<FPlayer> &GetCurrentPlayer() { assert(CurrentPlayer != -1); return Players[CurrentPlayer]; }
+        std::shared_ptr<FMap> &GetMap() { return Map; }
+        void DistributeCard();
+        void ChangeCelebrity(std::shared_ptr<FPlayer> &NewCelebrityPlayer);
+        void ChangeStatueOfLiberty(std::shared_ptr<FPlayer> &NewStatueOfLibertyPlayer);
+        void CheckDeadPlayer();
+        void CleanDeadPlayer(std::shared_ptr<FPlayer> &DeadPlayer);
+        void StartupPhase();
+        void StartMainPhase();
+    private:
+        bool InitializationPhase();
+        bool SelectMap();
+        bool DistributeTiles(FTileStack &TileStack);
+        int GetPlayerCount();
+        void CreatePlayers(int PlayerCount);
+        void GetFirstPlayer();
+        void SelectStartingBoroughs();
+        void MainPhase();
+        std::optional<std::shared_ptr<FPlayer>> VictoriousPlayer();
+        int TokenInventory[TOKEN_TYPE_COUNT];
+        int EnergyCubes = -1;
+        std::shared_ptr<FMap> Map =  nullptr;
+        std::vector<std::shared_ptr<FPlayer>> Players;
+        FDeck Deck;
+        FDeck DiscardDeck;
+        std::vector<std::unique_ptr<FCard>> AvailableCards;
+        int CurrentPlayer = -1;
+    };
 }
 
 #endif

@@ -12,12 +12,11 @@
 
 namespace KingOfNewYork
 {
-
-    //class FGame;
     class FMap;
     class FBorough;
     class FPlayer;
 
+    //Interface for the various move strategies.
     class IMoveStrategy
     {
     public:
@@ -27,19 +26,19 @@ namespace KingOfNewYork
     class HumanMoveStrategy : public IMoveStrategy
     {
     public:
-        void Execute(FMap &Map, std::shared_ptr<FPlayer> Player, bool bMovePhase, bool bOnlyStartingLocation);
+        void Execute(FMap &Map, std::shared_ptr<FPlayer> Player, bool bMovePhase, bool bOnlyStartingLocation) override;
     };
 
     class AggressiveMoveStrategy : public IMoveStrategy
     {
     public:
-        void Execute(FMap &Map, std::shared_ptr<FPlayer> Player, bool bMovePhase, bool bOnlyStartingLocation);
+        void Execute(FMap &Map, std::shared_ptr<FPlayer> Player, bool bMovePhase, bool bOnlyStartingLocation) override;
     };
 
     class ModerateMoveStrategy : public IMoveStrategy
     {
     public:
-        void Execute(FMap &Map, std::shared_ptr<FPlayer> Player, bool bMovePhase, bool bOnlyStartingLocation);
+        void Execute(FMap &Map, std::shared_ptr<FPlayer> Player, bool bMovePhase, bool bOnlyStartingLocation) override;
     };
 
     namespace

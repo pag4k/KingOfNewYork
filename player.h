@@ -26,6 +26,7 @@ namespace KingOfNewYork
     class FDiceRoller;
     class FCard;
 
+    //Player class.
     class FPlayer : public FSubject, public std::enable_shared_from_this<FPlayer>
     {
     public:
@@ -38,6 +39,8 @@ namespace KingOfNewYork
         const std::string GetPlayerAndMonsterNames();
         const std::shared_ptr<FBorough> GetBorough() { return Borough; }
         void SetBorough(const std::shared_ptr<FBorough> &Borough) { this->Borough = Borough; }
+        const std::vector<std::unique_ptr<FCard>>& GetCards() const { return Cards; }
+        const std::vector<int>& GetTokenInventory() const { return TokenInventory; }
         const bool IsVictorious() { return VictoryPoints >= VICTORY_POINTS_TO_WIN_COUNT; }
         const bool IsCelebrity() const { return bCelebrity; }
         void SetCelebrity(const bool bCelebrity) { this->bCelebrity = bCelebrity; }
@@ -57,18 +60,14 @@ namespace KingOfNewYork
         //Turn methods
         void TakeTurn(FMap &Map, FGame &Game);
         void TakeDamage(FGame &Game, int Damage);
-        void Move(FMap &Map, bool bOnlyStartingLocation);
+        void Move(FMap &Map, bool bMovePhase, bool bOnlyStartingLocation);
         void EarnMonsterResources(EMonsterResource MonsterResource, int Number);
         void ChangeEnergyCubes(int Number);
         void ChangeLifePoints(int Number);
         void ChangeVictoryPoints(int Number);
         void BuyCard(std::unique_ptr<FCard> Card);
         std::vector<EDiceFace> RollStartDice(int DiceCount);
-        void SetTurnResult(std::string Message);
 
-        //Output methods
-        void PrintShort() const;
-        void PrintLong() const;
     private :
         //Initialization methods
         void EnterPlayerName(std::vector<std::string> &PlayerNames);
@@ -96,7 +95,7 @@ namespace KingOfNewYork
         std::shared_ptr<FBorough> Borough;
         int LevelInCenter;
         FDiceRoller DiceRoller;
-        int TokenInventory[TOKEN_TYPE_COUNT];
+        std::vector<int> TokenInventory;
         std::vector<std::unique_ptr<FCard>> Cards;
         bool bAlive;
         int EnergyCubes;

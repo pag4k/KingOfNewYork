@@ -46,7 +46,7 @@ namespace KingOfNewYork
         Rob = 4,
         Sherrif = 5
     };
-    const std::string GetMonsterNameString(const EMonsterName MonsterName);
+    const std::string GetMonsterNameString(EMonsterName MonsterName);
 
     const int FACE_ON_DICE_COUNT = 6;
     const int DICE_FOR_CELEBRITY_COUNT = 3;
@@ -61,7 +61,7 @@ namespace KingOfNewYork
         Ouch = 5
     };
 
-    const std::string GetDiceFaceString(const EDiceFace Face);
+    const std::string GetDiceFaceString(EDiceFace Face);
 
     const int STARTING_TOKENS = 13;
     const int TOKEN_TYPE_COUNT = 4;
@@ -73,7 +73,7 @@ namespace KingOfNewYork
         Souvenir = 2,
         Web = 3
     };
-    const std::string GetTokenTypeString(const ETokenType TokenType);
+    const std::string GetTokenTypeString(ETokenType TokenType);
 
     const int MAXIMUM_AVAILABLE_CARDS = 3; 
     enum class EHowToPlay
@@ -82,7 +82,7 @@ namespace KingOfNewYork
         Keep = 0,
         Discard = 1
     };
-    const std::string GetHowToPlayString(const EHowToPlay HowToPlay);
+    const std::string GetHowToPlayString(EHowToPlay HowToPlay);
 
     const int MAXIMUM_TILE_DURABILITY = 4;
     enum class ETileType

@@ -20,83 +20,11 @@ namespace KingOfNewYork
             std::cout << "Error: There was a problem during the initialization phase."
                       << std::endl;
         }
-        if (!StartupPhase())
-        {
-            std::cout << "Error: There was a problem during the startup phase."
-                      << std::endl;
-        }
     }
 
     void FGame::StartMainPhase()
     {
         MainPhase();
-    }
-
-    void FGame::Print() const
-    {
-        std::cout << "Number of players: " << static_cast<int>(Players.size()) << std::endl;
-        for (const std::shared_ptr<FPlayer> &Player : Players)
-        {
-            std::cout << "\t-";
-            Player->PrintShort();
-        }
-        
-        std::cout << "Monster in Manhattam: ";
-        if (PlayersInCenter.empty())
-        {
-            std::cout << "No one." << std::endl;
-        }
-        else
-        {
-            for (const std::shared_ptr<FPlayer> &Player : Players)
-            {
-                std::cout   << "\t-"
-                            << GetMonsterNameString(Player->GetMonsterName())
-                            << std::endl;
-            }
-        }
-
-        std::cout   << "Superstar: "
-                    << (Superstar ?
-                        GetMonsterNameString(Superstar->GetMonsterName()) :
-                        "No one")
-                    << std::endl;
-        std::cout << "Status of Liberty: "
-                << (StatusOfLiberty ?
-                    GetMonsterNameString(StatusOfLiberty->GetMonsterName()) :
-                    "No one")
-                << std::endl;
-
-        std::cout << "Number of cards in deck: " << Deck.Size() << std::endl;
-        std::cout << "Number of cards in discard deck: "
-                  << DiscardDeck.Size()
-                  << std::endl;
-
-        std::cout << "Tokens left:" << std::endl;
-        for (int i = 0; i < TOKEN_TYPE_COUNT; ++i)
-        {
-            std::cout   << "\t-"
-                        << GetTokenTypeString(ETokenType(i))
-                        << ": "
-                        << TokenInventory[i]
-                        << std::endl;
-        }
-
-        std::cout   << "Energy cubes left: "
-                    << EnergyCubes
-                    << std::endl;
-
-        std::cout << "Available cards:" << std::endl;
-        for (const std::unique_ptr<FCard> &Card : AvailableCards)
-        {
-            if (Card)
-            {
-                std::cout << "\t-"
-                        << Card->GetName()
-                        << std::endl;
-            }
-            
-        }
     }
 
     std::unique_ptr<FCard> FGame::GetCard(int Index) {
@@ -114,7 +42,7 @@ namespace KingOfNewYork
         return Card;
     }
 
-    const bool FGame::InitializationPhase()
+    bool FGame::InitializationPhase()
     {
         if (!SelectMap())
         {
@@ -129,9 +57,6 @@ namespace KingOfNewYork
         }
 
         CreatePlayers(PlayerCount);
-
-        Superstar = nullptr;
-        StatusOfLiberty = nullptr;
 
         Deck = FDeck("cards.txt");
         Deck.Shuffle();
@@ -168,7 +93,7 @@ namespace KingOfNewYork
 
     }
 
-    void FGame::ChangeCelebrity(std::shared_ptr<FPlayer> NewCelebrityPlayer)
+    void FGame::ChangeCelebrity(std::shared_ptr<FPlayer> &NewCelebrityPlayer)
     {
         for (std::shared_ptr<FPlayer> &Player : Players)
         {
@@ -185,7 +110,7 @@ namespace KingOfNewYork
                   << std::endl;
     }
 
-    void FGame::ChangeStatueOfLiberty(std::shared_ptr<FPlayer> NewStatueOfLibertyPlayer)
+    void FGame::ChangeStatueOfLiberty(std::shared_ptr<FPlayer> &NewStatueOfLibertyPlayer)
     {
         for (std::shared_ptr<FPlayer> &Player : Players) {
             if (Player->IsStatueOfLiberty()) {
@@ -203,12 +128,12 @@ namespace KingOfNewYork
         NewStatueOfLibertyPlayer->ChangeVictoryPoints(STATUS_OF_LIBERTY_VICTORY_POINTS);
     }
 
-    const bool FGame::DistributeTiles(FTileStack &MasterTileStack)
+    bool FGame::DistributeTiles(FTileStack &MasterTileStack)
     {
         assert(Map != nullptr);
         while (!MasterTileStack.IsEmpty())
         {
-            for (auto Borough : Map->GetBoroughs())
+            for (const std::shared_ptr<FBorough> &Borough : Map->GetBoroughs())
             {
                 for (const std::unique_ptr<FTileStack> &CurrentTileStack : Borough->GetConstTileStacks())
                 {
@@ -223,7 +148,7 @@ namespace KingOfNewYork
         return true;
     }
 
-    const bool FGame::SelectMap()
+    bool FGame::SelectMap()
     {
         bool isValid = false;
         std::vector<std::string> MapFiles = GetMapFiles(MAP_PATH);
@@ -276,7 +201,7 @@ namespace KingOfNewYork
         return true;
     }
 
-    const int FGame::GetPlayerCount()
+    int FGame::GetPlayerCount()
     {
         bool isValid = false;
         int PlayerCount = 0;
@@ -333,17 +258,11 @@ namespace KingOfNewYork
         }
     }
 
-    const bool FGame::StartupPhase()
+    void FGame::StartupPhase()
     {
         GetFirstPlayer();
-
-        if (CurrentPlayer == -1)
-        {
-            return false;
-        }
-
+        assert(CurrentPlayer != -1);
         SelectStartingBoroughs();
-        return true;
     }
 
     void FGame::GetFirstPlayer()
@@ -432,7 +351,7 @@ namespace KingOfNewYork
 
     void FGame::MainPhase()
     {
-        while (VictoriousPlayer() == nullptr)
+        while (VictoriousPlayer() == std::nullopt)
         {
             Notify(shared_from_this(), std::make_shared<FBetweenTurnsEvent>(EObserverEvent::BetweenTurns, ""));
             Players[CurrentPlayer]->TakeTurn(*Map, *this);
@@ -472,7 +391,7 @@ namespace KingOfNewYork
 
     }
 
-    void FGame::CleanDeadPlayer(std::shared_ptr<FPlayer> DeadPlayer)
+    void FGame::CleanDeadPlayer(std::shared_ptr<FPlayer> &DeadPlayer)
     {
         assert(DeadPlayer);
         if (static_cast<int>(Players.size()) == 1)
@@ -495,7 +414,7 @@ namespace KingOfNewYork
         }
     }
 
-    std::shared_ptr<FPlayer> FGame::VictoriousPlayer()
+    std::optional<std::shared_ptr<FPlayer>> FGame::VictoriousPlayer()
     {
         if (static_cast<int>(Players.size()) == 1)
         {
@@ -518,6 +437,6 @@ namespace KingOfNewYork
                 exit(0);
             }
         }
-        return nullptr;
+        return std::nullopt;
     }
 }

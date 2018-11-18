@@ -1,6 +1,8 @@
-//
-// Created by oscar on 15/11/18.
-//
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 3
+// Due date: November 18, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
 
 #include "subject.h"
 #include <cassert>
@@ -35,7 +37,7 @@ namespace KingOfNewYork
         Observers->clear();
     }
 
-    void FSubject::Notify(std::shared_ptr<FSubject> Subject, std::shared_ptr<IObserverEvent> Event)
+    void FSubject::Notify(const std::shared_ptr<FSubject> &Subject, const std::shared_ptr<IObserverEvent> &Event)
     {
         assert(Observers);
         //std::cout << Observers->size();
@@ -44,7 +46,7 @@ namespace KingOfNewYork
             assert(Observer);
             Observer->Update(Subject, Event);
             //FIXME: This is not a good solution as since I'm not sure what happens if there is more than one element.
-            if (Observers->size() == 0)
+            if (Observers->empty())
             {
                 break;
             }

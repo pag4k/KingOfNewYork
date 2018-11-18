@@ -25,8 +25,9 @@ using namespace KingOfNewYork;
         std::shared_ptr<FGame> Game = std::make_shared<FGame>();
         FStateView StateView(Game);
         FGameView GameView(Game);
+        Game->StartupPhase();
         Game->StartMainPhase();
-        //Game->Initialize();
+
         std::cout << std::endl;
 
         return 0;

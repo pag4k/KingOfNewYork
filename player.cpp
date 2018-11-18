@@ -10,7 +10,6 @@
 #include "game.h"
 #include "player.h"
 #include "helper.h"
-#include "observerevent.h"
 
 namespace KingOfNewYork
 {
@@ -27,9 +26,9 @@ namespace KingOfNewYork
         DiceRoller = FDiceRoller();
 
 
-        for (int &Token : TokenInventory)
+        for (int i = 0; i < TOKEN_TYPE_COUNT; ++i)
         {
-            Token = 0;
+            TokenInventory.push_back(0);
         }
 
         bAlive = true;
@@ -113,10 +112,6 @@ namespace KingOfNewYork
     {
         if (Borough->IsCenter())
         {
-            std::cout << "Since you are in "
-                      << CENTER_LEVEL_NAMES[LevelInCenter]
-                      << " Manhattan, you get the following:"
-                      << std::endl;
             ChangeVictoryPoints(CENTER_VICTORY_POINT_REWARDS[LevelInCenter]);
             ChangeEnergyCubes(CENTER_ENERGY_CUBE_REWARDS[LevelInCenter]);
         }
@@ -134,89 +129,13 @@ namespace KingOfNewYork
 
     void FPlayer::MovePhase(FMap &Map)
     {
-        MoveStrategy->Execute(Map, shared_from_this(), true, false);
+        Move(Map, true, false);
+        //MoveStrategy->Execute(Map, shared_from_this(), true, false);
     }
 
     void FPlayer::BuyCardsPhase(FGame &Game)
     {
         BuyCardsStrategy->Execute(Game, shared_from_this());
-    }
-
-    void FPlayer::PrintShort() const
-    {
-        std::cout   << "Name: " << PlayerName
-                    << " Monster: " << GetMonsterNameString(MonsterName)
-                    << std::endl;
-
-    }
-
-    void FPlayer::PrintLong() const
-    {
-        std::cout << "Current status: "
-                  << std::endl;
-
-        if (Borough)
-        {
-            if (Borough->IsCenter())
-            {
-                std::cout << "Position: "
-                          << CENTER_LEVEL_NAMES[LevelInCenter]
-                          << " Manhattan"
-                          << std::endl;
-            }
-            else
-            {
-                std::cout << "Position: " << Borough->GetName() << std::endl;
-            }
-        }
-
-        //DiceRoller.PrintRollHistory();
-
-        std::cout << "Number of cards: " << Cards.size() << std::endl;
-        for (const std::unique_ptr<FCard> &Card : Cards) {
-            if (Card)
-            {
-                Card->Print();
-            }
-        }
-
-        std::cout << "Tokens:" << std::endl;
-        for (int i = 0; i < TOKEN_TYPE_COUNT; ++i)
-        {
-            std::cout << "\t-"
-                    << GetTokenTypeString(ETokenType(i))
-                    << ": "
-                    << TokenInventory[i]
-                    << std::endl;
-        }
-
-        std::cout << "Energy cubes: "
-                << EnergyCubes
-                << std::endl;
-
-        std::cout << "Life points: "
-                << LifePoints
-                << std::endl;
-
-        std::cout << "Victory points: "
-                << VictoryPoints
-                << std::endl;
-
-        if (bCelebrity)
-        {
-            std::cout << GetMonsterNameString(MonsterName)
-                    << "is a Superstar!"
-                    << std::endl;
-        }
-
-        if (bStatueOfLiberty)
-        {
-            std::cout << GetMonsterNameString(MonsterName)
-                    << " has help from the Status of Liberty!"
-                    << std::endl;
-        }
-
-        std::cout << std::endl;
     }
 
     void FPlayer::EnterPlayerName(std::vector<std::string> &PlayerNames)
@@ -343,11 +262,8 @@ namespace KingOfNewYork
 
     void FPlayer::SelectStartingLocation(FMap &Map)
     {
-        std::cout << GetPlayerAndMonsterNames()
-                  << ", please select your starting borough:"
-                  << std::endl;
-
-        Move(Map, true);
+        MoveStrategy->Execute(Map, shared_from_this(), false, true);
+        Notify(shared_from_this(), std::make_shared<FChangeBoroughEvent>(EObserverEvent::ChangeBorough, "", nullptr, Borough));
     }
 
 
@@ -361,16 +277,15 @@ namespace KingOfNewYork
             bAlive = false;
             bStatueOfLiberty = false;
             bCelebrity = false;
-            //TODO: WRONG PLACE TO PUT THIS!
             Notify(shared_from_this(), std::make_shared<FDeadPlayerEvent>(EObserverEvent::DeadPlayer, ""));
         }
     }
 
-    void FPlayer::Move(FMap &Map, bool bOnlyStartingLocation)
+    void FPlayer::Move(FMap &Map, bool bMovePhase, bool bOnlyStartingLocation)
     {
         std::shared_ptr<FBorough> OldBorough = Borough;
         int OldLevelInCenter = LevelInCenter;
-        MoveStrategy->Execute(Map, shared_from_this(), false, bOnlyStartingLocation);
+        MoveStrategy->Execute(Map, shared_from_this(), bMovePhase, bOnlyStartingLocation);
         if (OldBorough && OldBorough->IsCenter() && Borough->IsCenter())
         {
             Notify(shared_from_this(), std::make_shared<FMoveInManhattanEvent>(EObserverEvent::MoveInManhattan, "", OldLevelInCenter, LevelInCenter));
@@ -422,8 +337,4 @@ namespace KingOfNewYork
         Notify(shared_from_this(), std::make_shared<FChangeVictoryPointsEvent>(EObserverEvent::ChangeVictoryPoints, "", Number, VictoryPoints));
 
     }
-//
-//    void FPlayer::SetTurnResult(std::string Message) {
-//        Notify(shared_from_this(), std::make_shared<FTurnResultEvent>(EObserverEvent::TurnResult, Message));
-//    }
 }

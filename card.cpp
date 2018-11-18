@@ -24,6 +24,13 @@ namespace KingOfNewYork
                   << "\tEffect: " << GetEffect() << std::endl;
     }
 
+    const std::string FCard::GetCardInfo() const {
+        return "\tName: " + GetName() +
+                "\n\tHow to Play: " + GetHowToPlayString(GetHowToPlay()) +
+                "\n\tEnergy Cost: " + std::to_string(GetEnergyCost()) +
+                "\n\tEffect: " + GetEffect();
+    }
+
     FDeck::FDeck(const std::string &FileName)
     {
         GenerateFromFile(FileName);
@@ -47,15 +54,6 @@ namespace KingOfNewYork
     {
         assert(Card);
         Deck.push_back(std::move(Card));
-    }
-
-
-    void FDeck::Print() const
-    { 
-        for (const auto& Card : Deck)
-        {
-
-        }
     }
 
     void FDeck::Shuffle()

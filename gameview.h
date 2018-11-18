@@ -1,6 +1,8 @@
-//
-// Created by oscar on 15/11/18.
-//
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 3
+// Due date: November 18, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
 
 #ifndef GAMEVIEW_H
 #define GAMEVIEW_H
@@ -14,12 +16,13 @@ namespace KingOfNewYork
     class FSubject;
     class IObserverEvent;
 
+    //A class that observes the player notifications.
     class FGameView : public IObserver
     {
     public:
         explicit FGameView(std::shared_ptr<FGame> Game);
         ~FGameView() override;
-        void Update(std::shared_ptr<FSubject> Subject, std::shared_ptr<IObserverEvent> Event) override;
+        void Update(const std::shared_ptr<FSubject> &Subject, const std::shared_ptr<IObserverEvent> &Event) override;
     private:
         std::shared_ptr<FGame> Game;
     };

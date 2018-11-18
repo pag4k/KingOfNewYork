@@ -15,25 +15,14 @@
 
 namespace KingOfNewYork
 {
-    FTile::FTile(
-        const ETileType TileType,
-        const int Durability,
-        const int Reward) :
-        TileType(TileType),
-        Durability(Durability),
-        Reward(Reward) {}
+    FTile::FTile(ETileType TileType, int Durability, int Reward)
+            : TileType(TileType), Durability(Durability), Reward(Reward) {}
 
-    const bool FTile::IsBuilding() const
+    bool FTile::IsBuilding() const
     {
         return (TileType == ETileType::HighRise ||
                 TileType == ETileType::PowerPlant ||
                 TileType == ETileType::Hospital);
-    }
-
-    const EMonsterResource FTile::GetMonsterResource() const
-    {
-        //This only works if ETileType and EMonsterResources are in right order.
-        return EMonsterResource(static_cast<int>(TileType) / 2);
     }
 
     void FTile::Flip()
@@ -57,7 +46,7 @@ namespace KingOfNewYork
         Durability++;
     }
 
-    const std::string FTile::GetTileInfo()
+    std::string FTile::GetTileInfo() const
     {
         return GetTileTypeString(GetTileType()) + ": Durability: " + std::to_string(GetDurability()) + " Reward: " + std::to_string(GetReward()) + " " + GetMonsterResourceString(EMonsterResource(static_cast<int>(GetTileType())/2));
     }
@@ -81,7 +70,7 @@ namespace KingOfNewYork
         return Tile;
     }
 
-    std::unique_ptr<FTile> &FTileStack::GetTopTileInfo()
+    const std::unique_ptr<FTile> &FTileStack::GetTopTileInfo() const
     {
         assert(!TileStack.empty());
         return TileStack.back();

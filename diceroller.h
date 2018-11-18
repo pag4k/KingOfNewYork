@@ -13,15 +13,14 @@
 
 namespace KingOfNewYork
 {
-    struct FDiceResult;
-
+    //A class that handles the dice rolling for the FPlayer class.
     class FDiceRoller {
     public :
         FDiceRoller();
-        std::vector<EDiceFace> BeginRolling(const int DiceCount) const;
-        void RollDice(const int DiceCount, std::vector<EDiceFace> &OutDiceResult) const;
+        std::vector<EDiceFace> BeginRolling(int DiceCount) const;
+        void RollDice(int DiceCount, std::vector<EDiceFace> &OutDiceResult) const;
     private :
-        const EDiceFace RollSingleDice(const int FaceNumber) const;
+        const EDiceFace RollSingleDice(int FaceNumber) const;
         mutable int RollHistory[FACE_ON_DICE_COUNT];
     };
 }

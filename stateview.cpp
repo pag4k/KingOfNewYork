@@ -18,7 +18,7 @@ namespace KingOfNewYork
         Game->Detach(this);
     }
 
-    void FStateView::Update(std::shared_ptr<FSubject> Subject, std::shared_ptr<IObserverEvent> Event)
+    void FStateView::Update(const std::shared_ptr<FSubject> &Subject, const std::shared_ptr<IObserverEvent> &Event)
     {
         //TODO: Not sure if it will only observe the game.
         auto GameSubject = std::dynamic_pointer_cast<FGame>(Subject);
@@ -34,7 +34,7 @@ namespace KingOfNewYork
                 std::cout << "################################################################################" << std::endl;
                 std::cout << "                              Current Game Status                               " << std::endl;
                 std::cout << "################################################################################" << std::endl;
-                for (auto Borough : Game->GetMap()->GetBoroughs())
+                for (const std::shared_ptr<FBorough> &Borough : Game->GetMap()->GetBoroughs())
                 {
                     std::cout << Borough->GetName()
                               << ":"
@@ -71,6 +71,7 @@ namespace KingOfNewYork
                                       << Player->GetVictoryPoints()
                                       << (Player->IsCelebrity() ? " Celebrity" : "")
                                       << (Player->IsStatueOfLiberty() ? "  Statue of Liberty" : "")
+                                      << ")"
                                       << std::endl;
                         }
                     }

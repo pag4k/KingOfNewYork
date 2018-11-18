@@ -11,29 +11,30 @@
 
 namespace KingOfNewYork
 {
+    //Interface for the various roll dice strategies.
     class IRollDiceStrategy
 
     {
     public:
-        virtual void Execute(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult) = 0;
+        virtual void Execute(FDiceRoller &DiceRoller, int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult) = 0;
     };
 
     class HumanRollDiceStrategy : public IRollDiceStrategy
     {
     public:
-        void Execute(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult);
+        void Execute(FDiceRoller &DiceRoller, int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult) override;
     };
 
     class AggressiveRollDiceStrategy : public IRollDiceStrategy
     {
     public:
-        void Execute(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult);
+        void Execute(FDiceRoller &DiceRoller, int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult) override;
     };
 
     class ModerateRollDiceStrategy : public IRollDiceStrategy
     {
     public:
-        void Execute(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult);
+        void Execute(FDiceRoller &DiceRoller, int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult) override;
     };
 
 }

@@ -22,16 +22,15 @@ namespace KingOfNewYork
         FBorough(const FBorough& Other) = delete;
         const std::string &GetName() const { return Name; }
         void SetName(const std::string &Name) { this->Name = Name; }
-        const bool IsStartingLocation() const { return bStartingLocation; }
-        void SetStartingLocation(const bool bStartingLocation) { this->bStartingLocation = bStartingLocation; }
-        const bool IsCenter() const { return bCenter; }
-        int GetPlayerCount() { return static_cast<int>(GetConstPlayers().size()); }
-        void SetCenter(const bool bCenter) { this->bCenter = bCenter; }
+        bool IsStartingLocation() const { return bStartingLocation; }
+        void SetStartingLocation(bool bStartingLocation) { this->bStartingLocation = bStartingLocation; }
+        bool IsCenter() const { return bCenter; }
+        int GetPlayerCount() const { return static_cast<int>(GetConstPlayers().size()); }
+        void SetCenter(bool bCenter) { this->bCenter = bCenter; }
         const std::vector<std::unique_ptr<FTileStack>> &GetConstTileStacks() const { return TileStacks; }
-        std::vector<std::unique_ptr<FTileStack>> &GetMutableTileStacks() { return TileStacks; }
         const std::vector<std::shared_ptr<FPlayer>> &GetConstPlayers() const { return Players; }
         std::vector<std::shared_ptr<FPlayer>> &GetMutablePlayers() { return Players; }
-        const int GetUnitCount();
+        int GetUnitCount() const;
     private:
         std::string Name;
         bool bStartingLocation;

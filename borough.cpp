@@ -14,9 +14,9 @@ namespace KingOfNewYork {
         }
     }
 
-    const int FBorough::GetUnitCount() {
+    int FBorough::GetUnitCount() const {
         int UnitCount = 0;
-        for (std::unique_ptr<FTileStack> &TileStack : TileStacks)
+        for (const std::unique_ptr<FTileStack> &TileStack : TileStacks)
         {
             if (!TileStack->IsEmpty() && !TileStack->GetTopTileInfo()->IsBuilding())
             {

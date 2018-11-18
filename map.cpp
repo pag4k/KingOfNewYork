@@ -173,7 +173,7 @@ namespace KingOfNewYork
     std::shared_ptr<FBorough> FMap::GetCenterBorough()
     {
         std::shared_ptr<FBorough> CenterBorough = nullptr;
-        for (auto Borough : GetBoroughs()) {
+        for (const std::shared_ptr<FBorough> &Borough : GetBoroughs()) {
             if (Borough->IsCenter()) {
                 if (CenterBorough == nullptr)
                 {
@@ -188,7 +188,7 @@ namespace KingOfNewYork
         }
         if (CenterBorough == nullptr)
         {
-            //There should one Center Borough.
+            //There should be exactly one Center Borough.
             assert(true);
         }
 

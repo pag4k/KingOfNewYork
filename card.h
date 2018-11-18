@@ -19,23 +19,15 @@ namespace KingOfNewYork
     class FCard
     {
     public:
-        FCard() :
-            Id(-1),
-            Name(""),
-            HowToPlay(EHowToPlay::None),
-            EnergyCost(-1),
-            Effect("") {}
+        FCard() : Id(-1), Name(""), HowToPlay(EHowToPlay::None), EnergyCost(-1), Effect("") {}
         FCard(int Id, std::string &Name, EHowToPlay HowToPlay, int EnergyCost, std::string &Effect) :
-            Id(Id),
-            Name(std::move(Name)),
-            HowToPlay(HowToPlay),
-            EnergyCost(EnergyCost),
-            Effect(std::move(Effect)) {}
-        const std::string GetName() const { return Name; };
-        const EHowToPlay GetHowToPlay() const { return HowToPlay; };
-        const int GetEnergyCost() const { return EnergyCost; };
-        const std::string GetEffect() const { return Effect; };
+            Id(Id), Name(std::move(Name)), HowToPlay(HowToPlay), EnergyCost(EnergyCost), Effect(std::move(Effect)) {}
+        const std::string &GetName() const { return Name; };
+        EHowToPlay GetHowToPlay() const { return HowToPlay; };
+        int GetEnergyCost() const { return EnergyCost; };
+        const std::string &GetEffect() const { return Effect; };
         void Print();
+        const std::string GetCardInfo() const;
     private:
         int Id;
         std::string Name;
@@ -51,11 +43,9 @@ namespace KingOfNewYork
         FDeck() = default;
         explicit FDeck(const std::string &FileName);
         void Shuffle();
-        const unsigned int Size() const { return (unsigned int)Deck.size(); };
-        const bool IsEmpty() const { return Deck.empty(); };
+        bool IsEmpty() const { return Deck.empty(); };
         std::unique_ptr<FCard> Draw();
         void AddCard(std::unique_ptr<FCard> &Card);
-        void Print() const;
     private:
         void GenerateFromFile(const std::string &FileName);
         std::vector<std::unique_ptr<FCard>> Deck;

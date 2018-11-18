@@ -1,7 +1,8 @@
-//
-// Created by oscar on 15/11/18.
-//
-
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 3
+// Due date: November 18, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
 #ifndef OBSERVER_H
 #define OBSERVER_H
 
@@ -12,11 +13,12 @@ namespace KingOfNewYork
     class FSubject;
     class IObserverEvent;
 
+    //Interface for the observer pattern.
     class IObserver
     {
     public:
         virtual ~IObserver() = default;
-        virtual void Update(std::shared_ptr<FSubject> Subject, std::shared_ptr<IObserverEvent> Event) = 0;
+        virtual void Update(const std::shared_ptr<FSubject> &Subject, const std::shared_ptr<IObserverEvent> &Event) = 0;
     protected:
         IObserver() = default;
     };

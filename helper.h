@@ -14,6 +14,7 @@ namespace KingOfNewYork
     extern std::string Path;
     void PrintHeader(std::string Header);
     void PrintNormal(std::string Message);
+    void AddPadding(std::string& OutString, int OutputLength, char Symbol);
     const int InputSingleDigit();
     const std::string InputString();
     const int ParseIntFromChar(char Char);
