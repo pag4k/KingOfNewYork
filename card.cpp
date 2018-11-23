@@ -15,25 +15,23 @@
 
 namespace KingOfNewYork
 {
-    void FCard::Print()
-    {
-        std::cout << "\tName: " << GetName() << std::endl
-                  << "\tHow to Play: "
-                  << GetHowToPlayString(GetHowToPlay()) << std::endl
-                  << "\tEnergy Cost: " << GetEnergyCost() << std::endl
-                  << "\tEffect: " << GetEffect() << std::endl;
-    }
-
-    const std::string FCard::GetCardInfo() const {
-        return "\tName: " + GetName() +
-                "\n\tHow to Play: " + GetHowToPlayString(GetHowToPlay()) +
-                "\n\tEnergy Cost: " + std::to_string(GetEnergyCost()) +
-                "\n\tEffect: " + GetEffect();
-    }
-
     FDeck::FDeck(const std::string &FileName)
     {
         GenerateFromFile(FileName);
+    }
+
+    void FCard::Display() const
+    {
+        std::shared_ptr<FCard> ShareCardCopyPointer = std::make_shared<FCard>(*this);
+        ShareCardCopyPointer->ClearObserverListPointer();
+        Notify(ShareCardCopyPointer, std::make_shared<FDisplayCardEvent>(EObserverEvent::DisplayCard, ""));
+    }
+
+    void FCard::Use()
+    {
+        std::shared_ptr<FCard> ShareCardCopyPointer = std::make_shared<FCard>(*this);
+        ShareCardCopyPointer->ClearObserverListPointer();
+        Notify(ShareCardCopyPointer, std::make_shared<FUsedCardEvent>(EObserverEvent::UsedCard, ""));
     }
 
     std::unique_ptr<FCard> FDeck::Draw()

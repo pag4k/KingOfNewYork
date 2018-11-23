@@ -11,12 +11,12 @@
 #include <memory>
 #include "common.h"
 
-
 namespace KingOfNewYork
 {
     class FGame;
     class FMap;
     class FPlayer;
+    class FBorough;
 
     //Interface for the various resolve dice strategies.
     class IResolveDiceStrategy
@@ -48,8 +48,9 @@ namespace KingOfNewYork
         std::vector<int> GetDiceSums(std::vector<EDiceFace> &DiceResult);
         const bool ResolveAttack(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, int NumberOfDice);
         const bool ResolveCelebrity(FGame &Game, std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        int GetMinimumDurability(const std::shared_ptr<FBorough> &Borough);
         const bool HumanResolveDestruction(std::shared_ptr<FPlayer> Player, int NumberOfDice);
-        const bool AIResolveDestruction(std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        const bool AIResolveDestruction(std::shared_ptr<FPlayer> Player, int NumberOfDice, bool bPrioritizeUnit);
         const bool ResolveEnergy(std::shared_ptr<FPlayer> Player, int NumberOfDice);
         const bool ResolveHeal(std::shared_ptr<FPlayer> Player, int NumberOfDice);
         const bool ResolveOuch(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, int NumberOfDice);

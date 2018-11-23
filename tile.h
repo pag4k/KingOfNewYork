@@ -40,9 +40,10 @@ namespace KingOfNewYork
         void Shuffle();
         bool IsEmpty() const { return TileStack.empty(); }
         std::unique_ptr<FTile> Draw();
-        const std::unique_ptr<FTile> &GetTopTileInfo() const;
+        std::unique_ptr<FTile> &GetMutableTopTile();
+        const std::unique_ptr<FTile> &GetTopTile() const;
         void AddTileOnTop(std::unique_ptr<FTile> Tile);
-        void DestructTopTile();
+        std::unique_ptr<FTile> DestructTopTile();
     private:
         void GenerateFromFile(std::string FileName);
         std::vector<std::unique_ptr<FTile>> TileStack;

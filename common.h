@@ -7,6 +7,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <memory>
 #include <string>
 
 namespace KingOfNewYork
@@ -142,7 +143,14 @@ namespace KingOfNewYork
 //        Ouch = 5
         ChangeBorough,
         MoveInManhattan,
-        DeadPlayer
+        DestroyedTile,
+        SpawnedUnit,
+        TakeSuperstar,
+        DeadPlayer,
+        RolledDice,
+        RollingDone,
+        DisplayCard,
+        UsedCard
     };
 
 }

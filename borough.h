@@ -28,14 +28,17 @@ namespace KingOfNewYork
         int GetPlayerCount() const { return static_cast<int>(GetConstPlayers().size()); }
         void SetCenter(bool bCenter) { this->bCenter = bCenter; }
         const std::vector<std::unique_ptr<FTileStack>> &GetConstTileStacks() const { return TileStacks; }
+        std::vector<std::unique_ptr<FTileStack>> &GetMutableTileStacks() { return TileStacks; }
         const std::vector<std::shared_ptr<FPlayer>> &GetConstPlayers() const { return Players; }
         std::vector<std::shared_ptr<FPlayer>> &GetMutablePlayers() { return Players; }
-        int GetUnitCount() const;
+        std::vector<std::unique_ptr<FTile>> &GetUnits() { return Units; }
+        int GetUnitCount() const { return static_cast<int>(Units.size()); }
     private:
         std::string Name;
         bool bStartingLocation;
         bool bCenter;
         std::vector<std::unique_ptr<FTileStack>> TileStacks;
+        std::vector<std::unique_ptr<FTile>> Units;
         std::vector<std::shared_ptr<FPlayer>> Players;
     };
 }

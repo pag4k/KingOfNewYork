@@ -4,10 +4,13 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
-#include "helper.h"
+
 #include "resolvedicestrategy.h"
+
+#include <algorithm>
+
+#include "helper.h"
 #include "game.h"
-//#include "map.h"
 #include "player.h"
 
 namespace KingOfNewYork
@@ -159,7 +162,7 @@ namespace KingOfNewYork
         //6. Destruction
         if (DiceSums[2] > 0)
         {
-            AIResolveDestruction(Player, DiceSums[2]);
+            AIResolveDestruction(Player, DiceSums[2], false);
             DiceSums[2] = 0;
         }
     }
@@ -211,7 +214,7 @@ namespace KingOfNewYork
         //6. Destruction
         if (DiceSums[2] > 0)
         {
-            AIResolveDestruction(Player, DiceSums[2]);
+            AIResolveDestruction(Player, DiceSums[2], true);
             DiceSums[2] = 0;
         }
     }
@@ -221,7 +224,7 @@ namespace KingOfNewYork
 
         std::vector<int> GetDiceSums(std::vector<EDiceFace> &DiceResult)
         {
-            std::vector<int> DiceSums(DiceResult.size(), 0);
+            std::vector<int> DiceSums(FACE_ON_DICE_COUNT, 0);
             for (EDiceFace DiceFace: DiceResult)
             {
                 DiceSums[static_cast<int>(DiceFace)]++;
@@ -229,10 +232,15 @@ namespace KingOfNewYork
             return  DiceSums;
         }
 
-        const bool ResolveAttack(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, const int NumberOfDice)
+        const bool ResolveAttack(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, int NumberOfDice)
         {
-            assert(Player->GetBorough() != nullptr);
-            const bool bAttackCenter = !Player->GetBorough()->IsCenter();
+            assert(Player->GetMutableBorough() != nullptr);
+            const bool bAttackCenter = !Player->GetMutableBorough()->IsCenter();
+            if (Player->UseCard(22))
+            {
+                NumberOfDice *= 2;
+            }
+
             if (bAttackCenter)
             {
                 std::cout << "Since you are not in Manhattan, each Attack inflicts damage to all Monsters in Manhattan:"
@@ -243,7 +251,12 @@ namespace KingOfNewYork
                     {
                         assert(Borough->GetConstPlayers().size() == MAXIMUM_MONSTERS_IN_CENTER);
                         std::shared_ptr<FPlayer> TargetPlayer = Borough->GetMutablePlayers().back();
-                        TargetPlayer->TakeDamage(Game, NumberOfDice);
+                        int BonusAttack = 0;
+                        if (TargetPlayer->GetLifePoints() > Player->GetLifePoints() && Player->UseCard(23))
+                        {
+                            BonusAttack = 1;
+                        }
+                        TargetPlayer->TakeDamage(Game, NumberOfDice + BonusAttack);
 
                         if (!TargetPlayer->IsAlive())
                         {
@@ -251,10 +264,11 @@ namespace KingOfNewYork
                         }
 
                         std::cout << "Since "
-                                  << TargetPlayer->GetPlayerAndMonsterNames()
+                                  << TargetPlayer->GetMonsterName()
                                   <<" was attacked while being in Manhattan, he/she may flee Manhattan."
                                   << std::endl;
-                        TargetPlayer->Move(Map, false, false);
+                        auto &TargetPlayerController = Game.GetPlayerController(TargetPlayer);
+                        TargetPlayerController->Move(Map, false, false);
                         break;
                     }
                 }
@@ -267,9 +281,15 @@ namespace KingOfNewYork
                 {
                     if (!Borough->IsCenter())
                     {
-                        for (const std::shared_ptr<FPlayer> &TargetPlayer : Borough->GetMutablePlayers())
+                        auto TargetPlayers = Borough->GetMutablePlayers();
+                        for (const std::shared_ptr<FPlayer> &TargetPlayer : TargetPlayers)
                         {
-                            TargetPlayer->TakeDamage(Game, NumberOfDice);
+                            int BonusAttack = 0;
+                            if (TargetPlayer->GetLifePoints() > Player->GetLifePoints() && Player->UseCard(23))
+                            {
+                                BonusAttack = 1;
+                            }
+                            TargetPlayer->TakeDamage(Game, NumberOfDice + BonusAttack);
                         }
                     }
                 }
@@ -305,94 +325,109 @@ namespace KingOfNewYork
             return true;
         }
 
+        int GetMinimumDurability(const std::shared_ptr<FBorough> &Borough)
+        {
+            auto &TileStacks = Borough->GetMutableTileStacks();
+            auto &Units = Borough->GetUnits();
+            int MinimumDurability = MAXIMUM_TILE_DURABILITY;
+            for (const auto &TileStack : TileStacks)
+            {
+                if (!TileStack->IsEmpty() && TileStack->GetTopTile()->GetDurability() < MinimumDurability)
+                {
+                    MinimumDurability = TileStack->GetTopTile()->GetDurability();
+                }
+            }
+            for (const auto &Unit : Units)
+            {
+                if (Unit->GetDurability() < MinimumDurability)
+                {
+                    MinimumDurability = Unit->GetDurability();
+                }
+            }
+            return MinimumDurability;
+        }
+
+
         const bool HumanResolveDestruction(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
         {
-            assert(Player->GetBorough() != nullptr);
-            bool bAllEmptyStack = true;
-            int MinimumDurability = MAXIMUM_TILE_DURABILITY;
-            for (const std::unique_ptr<FTileStack> &TileStack : Player->GetBorough()->GetConstTileStacks())
+            assert(Player->GetMutableBorough());
+            auto &Borough = Player->GetMutableBorough();
+            auto &TileStacks = Borough->GetMutableTileStacks();
+            auto &Units = Borough->GetUnits();
+            int TileStackCount = static_cast<int>(std::count_if(TileStacks.begin(), TileStacks.end(), [](const auto &TileStack) { return !TileStack->IsEmpty(); }));
+
+            if (TileStackCount == 0 && Borough->GetUnitCount() == 0)
             {
-                if (!TileStack->IsEmpty() && TileStack->GetTopTileInfo()->GetDurability() < MinimumDurability)
-                {
-                    bAllEmptyStack = false;
-                    MinimumDurability = TileStack->GetTopTileInfo()->GetDurability();
-                }
-            }
-            if (bAllEmptyStack)
-            {
-                std::cout << "There are no buildings or units to destruct."
-                          << std::endl;
+                PrintNormal("There are no buildings or units to destruct.");
                 return true;
             }
+
+            const int MinimumDurability = GetMinimumDurability(Borough);
+
             if (MinimumDurability > NumberOfDice)
             {
-                std::cout << "You only have "
-                          << NumberOfDice
-                          << " dice left and the weakest building/unit has "
-                          << MinimumDurability
-                          << " durability. You cannot do anything."
-                          << std::endl;
+                PrintNormal("You only have " +  std::to_string(NumberOfDice) + " dice left and the weakest building/unit has " + std::to_string(MinimumDurability) + " durability. You cannot do anything.");
                 return true;
             }
-            int SelectedStack = -1;
-            do {
-                std::cout << "The following buildings/units are in your borough. Select the number of the one you want to destruct (you have "
-                          << NumberOfDice
-                          << " left):"
-                          << std::endl;
-                for (int i = 0; i < Player->GetBorough()->GetConstTileStacks().size(); ++i)
+
+            int Input = 0;
+            int UsedDice = 0;
+            //TODO: BAD CONDITION
+            while(Input > -3)
+            {
+                PrintNormal("The following buildings/units are in your borough. Select the number of the one you want to destruct (you have " + std::to_string(NumberOfDice) + " left):");
+                for (int i = 0; i < TileStacks.size(); ++i)
                 {
-                    std::cout << (i + 1)
-                              << ". "
-                              << (Player->GetBorough()->GetConstTileStacks()[i]->IsEmpty()
-                                  ? "Tile stack is empty"
-                                  : Player->GetBorough()->GetConstTileStacks()[i]->GetTopTileInfo()->GetTileInfo())
-                              << "."
-                              << std::endl;
+                    PrintList(i + 1, (TileStacks[i]->IsEmpty() ? "Tile stack is empty" : TileStacks[i]->GetTopTile()->GetTileInfo()) + ".");
                 }
-                std::cout << ">";
-                int Input = InputSingleDigit() - 1;
-                if (0 <= Input && Input <= Player->GetBorough()->GetConstTileStacks().size() - 1)
+                for (int i = 0; i < Borough->GetUnitCount(); ++i)
                 {
-                    if (Player->GetBorough()->GetConstTileStacks()[Input]->IsEmpty())
+                    PrintList(i + static_cast<int>(TileStacks.size()) + 1, Units[i]->GetTileInfo() + ".");
+                }
+
+                std::cout << ">";
+                Input = InputSingleDigit() - 1;
+                if (0 <= Input && Input <= TileStacks.size() - 1)
+                {
+                    if (TileStacks[Input]->IsEmpty())
                     {
-                        std::cout << "Tile stack is empty. Please try again."
-                                  << std::endl;
+                        PrintNormal("Tile stack is empty. Please try again.");
                     }
                     else{
-                        if (Player->GetBorough()->GetConstTileStacks()[Input]->GetTopTileInfo()->GetDurability() <= NumberOfDice)
+                        if (TileStacks[Input]->GetTopTile()->GetDurability() <= NumberOfDice)
                         {
-                            SelectedStack = Input;
+                            UsedDice = TileStacks[Input]->GetTopTile()->GetDurability();
+                            Player->DestroyBuilding(TileStacks[Input]);
+                            break;
                         }
                         else
                         {
-                            std::cout << "You need "
-                                      << Player->GetBorough()->GetConstTileStacks()[Input]->GetTopTileInfo()->GetDurability()
-                                      << " destruction dice, but you only have "
-                                      << NumberOfDice
-                                      << ". Please try again."
-                                      << std::endl;
+                            PrintNormal("You need " + std::to_string(TileStacks[Input]->GetTopTile()->GetDurability()) + " destruction dice, but you only have " + std::to_string(NumberOfDice) + ". Please try again.");
                         }
                     }
-
+                }
+                else if (TileStacks.size() <= Input && Input <= TileStacks.size() + Borough->GetUnitCount() - 1)
+                {
+                    Input -= TileStacks.size();
+                    if (Units[Input]->GetDurability() <= NumberOfDice)
+                    {
+                        UsedDice = Units[Input]->GetDurability();
+                        Player->DestroyUnit(Units[Input]);
+                        break;
+                    }
+                    else
+                    {
+                        PrintNormal("You need " + std::to_string(Units[Input]->GetDurability()) + " destruction dice, but you only have " + std::to_string(NumberOfDice) + ". Please try again.");
+                    }
                 }
                 else
                 {
-                    std::cout << "Invalid input. Please try again."
-                              << std::endl;
+                        PrintNormal("Invalid input. Please try again.");
                 }
-            } while (SelectedStack == -1);
+            }
 
-            //Make a copy of the tile for convenience.
-            FTile DestructedTile = FTile(*(Player->GetBorough()->GetConstTileStacks()[SelectedStack]->GetTopTileInfo()));
-            Player->GetBorough()->GetConstTileStacks()[SelectedStack]->DestructTopTile();
-            std::cout << "Destructed "
-                      << GetTileTypeString(DestructedTile.GetTileType())
-                      << "."
-                      << std::endl;
-            Player->EarnMonsterResources(EMonsterResource(static_cast<int>(DestructedTile.GetTileType())/2), DestructedTile.GetReward());
+            int NewNumberOfDice = NumberOfDice - UsedDice;
 
-            int NewNumberOfDice = NumberOfDice - DestructedTile.GetDurability();
             if (NewNumberOfDice > 0)
             {
                 HumanResolveDestruction(Player, NewNumberOfDice);
@@ -400,68 +435,110 @@ namespace KingOfNewYork
             return true;
         }
 
-        const bool AIResolveDestruction(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
+        const bool AIResolveDestruction(std::shared_ptr<FPlayer> Player, int NumberOfDice, bool bPrioritizeUnit)
         {
-            assert(Player->GetBorough() != nullptr);
-            bool bAllEmptyStack = true;
-            int SelectedStack = -1;
-            for (int i = 0; i < Player->GetBorough()->GetConstTileStacks().size(); ++i)
+            assert(Player->GetMutableBorough());
+            auto &Borough = Player->GetMutableBorough();
+            auto &TileStacks = Borough->GetMutableTileStacks();
+            auto &Units = Borough->GetUnits();
+            int TileStackCount = static_cast<int>(std::count_if(TileStacks.begin(), TileStacks.end(), [](const auto &TileStack) { return !TileStack->IsEmpty(); }));
+
+            if (TileStackCount == 0 && Borough->GetUnitCount() == 0)
             {
-                if (!Player->GetBorough()->GetConstTileStacks()[i]->IsEmpty() &&
-                        Player->GetBorough()->GetConstTileStacks()[i]->GetTopTileInfo()->GetDurability() <= NumberOfDice)
+                PrintNormal("There are no buildings or units to destruct.");
+                return true;
+            }
+
+            const int MinimumDurability = GetMinimumDurability(Borough);
+
+            if (MinimumDurability > NumberOfDice)
+            {
+                PrintNormal("You only have " +  std::to_string(NumberOfDice) + " dice left and the weakest building/unit has " + std::to_string(MinimumDurability) + " durability. You cannot do anything.");
+                return true;
+            }
+
+            int Input = -1;
+
+            if (bPrioritizeUnit)
+            {
+                for (int i = 0; i < Borough->GetUnitCount(); ++i)
                 {
-                    bAllEmptyStack = false;
-                    SelectedStack = i;
-                    break;
+                    if (Units[i]->GetDurability() <= NumberOfDice)
+                    {
+                        Input = static_cast<int>(TileStacks.size()) + i;
+                        break;
+                    }
+                }
+                if (Input == -1)
+                {
+                    for (int i = 0; i < TileStacks.size(); ++i)
+                    {
+                        if (!TileStacks[i]->IsEmpty() && TileStacks[i]->GetTopTile()->GetDurability() <= NumberOfDice)
+                        {
+                            Input = i;
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < TileStacks.size(); ++i)
+                {
+                    if (!TileStacks[i]->IsEmpty() && TileStacks[i]->GetTopTile()->GetDurability() <= NumberOfDice)
+                    {
+                        Input = i;
+                        break;
+                    }
+                }
+
+                if (Input == -1)
+                {
+                    for (int i = 0; i < Borough->GetUnitCount(); ++i)
+                    {
+                        if (Units[i]->GetDurability() <= NumberOfDice)
+                        {
+                            Input = static_cast<int>(TileStacks.size()) + i;
+                            break;
+                        }
+                    }
                 }
             }
 
-            if (bAllEmptyStack)
+            assert(Input != -1);
+
+            int UsedDice = 0;
+
+            PrintNormal("The following buildings/units are in your borough (you have " + std::to_string(NumberOfDice) + " left):");
+            for (int i = 0; i < TileStacks.size(); ++i)
             {
-                std::cout << "There are no buildings or units to destruct."
-                          << std::endl;
-                return true;
+                PrintList(i + 1, (TileStacks[i]->IsEmpty() ? "Tile stack is empty" : TileStacks[i]->GetTopTile()->GetTileInfo()) + ".");
+            }
+            for (int i = 0; i < Borough->GetUnitCount(); ++i)
+            {
+                PrintList(i + static_cast<int>(TileStacks.size()) + 1, Units[i]->GetTileInfo() + ".");
             }
 
-            std::cout << "The following buildings/units are in your borough:"
-                      << std::endl;
-            for (int i = 0; i < Player->GetBorough()->GetConstTileStacks().size(); ++i)
+            if (0 <= Input && Input <= TileStacks.size() - 1)
             {
-                std::cout << (i + 1)
-                          << ". "
-                          << (Player->GetBorough()->GetConstTileStacks()[i]->IsEmpty()
-                              ? "Tile stack is empty"
-                              : Player->GetBorough()->GetConstTileStacks()[i]->GetTopTileInfo()->GetTileInfo())
-                          << "."
-                          << std::endl;
+                UsedDice = TileStacks[Input]->GetTopTile()->GetDurability();
+                Player->DestroyBuilding(TileStacks[Input]);
+            }
+            else if (TileStacks.size() <= Input && Input <= TileStacks.size() + Borough->GetUnitCount() - 1)
+            {
+                Input -= TileStacks.size();
+                UsedDice = Units[Input]->GetDurability();
+                Player->DestroyUnit(Units[Input]);
             }
 
-            if (SelectedStack == -1)
-            {
-                std::cout << "No buildings can be deleted with "
-                          << NumberOfDice
-                          << " dice left."
-                          << std::endl;
-                return true;
-            }
+            int NewNumberOfDice = NumberOfDice - UsedDice;
 
-            //Make a copy of the tile for convenience.
-            FTile DestructedTile = FTile(*(Player->GetBorough()->GetConstTileStacks()[SelectedStack]->GetTopTileInfo()));
-            Player->GetBorough()->GetConstTileStacks()[SelectedStack]->DestructTopTile();
-            std::cout << "Destructed "
-                      << GetTileTypeString(DestructedTile.GetTileType())
-                      << "."
-                      << std::endl;
-            Player->EarnMonsterResources(EMonsterResource(static_cast<int>(DestructedTile.GetTileType())/2), DestructedTile.GetReward());
-
-            int NewNumberOfDice = NumberOfDice - DestructedTile.GetDurability();
             if (NewNumberOfDice > 0)
             {
-                AIResolveDestruction(Player, NewNumberOfDice);
+                AIResolveDestruction(Player, NewNumberOfDice, bPrioritizeUnit);
             }
             return true;
         }
-
 
         const bool ResolveEnergy(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
         {
@@ -473,7 +550,7 @@ namespace KingOfNewYork
         const bool ResolveHeal(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
         {
             assert(NumberOfDice > 0);
-            if (Player->GetBorough()->IsCenter())
+            if (Player->GetMutableBorough()->IsCenter())
             {
                 std::cout << "Since you are in Manhattan, you cannot use Heal rolls to heal."
                           << std::endl;
@@ -494,8 +571,14 @@ namespace KingOfNewYork
                 {
                     std::cout << "Since you rolled 1 Ouch, the Units in your borough attack you; you suffer 1 damage per Unit tile in your borough."
                               << std::endl;
-                    int Damage = Player->GetBorough()->GetUnitCount();
-                    if (Damage > 0)
+                    int Damage = Player->GetMutableBorough()->GetUnitCount();
+                    int FinalDamage = Damage;
+                    if (Player->UseCard(18))
+                    {
+                        FinalDamage--;
+                    }
+
+                    if (FinalDamage > 0)
                     {
                         Player->TakeDamage(Game, Damage);
                     }
@@ -505,10 +588,17 @@ namespace KingOfNewYork
                 {
                     std::cout << "Since you rolled 2 Ouch, the Units in your borough attack all the Monsters in your borough; each Monster in your borough suffers 1 damage per Unit tile in your borough."
                               << std::endl;
-                    int Damage = Player->GetBorough()->GetUnitCount();
-                    if (Damage > 0)
+                    int Damage = Player->GetMutableBorough()->GetUnitCount();
+                    auto TargetPlayers = Player->GetMutableBorough()->GetMutablePlayers();
+                    for (const std::shared_ptr<FPlayer> &TargetPlayer : TargetPlayers)
                     {
-                        for (std::shared_ptr<FPlayer> &TargetPlayer : Player->GetBorough()->GetMutablePlayers())
+                        int FinalDamage = Damage;
+                        if (TargetPlayer == Player && Player->UseCard(18))
+                        {
+                            FinalDamage--;
+                        }
+
+                        if (FinalDamage > 0)
                         {
                             TargetPlayer->TakeDamage(Game, Damage);
                         }
@@ -522,10 +612,12 @@ namespace KingOfNewYork
                     for (const auto &Borough : Map.GetBoroughs())
                     {
                         int Damage = Borough->GetUnitCount();
-                        for (std::shared_ptr<FPlayer> &CurrentPlayer : Borough->GetMutablePlayers()) {
+                        auto TargetPlayers = Borough->GetMutablePlayers();
+                        for (const std::shared_ptr<FPlayer> &TargetPlayer : TargetPlayers)
+                        {
                             //Do the check inside the loop to make sure the Status of Liberty is properly removed.
                             if (Damage > 0) {
-                                CurrentPlayer->TakeDamage(Game, Damage);
+                                TargetPlayer->TakeDamage(Game, Damage);
                             }
                         }
                     }

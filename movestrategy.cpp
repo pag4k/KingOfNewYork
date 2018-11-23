@@ -15,7 +15,7 @@ namespace KingOfNewYork
     {
         if (bMovePhase)
         {
-            if (Player->GetBorough()->IsCenter())
+            if (Player->GetMutableBorough()->IsCenter())
             {
                 ForceProgressInCenter(Map, Player);
             }
@@ -46,7 +46,7 @@ namespace KingOfNewYork
         //Try to stay away from Manhattan
         if (bMovePhase)
         {
-            if (Player->GetBorough()->IsCenter())
+            if (Player->GetMutableBorough()->IsCenter())
             {
                 ForceProgressInCenter(Map, Player);
             }
@@ -59,7 +59,7 @@ namespace KingOfNewYork
                     std::cout << "Since there is already "
                               << MAXIMUM_MONSTERS_IN_CENTER
                               << " Monsters in any zone of Manhattan, "
-                              << Player->GetPlayerAndMonsterNames()
+                              << Player->GetMonsterName()
                               <<" has two options: He/she can move to any borough that does not already have 2 Monsters in it (except Manhattan), or can just stay in his/her borough."
                               << std::endl;
 
@@ -82,7 +82,7 @@ namespace KingOfNewYork
         //Try to stay in Manhattan
         if (bMovePhase)
         {
-            if (Player->GetBorough()->IsCenter())
+            if (Player->GetMutableBorough()->IsCenter())
             {
                 ForceProgressInCenter(Map, Player);
             }
@@ -95,7 +95,7 @@ namespace KingOfNewYork
                     std::cout << "Since there is already "
                               << MAXIMUM_MONSTERS_IN_CENTER
                               << " Monsters in any zone of Manhattan, "
-                              << Player->GetPlayerAndMonsterNames()
+                              << Player->GetMonsterName()
                               <<" has two options: He/she can move to any borough that does not already have 2 Monsters in it (except Manhattan), or can just stay in his/her borough."
                               << std::endl;
 
@@ -119,14 +119,14 @@ namespace KingOfNewYork
         std::vector<std::shared_ptr<FBorough>> GetValidBorough(FMap &Map, std::shared_ptr<FPlayer> Player, bool bOnlyStartingLocation)
         {
             std::vector<std::shared_ptr<FBorough>> ValidBorough;
-            std::cout << Player->GetPlayerAndMonsterNames()
+            std::cout << Player->GetMonsterName()
                       << ", select where you want to go:" << std::endl;
             int CurrentIndex = 1;
             for (std::shared_ptr<FBorough> const &CurrentBorough : Map.GetBoroughs())
             {
                 const std::vector<std::shared_ptr<FPlayer>> &CurrentPlayers =
                         CurrentBorough->GetConstPlayers();
-                const int Offset = CurrentBorough == Player->GetBorough() ? 1 : 0;
+                const int Offset = CurrentBorough == Player->GetMutableBorough() ? 1 : 0;
                 if (CurrentPlayers.size() - Offset < MAXIMUM_PLAYERS_IN_BOROUGH &&
                     (!bOnlyStartingLocation || CurrentBorough->IsStartingLocation()) &&
                         (!CurrentBorough->IsCenter() || CurrentBorough->GetPlayerCount() - Offset < MAXIMUM_MONSTERS_IN_CENTER))
@@ -140,7 +140,7 @@ namespace KingOfNewYork
                         std::cout << " (already there: ";
                         for (int i = 0; i < CurrentPlayers.size(); ++i)
                         {
-                            std::cout << CurrentPlayers[i]->GetPlayerAndMonsterNames();
+                            std::cout << CurrentPlayers[i]->GetMonsterName();
                             std::cout << (i + 1 != CurrentPlayers.size() ? ", " : ")");
                         }
                     }
@@ -182,7 +182,7 @@ namespace KingOfNewYork
             std::shared_ptr<FBorough> CenterBorough = Map.GetCenterBorough();
             if (bPreferManhattan)
             {
-                if (Player->GetBorough() == nullptr)
+                if (Player->GetMutableBorough() == nullptr)
                 {
                     for (const std::shared_ptr<FBorough> &Borough : ValidBorough)
                     {
@@ -193,7 +193,7 @@ namespace KingOfNewYork
                         }
                     }
                 }
-                else if (Player->GetBorough() == CenterBorough)
+                else if (Player->GetMutableBorough() == CenterBorough)
                 {
                     //Do nothing.
                 }
@@ -211,7 +211,7 @@ namespace KingOfNewYork
             }
             else
             {
-                if (Player->GetBorough() == nullptr)
+                if (Player->GetMutableBorough() == nullptr)
                 {
                     for (const std::shared_ptr<FBorough> &Borough : ValidBorough)
                     {
@@ -222,7 +222,7 @@ namespace KingOfNewYork
                         }
                     }
                 }
-                else if (Player->GetBorough() == CenterBorough)
+                else if (Player->GetMutableBorough() == CenterBorough)
                 {
                     for (const std::shared_ptr<FBorough> &Borough : ValidBorough)
                     {
@@ -243,24 +243,24 @@ namespace KingOfNewYork
         void MoveTo(std::shared_ptr<FPlayer> Player, std::shared_ptr<FBorough> NewBorough)
         {
             assert(NewBorough);
-            if (Player->GetBorough() == NewBorough)
+            if (Player->GetMutableBorough() == NewBorough)
             {
                 return;
             }
 
-            std::shared_ptr<FBorough> OldBorough = Player->GetBorough();
+            std::shared_ptr<FBorough> OldBorough = Player->GetMutableBorough();
 
             //Removing player from previous borough list.
-            if (Player->GetBorough())
+            if (Player->GetMutableBorough())
             {
                 bool Erased = false;
-                for (auto it = Player->GetBorough()->GetConstPlayers().begin();
-                     it != Player->GetBorough()->GetConstPlayers().end();
+                for (auto it = Player->GetMutableBorough()->GetConstPlayers().begin();
+                     it != Player->GetMutableBorough()->GetConstPlayers().end();
                      ++it)
                 {
                     if (*it == Player)
                     {
-                        Player->GetBorough()->GetMutablePlayers().erase(it);
+                        Player->GetMutableBorough()->GetMutablePlayers().erase(it);
                         Erased = true;
                         break;
                     }
@@ -270,17 +270,17 @@ namespace KingOfNewYork
             //Setting player position to selected borough.
             Player->SetBorough(NewBorough);
             //Put player in the borough player list.
-            Player->GetBorough()->GetMutablePlayers().push_back(Player);
+            Player->GetMutableBorough()->GetMutablePlayers().push_back(Player);
 
         }
 
         void ForceMoveToCenter(FMap &Map, std::shared_ptr<FPlayer> Player)
         {
-            std::string OldBorough = Player->GetBorough()->GetName();
+            std::string OldBorough = Player->GetMutableBorough()->GetName();
             std::cout << "Since there are less than "
                       << MAXIMUM_MONSTERS_IN_CENTER
                       << " Monsters in any zone of Manhattan, "
-                      << Player->GetPlayerAndMonsterNames()
+                      << Player->GetMonsterName()
                       <<" must move there."
                       << std::endl;
             Player->ChangeVictoryPoints(ENTER_CENTER_VICTORY_POINT_REWARD);
@@ -293,7 +293,7 @@ namespace KingOfNewYork
         {
             if (Player->GetLevelInCenter() < LEVEL_IN_CENTER_COUNT){
                 std::cout << "Since "
-                          << Player->GetPlayerAndMonsterNames()
+                          << Player->GetMonsterName()
                           << " is already in Manhattan, he/she must advance to the next zone up there."
                           << std::endl;
                 assert(0 < Player->GetLevelInCenter() && Player->GetLevelInCenter() < LEVEL_IN_CENTER_COUNT);
@@ -302,7 +302,7 @@ namespace KingOfNewYork
             else
             {
                 std::cout << "Since "
-                          << Player->GetPlayerAndMonsterNames()
+                          << Player->GetMonsterName()
                           << " is already in Upper Manhattan, it cannot advance further."
                           << std::endl;
             }

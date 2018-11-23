@@ -70,7 +70,13 @@ namespace KingOfNewYork
         return Tile;
     }
 
-    const std::unique_ptr<FTile> &FTileStack::GetTopTileInfo() const
+    std::unique_ptr<FTile> &FTileStack::GetMutableTopTile()
+    {
+        assert(!TileStack.empty());
+        return TileStack.back();
+    }
+
+    const std::unique_ptr<FTile> &FTileStack::GetTopTile() const
     {
         assert(!TileStack.empty());
         return TileStack.back();
@@ -82,16 +88,13 @@ namespace KingOfNewYork
         TileStack.push_back(std::move(Tile));
     }
 
-    void FTileStack::DestructTopTile()
+    //Destroy the top Building, flip it to a unit, and return it.
+    std::unique_ptr<FTile> FTileStack::DestructTopTile()
     {
-        if (GetTopTileInfo()->IsBuilding())
-        {
-            GetTopTileInfo()->Flip();
-        }
-        else
-        {
-            TileStack.pop_back();
-        }
+        auto Tile = std::move(TileStack.back());
+        TileStack.pop_back();
+        Tile->Flip();
+        return Tile;
     }
 
     void FTileStack::GenerateFromFile(const std::string FileName)

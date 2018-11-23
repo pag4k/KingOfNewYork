@@ -4,9 +4,10 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
-#ifndef STATEVIEW_H
-#define STATEVIEW_H
+#ifndef GAMEVIEW_H
+#define GAMEVIEW_H
 
+#include <memory>
 #include "observer.h"
 
 namespace KingOfNewYork
@@ -15,13 +16,13 @@ namespace KingOfNewYork
     class FSubject;
     class IObserverEvent;
 
-    //A class that observes the game notifications.
-    class FStateView : public IObserver
+    //A class that observes the player notifications.
+    class FPlayerView : public IObserver
     {
     public:
-        explicit FStateView(std::shared_ptr<FGame> Game);
-        ~FStateView() override;
-        void Update(const std::shared_ptr<FSubject> &Subject, const std::shared_ptr<IObserverEvent> &Event) override;
+        explicit FPlayerView(std::shared_ptr<FGame> Game);
+        ~FPlayerView() override;
+        void Update(const std::shared_ptr<const FSubject> &Subject, const std::shared_ptr<const IObserverEvent> &Event) override;
     private:
         std::shared_ptr<FGame> Game;
     };

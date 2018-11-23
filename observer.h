@@ -18,7 +18,7 @@ namespace KingOfNewYork
     {
     public:
         virtual ~IObserver() = default;
-        virtual void Update(const std::shared_ptr<FSubject> &Subject, const std::shared_ptr<IObserverEvent> &Event) = 0;
+        virtual void Update(const std::shared_ptr<const FSubject> &Subject, const std::shared_ptr<const IObserverEvent> &Event) = 0;
     protected:
         IObserver() = default;
     };

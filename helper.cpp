@@ -27,6 +27,17 @@ namespace KingOfNewYork
                   << std::endl;
     }
 
+    void PrintList(int Number, std::string Message)
+    {
+        PrintNormal(std::to_string(Number) + ". " + Message);
+    }
+
+    void PrintChar(char Character)
+    {
+        std::cout << Character;
+    }
+
+
     void AddPadding(std::string &OutString, int OutputLength, char Symbol) {
         const unsigned long StringLength = OutString.length();
         if (StringLength + 4 > OutputLength)

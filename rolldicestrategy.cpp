@@ -5,11 +5,13 @@
 // ----------------------------------------------------------------------------
 
 #include "rolldicestrategy.h"
-#include <iostream>
+#include <algorithm>
+#include "player.h"
+#include "diceroller.h"
 
 namespace KingOfNewYork
 {
-    void HumanRollDiceStrategy::Execute(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
+    void HumanRollDiceStrategy::Execute(std::shared_ptr<FDiceRoller> DiceRoller, std::shared_ptr<FPlayer> Player, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
     {
         int CurrentRollCount = 0;
 
@@ -22,7 +24,7 @@ namespace KingOfNewYork
                       << " ###"
                       << std::endl;
 
-            DiceRoller.RollDice(DiceCount, OutDiceResult);
+            DiceRoller->RollDice(DiceCount, OutDiceResult);
 
             CurrentRollCount++;
             if (CurrentRollCount >= RollCount)
@@ -45,7 +47,6 @@ namespace KingOfNewYork
             std::getline(std::cin, input);
             if (input.empty())
             {
-                std::cout << "Ending rolling phase..." << std::endl;
                 break;
             }
 
@@ -57,9 +58,10 @@ namespace KingOfNewYork
                 }
             }
         }
+        PostRolling(Player, OutDiceResult);
     }
 
-    void AggressiveRollDiceStrategy::Execute(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
+    void AggressiveRollDiceStrategy::Execute(std::shared_ptr<FDiceRoller> DiceRoller, std::shared_ptr<FPlayer> Player, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
     {
         //focuses on attack or destruction during the role dice step
         int CurrentRollCount = 0;
@@ -73,7 +75,7 @@ namespace KingOfNewYork
                       << " ###"
                       << std::endl;
 
-            DiceRoller.RollDice(DiceCount, OutDiceResult);
+            DiceRoller->RollDice(DiceCount, OutDiceResult);
 
             CurrentRollCount++;
             if (CurrentRollCount >= RollCount)
@@ -97,10 +99,10 @@ namespace KingOfNewYork
                 break;
             }
         }
-
+        PostRolling(Player, OutDiceResult);
     }
 
-    void ModerateRollDiceStrategy::Execute(FDiceRoller &DiceRoller, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
+    void ModerateRollDiceStrategy::Execute(std::shared_ptr<FDiceRoller> DiceRoller, std::shared_ptr<FPlayer> Player, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
     {
         //focus on balancing the health, grabbing power-ups or storming Manhattan which quickly builds rewards
         int CurrentRollCount = 0;
@@ -114,7 +116,7 @@ namespace KingOfNewYork
                       << " ###"
                       << std::endl;
 
-            DiceRoller.RollDice(DiceCount, OutDiceResult);
+            DiceRoller->RollDice(DiceCount, OutDiceResult);
 
             CurrentRollCount++;
             if (CurrentRollCount >= RollCount)
@@ -134,8 +136,52 @@ namespace KingOfNewYork
 
             if (!bReroll)
             {
-                std::cout << "Ending rolling phase..." << std::endl;
                 break;
+            }
+        }
+        PostRolling(Player, OutDiceResult);
+    }
+
+    namespace
+    {
+        void PostRolling(std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &OutDiceResult)
+        {
+            bool bChanged = false;
+            if (Player->UseCard(7))
+            {
+                OutDiceResult.push_back(EDiceFace::Attack);
+                OutDiceResult.push_back(EDiceFace::Attack);
+            }
+            int DestructionCount = static_cast<int>(std::count_if(OutDiceResult.begin(), OutDiceResult.end(), [](const auto &DiceFace) { return DiceFace == EDiceFace::Destruction; } ));
+            if (DestructionCount > 0 && DestructionCount % 2 == 0 && Player->UseCard(8))
+            {
+                switch (DestructionCount) {
+                    case 2:
+                        OutDiceResult.push_back(EDiceFace::Attack);
+                        break;
+                    case 4:
+                        OutDiceResult.push_back(EDiceFace::Attack);
+                        OutDiceResult.push_back(EDiceFace::Attack);
+                        break;
+                    case 6:
+                        Player->SetVictorious();
+                        break;
+                }
+            }
+            if (Player->UseCard(11))
+            {
+                OutDiceResult.push_back(EDiceFace::Destruction);
+            }
+            bool bHasCelebrity = std::any_of(OutDiceResult.begin(), OutDiceResult.end(), [](const auto &DiceFace) { return DiceFace == EDiceFace::Celebrity; } );
+            if (bHasCelebrity && Player->UseCard(21))
+            {
+                Player->ChangeVictoryPoints(1);
+            }
+            int UnitCount = Player->GetBorough()->GetUnitCount();
+            if (UnitCount >= 3 && Player->UseCard(28))
+            {
+                OutDiceResult.push_back(EDiceFace::Destruction);
+                OutDiceResult.push_back(EDiceFace::Energy);
             }
         }
     }

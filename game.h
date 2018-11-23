@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include "playercontroller.h"
 #include "common.h"
 #include "map.h"
 #include "card.h"
@@ -19,7 +20,7 @@
 
 namespace KingOfNewYork
 {
-    class FPlayer;
+    class FPlayerController;
 
     //The main class of the game that handles its basic functions.
     class FGame: public FSubject, public std::enable_shared_from_this<FGame>
@@ -27,11 +28,14 @@ namespace KingOfNewYork
     public:
         FGame();
         std::unique_ptr<FCard> GetCard(int Index);
-        std::vector<std::shared_ptr<FPlayer>> &GetPlayers() { return Players; }
+        std::vector<std::unique_ptr<FPlayerController>> &GetPlayerControllers() { return PlayerControllers; }
+        std::unique_ptr<FPlayerController> &GetPlayerController(const std::shared_ptr<FPlayer> &Player);
         std::vector<std::unique_ptr<FCard>> &GetAvailableCards() { return AvailableCards; }
-        std::shared_ptr<FPlayer> &GetCurrentPlayer() { assert(CurrentPlayer != -1); return Players[CurrentPlayer]; }
         std::shared_ptr<FMap> &GetMap() { return Map; }
-        void DistributeCard();
+        int GetPlayerCount() const;
+        FDeck &GetDeck() { return Deck; }
+        FDeck &GetDiscardDeck() { return DiscardDeck; }
+        bool DistributeCard();
         void ChangeCelebrity(std::shared_ptr<FPlayer> &NewCelebrityPlayer);
         void ChangeStatueOfLiberty(std::shared_ptr<FPlayer> &NewStatueOfLibertyPlayer);
         void CheckDeadPlayer();
@@ -42,8 +46,8 @@ namespace KingOfNewYork
         bool InitializationPhase();
         bool SelectMap();
         bool DistributeTiles(FTileStack &TileStack);
-        int GetPlayerCount();
-        void CreatePlayers(int PlayerCount);
+        int PromptPlayerCount();
+        void CreatePlayerControllers(int PlayerCount);
         void GetFirstPlayer();
         void SelectStartingBoroughs();
         void MainPhase();
@@ -51,7 +55,7 @@ namespace KingOfNewYork
         int TokenInventory[TOKEN_TYPE_COUNT];
         int EnergyCubes = -1;
         std::shared_ptr<FMap> Map =  nullptr;
-        std::vector<std::shared_ptr<FPlayer>> Players;
+        std::vector<std::unique_ptr<FPlayerController>> PlayerControllers;
         FDeck Deck;
         FDeck DiscardDeck;
         std::vector<std::unique_ptr<FCard>> AvailableCards;

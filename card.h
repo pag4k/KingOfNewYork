@@ -12,22 +12,24 @@
 #include <vector>
 #include <memory>
 #include "common.h"
+#include "subject.h"
 
 namespace KingOfNewYork
 {
     //This class will represent a single card in the game.
-    class FCard
+    class FCard: public FSubject
     {
     public:
         FCard() : Id(-1), Name(""), HowToPlay(EHowToPlay::None), EnergyCost(-1), Effect("") {}
         FCard(int Id, std::string &Name, EHowToPlay HowToPlay, int EnergyCost, std::string &Effect) :
             Id(Id), Name(std::move(Name)), HowToPlay(HowToPlay), EnergyCost(EnergyCost), Effect(std::move(Effect)) {}
+        const int GetId() const { return Id; }
         const std::string &GetName() const { return Name; };
         EHowToPlay GetHowToPlay() const { return HowToPlay; };
         int GetEnergyCost() const { return EnergyCost; };
         const std::string &GetEffect() const { return Effect; };
-        void Print();
-        const std::string GetCardInfo() const;
+        void Display() const;
+        void Use();
     private:
         int Id;
         std::string Name;
@@ -46,6 +48,7 @@ namespace KingOfNewYork
         bool IsEmpty() const { return Deck.empty(); };
         std::unique_ptr<FCard> Draw();
         void AddCard(std::unique_ptr<FCard> &Card);
+        std::vector<std::unique_ptr<FCard>> &GetCards() { return Deck; }
     private:
         void GenerateFromFile(const std::string &FileName);
         std::vector<std::unique_ptr<FCard>> Deck;

@@ -7,91 +7,143 @@
 #ifndef OBSERVEREVENT_H
 #define OBSERVEREVENT_H
 
-#include <string>
-#include "memory"
+//#include <string>
+#include <vector>
+#include <memory>
 #include "common.h"
 
 namespace KingOfNewYork
 {
-    class String;
+    //class String;
     class FBorough;
+    class FTile;
+    class FCard;
 
     //Interface for events that are used with the observer pattern.
     class IObserverEvent
     {
     public:
-        IObserverEvent(const EObserverEvent &ObserverEvent, const std::string &Message)
+        IObserverEvent(const EObserverEvent ObserverEvent, const std::string &Message)
                 : ObserverEvent(ObserverEvent), Message(Message) {}
         virtual ~IObserverEvent() = default;
-        EObserverEvent ObserverEvent;
-        std::string Message;
+        const EObserverEvent ObserverEvent;
+        const std::string &Message;
     };
 
     class FStartTurnPhaseEvent: public IObserverEvent
     {
     public:
-        FStartTurnPhaseEvent(const EObserverEvent &ObserverEvent, const std::string &Message, ETurnPhase TurnPhase)
+        FStartTurnPhaseEvent(const EObserverEvent ObserverEvent, const std::string &Message, const ETurnPhase TurnPhase)
                 : IObserverEvent(ObserverEvent, Message), TurnPhase(TurnPhase) {}
-        ETurnPhase TurnPhase;
+        const ETurnPhase TurnPhase;
     };
 
     class FChangeVictoryPointsEvent: public IObserverEvent
     {
     public:
-        FChangeVictoryPointsEvent(const EObserverEvent &ObserverEvent, const std::string &Message, int Delta, int Total)
+        FChangeVictoryPointsEvent(const EObserverEvent ObserverEvent, const std::string &Message, const int Delta, const int Total)
                 : IObserverEvent(ObserverEvent, Message), Delta(Delta), Total(Total) {}
-        int Delta;
-        int Total;
+        const int Delta;
+        const int Total;
     };
 
 
     class FChangeEnergyCubesEvent: public IObserverEvent
     {
     public:
-        FChangeEnergyCubesEvent(const EObserverEvent &ObserverEvent, const std::string &Message, int Delta, int Total)
+        FChangeEnergyCubesEvent(const EObserverEvent ObserverEvent, const std::string &Message, const int Delta, const int Total)
                 : IObserverEvent(ObserverEvent, Message), Delta(Delta), Total(Total) {}
-        int Delta;
-        int Total;
+        const int Delta;
+        const int Total;
     };
 
 
     class FChangeLifePointsEvent: public IObserverEvent
     {
     public:
-        FChangeLifePointsEvent(const EObserverEvent &ObserverEvent, const std::string &Message, int Delta, int Total)
+        FChangeLifePointsEvent(const EObserverEvent ObserverEvent, const std::string &Message, const int Delta, const int Total)
                 : IObserverEvent(ObserverEvent, Message), Delta(Delta), Total(Total) {}
-        int Delta;
-        int Total;
+        const int Delta;
+        const int Total;
     };
 
     class FChangeBoroughEvent: public IObserverEvent
     {
     public:
-        FChangeBoroughEvent(const EObserverEvent &ObserverEvent, const std::string &Message, const std::shared_ptr<FBorough> &OriginBorough, const std::shared_ptr<FBorough> &DestinationBorough)
+        FChangeBoroughEvent(const EObserverEvent ObserverEvent, const std::string &Message, const std::shared_ptr<FBorough> &OriginBorough, const std::shared_ptr<FBorough> &DestinationBorough)
                 : IObserverEvent(ObserverEvent, Message), OriginBorough(OriginBorough), DestinationBorough(DestinationBorough) {}
-        std::shared_ptr<FBorough> OriginBorough;
-        std::shared_ptr<FBorough> DestinationBorough;
+        const std::shared_ptr<FBorough> &OriginBorough;
+        const std::shared_ptr<FBorough> &DestinationBorough;
     };
 
     class FMoveInManhattanEvent: public IObserverEvent
     {
     public:
-        FMoveInManhattanEvent(const EObserverEvent &ObserverEvent, const std::string &Message, int OriginLevel, int DestinationLevel)
+        FMoveInManhattanEvent(const EObserverEvent ObserverEvent, const std::string &Message, const int OriginLevel, const int DestinationLevel)
                 : IObserverEvent(ObserverEvent, Message), OriginLevel(OriginLevel), DestinationLevel(DestinationLevel) {}
-        int OriginLevel;
-        int DestinationLevel;
+        const int OriginLevel;
+        const int DestinationLevel;
+    };
+
+    class FDestroyedTileEvent: public IObserverEvent
+    {
+    public:
+        FDestroyedTileEvent(const EObserverEvent ObserverEvent, const std::string &Message, const std::unique_ptr<FTile> &Tile)
+                : IObserverEvent(ObserverEvent, Message), Tile(Tile) {}
+        const std::unique_ptr<FTile> &Tile;
+    };
+
+    class FSpawnedUnitEvent: public IObserverEvent
+    {
+    public:
+        FSpawnedUnitEvent(const EObserverEvent ObserverEvent, const std::string &Message, const std::unique_ptr<FTile> &Tile)
+                : IObserverEvent(ObserverEvent, Message), Tile(Tile) {}
+        const std::unique_ptr<FTile> &Tile;
+    };
+
+    class FTakeSuperstarEvent: public IObserverEvent
+    {
+    public:
+        FTakeSuperstarEvent(const EObserverEvent ObserverEvent, const std::string &Message) : IObserverEvent(ObserverEvent, Message) {}
     };
 
     class FDeadPlayerEvent: public IObserverEvent
     {
     public:
-        FDeadPlayerEvent(const EObserverEvent &ObserverEvent, const std::string &Message) : IObserverEvent(ObserverEvent, Message) {}
+        FDeadPlayerEvent(const EObserverEvent ObserverEvent, const std::string &Message) : IObserverEvent(ObserverEvent, Message) {}
     };
 
     class FBetweenTurnsEvent: public IObserverEvent
     {
     public:
-        FBetweenTurnsEvent(const EObserverEvent &ObserverEvent, const std::string &Message) : IObserverEvent(ObserverEvent, Message) {}
+        FBetweenTurnsEvent(const EObserverEvent ObserverEvent, const std::string &Message) : IObserverEvent(ObserverEvent, Message) {}
+    };
+
+    class FRolledDiceEvent: public IObserverEvent
+    {
+    public:
+        FRolledDiceEvent(const EObserverEvent ObserverEvent, const std::string &Message, const std::vector<EDiceFace> &DiceResult, const std::vector<bool> &NewRoll)
+                : IObserverEvent(ObserverEvent, Message), DiceResult(DiceResult), NewRoll(NewRoll) {}
+        const std::vector<EDiceFace> &DiceResult;
+        const std::vector<bool> &NewRoll;
+    };
+
+    class FRollingDoneEvent: public IObserverEvent
+    {
+    public:
+        FRollingDoneEvent(const EObserverEvent ObserverEvent, const std::string &Message) : IObserverEvent(ObserverEvent, Message) {}
+    };
+
+    class FDisplayCardEvent: public IObserverEvent
+    {
+    public:
+        FDisplayCardEvent(const EObserverEvent ObserverEvent, const std::string &Message) : IObserverEvent(ObserverEvent, Message) {}
+    };
+
+    class FUsedCardEvent: public IObserverEvent
+    {
+    public:
+        FUsedCardEvent(const EObserverEvent ObserverEvent, const std::string &Message) : IObserverEvent(ObserverEvent, Message) {}
     };
 }
 

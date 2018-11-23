@@ -7,7 +7,6 @@
 #include "buycardsstrategy.h"
 #include "helper.h"
 #include "game.h"
-//#include "map.h"
 #include "player.h"
 
 namespace KingOfNewYork
@@ -16,17 +15,25 @@ namespace KingOfNewYork
     {
         int Input;
         do {
+            std::vector<std::unique_ptr<FCard>> &AvailableCards = Game.GetAvailableCards();
+            if (AvailableCards.empty())
+            {
+                std::cout << "There are no more cards."
+                          << std::endl;
+                break;
+            }
             std::cout << "Please enter the number of the card you want to buy (or 0 to stop buying or 9 to spend "
                       << ENERGY_CUBE_FOR_NEW_CARDS_COUNT
                       << " Energy Cubes to discard the 3 available cards and reveal new ones). You currently have "
                       << Player->GetEnergyCubes()
                       << " Energy Cubes."
                       << std::endl;
-            std::vector<std::unique_ptr<FCard>> &AvailableCards = Game.GetAvailableCards();
             for (int i = 0; i < AvailableCards.size(); ++i)
             {
                 std::cout << (i+1);
-                AvailableCards[i]->Print();
+                //PrintNormal(AvailableCards[i]->GetCardInfo());
+
+                AvailableCards[i]->Display();
             }
             std::cout << ">";
             Input = InputSingleDigit();
@@ -36,10 +43,17 @@ namespace KingOfNewYork
             }
             if (Input == 9 && Player->GetEnergyCubes() >= ENERGY_CUBE_FOR_NEW_CARDS_COUNT)
             {
-                std::cout << "You get new card."
-                          << std::endl;
-                Player->ChangeEnergyCubes(-ENERGY_CUBE_FOR_NEW_CARDS_COUNT);
-                Game.DistributeCard();
+                if (Game.DistributeCard())
+                {
+                    Player->ChangeEnergyCubes(-ENERGY_CUBE_FOR_NEW_CARDS_COUNT);
+                    std::cout << "You get new card."
+                              << std::endl;
+                }
+                else
+                {
+                    std::cout << "There are no cards new cards."
+                            << std::endl;
+                }
                 continue;
             }
             else if (Input == 9 && Player->GetEnergyCubes() < ENERGY_CUBE_FOR_NEW_CARDS_COUNT)
@@ -48,7 +62,7 @@ namespace KingOfNewYork
                           << std::endl;
                 continue;
             }
-            if (1 <= Input && Input <= MAXIMUM_AVAILABLE_CARDS)
+            if (1 <= Input && Input <= AvailableCards.size())
             {
                 if (AvailableCards[Input-1] && AvailableCards[Input-1]->GetEnergyCost() <= Player->GetEnergyCubes())
                 {

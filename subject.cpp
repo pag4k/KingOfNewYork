@@ -19,7 +19,9 @@ namespace KingOfNewYork
 
     FSubject::~FSubject()
     {
-        delete Observers;
+        if (Observers){
+            delete Observers;
+        }
     }
 
     void FSubject::Attach(IObserver* Observer)
@@ -32,15 +34,13 @@ namespace KingOfNewYork
         Observers->remove(Observer);
     }
 
-    void FSubject::DetachAll()
-    {
-        Observers->clear();
-    }
-
-    void FSubject::Notify(const std::shared_ptr<FSubject> &Subject, const std::shared_ptr<IObserverEvent> &Event)
+    void FSubject::Notify(const std::shared_ptr<const FSubject> &Subject, const std::shared_ptr<const IObserverEvent> &Event) const
     {
         assert(Observers);
-        //std::cout << Observers->size();
+        if (Observers->empty())
+        {
+            return;
+        }
         for (auto Observer : *Observers)
         {
             assert(Observer);

@@ -21,10 +21,11 @@ namespace KingOfNewYork
     public:
         virtual void Attach(IObserver* Observer);
         virtual void Detach(IObserver* Observer);
-        virtual void DetachAll();
-        virtual void Notify(const std::shared_ptr<FSubject> &Subject, const std::shared_ptr<IObserverEvent> &Event);
+        virtual void Notify(const std::shared_ptr<const FSubject> &Subject, const std::shared_ptr<const IObserverEvent> &Event) const;
         FSubject();
         virtual ~FSubject();
+    protected:
+        virtual void ClearObserverListPointer() { Observers = nullptr; }
     private:
         std::list<IObserver*>* Observers;
     };

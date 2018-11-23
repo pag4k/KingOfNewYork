@@ -11,90 +11,65 @@
 #include <vector>
 #include <memory>
 #include "common.h"
-#include "diceroller.h"
 #include "borough.h"
 #include "map.h"
-#include "rolldicestrategy.h"
-#include "resolvedicestrategy.h"
-#include "movestrategy.h"
-#include "buycardsstrategy.h"
 #include "subject.h"
 
 namespace KingOfNewYork
 {
     class FGame;
-    class FDiceRoller;
     class FCard;
 
     //Player class.
     class FPlayer : public FSubject, public std::enable_shared_from_this<FPlayer>
     {
     public:
-        FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[]);
-        ~FPlayer() override;
+        explicit FPlayer(EMonsterName MonsterName);
 
         //Getters and Setters
-        const std::string GetPlayerName() const { return PlayerName; }
-        const EMonsterName GetMonsterName() const { return MonsterName; }
-        const std::string GetPlayerAndMonsterNames();
-        const std::shared_ptr<FBorough> GetBorough() { return Borough; }
+        const std::string GetMonsterName() const { return GetMonsterNameString(MonsterName); }
+        const std::shared_ptr<FBorough> &GetBorough() const { return Borough; }
+        const std::shared_ptr<FBorough> &GetMutableBorough() { return Borough; }
         void SetBorough(const std::shared_ptr<FBorough> &Borough) { this->Borough = Borough; }
         const std::vector<std::unique_ptr<FCard>>& GetCards() const { return Cards; }
         const std::vector<int>& GetTokenInventory() const { return TokenInventory; }
-        const bool IsVictorious() { return VictoryPoints >= VICTORY_POINTS_TO_WIN_COUNT; }
+        void SetDestroyedBuilding(bool bDestroyerBuilding) { this->bDestroyedBuilding = bDestroyerBuilding; }
+        const bool IsVictorious() const { return bVictorious || VictoryPoints >= VICTORY_POINTS_TO_WIN_COUNT; }
+        void SetVictorious() { bVictorious = true; }
         const bool IsCelebrity() const { return bCelebrity; }
-        void SetCelebrity(const bool bCelebrity) { this->bCelebrity = bCelebrity; }
+        void SetCelebrity(const bool bCelebrity);
         const bool IsStatueOfLiberty() const { return bStatueOfLiberty; }
         void SetStatueOfLiberty(const bool bStatueOfLiberty) { this->bStatueOfLiberty = bStatueOfLiberty; }
-        const int GetLifePoints() { return LifePoints; }
-        const int GetEnergyCubes() { return EnergyCubes; }
-        const int GetVictoryPoints() { return VictoryPoints; }
+        const int GetLifePoints() const { return LifePoints; }
+        const int GetEnergyCubes() const { return EnergyCubes; }
+        const int GetVictoryPoints() const { return VictoryPoints; }
         void SetEnergyCubes(const int EnergyCubes) { this->EnergyCubes = EnergyCubes; }
-        const int GetLevelInCenter() { return LevelInCenter; }
+        const int GetLevelInCenter() const { return LevelInCenter; }
         void SetLevelInCenter(const int LevelInCenter) { this->LevelInCenter = LevelInCenter; }
-        const bool IsAlive() { return bAlive; }
-
-        //Initialization methods
-        void SelectStartingLocation(FMap &Map);
+        const bool IsAlive() const { return bAlive; }
 
         //Turn methods
-        void TakeTurn(FMap &Map, FGame &Game);
+        void SetTurnPhase(ETurnPhase NewTurnPhase);
         void TakeDamage(FGame &Game, int Damage);
-        void Move(FMap &Map, bool bMovePhase, bool bOnlyStartingLocation);
+        void Move(std::shared_ptr<FBorough> OldBorough, int OldLevelInCenter);
         void EarnMonsterResources(EMonsterResource MonsterResource, int Number);
         void ChangeEnergyCubes(int Number);
         void ChangeLifePoints(int Number);
         void ChangeVictoryPoints(int Number);
+        void DestroyBuilding(std::unique_ptr<FTileStack> &TileStack);
+        void DestroyUnit(std::unique_ptr<FTile> &DestroyedUnit);
         void BuyCard(std::unique_ptr<FCard> Card);
-        std::vector<EDiceFace> RollStartDice(int DiceCount);
+        bool UseCard(int Id);
+        void Died(FGame &Game);
 
     private :
-        //Initialization methods
-        void EnterPlayerName(std::vector<std::string> &PlayerNames);
-        void SelectMonster(bool AvailableMonsters[]);
-        void SelectStrategy();
 
-        //Turn methods
-        void SetTurnPhase(ETurnPhase NewTurnPhase);
-        void StartPhase();
-        void RollDicePhase(int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult);
-        void ResolveDicePhase(FGame &Game, FMap &Map, std::vector<EDiceFace> &DiceResult);
-        void MovePhase(FMap &Map);
-        void BuyCardsPhase(FGame &Game);
-
-        //Strategy pointers
-        IRollDiceStrategy *RollDiceStrategy = nullptr;
-        IResolveDiceStrategy *ResolveDiceStrategy = nullptr;
-        IMoveStrategy *MoveStrategy = nullptr;
-        IBuyCardsStrategy *BuyCardsStrategy = nullptr;
+        ETurnPhase  TurnPhase;
 
         //Player variables
-        std::string PlayerName;
         EMonsterName MonsterName;
-        ETurnPhase  TurnPhase;
         std::shared_ptr<FBorough> Borough;
         int LevelInCenter;
-        FDiceRoller DiceRoller;
         std::vector<int> TokenInventory;
         std::vector<std::unique_ptr<FCard>> Cards;
         bool bAlive;
@@ -103,6 +78,8 @@ namespace KingOfNewYork
         int VictoryPoints;
         bool bCelebrity;
         bool bStatueOfLiberty;
+        bool bDestroyedBuilding;
+        bool bVictorious;
     };
 }
 

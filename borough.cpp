@@ -5,24 +5,28 @@
 // ----------------------------------------------------------------------------
 
 #include "borough.h"
+#include <algorithm>
 
 namespace KingOfNewYork {
 
-    FBorough::FBorough() : bStartingLocation(false), bCenter(false) {
-        for (int i = 0; i < TILESTACK_IN_BOROUGH_COUNT; ++i) {
-            TileStacks.push_back(std::make_unique<FTileStack>());
-        }
+    FBorough::FBorough() : bStartingLocation(false), bCenter(false)
+    {
+        TileStacks.resize(TILESTACK_IN_BOROUGH_COUNT);
+        std::for_each(TileStacks.begin(), TileStacks.end(), [](auto &TileStack) { TileStack = std::make_unique<FTileStack>(); });
     }
 
-    int FBorough::GetUnitCount() const {
-        int UnitCount = 0;
-        for (const std::unique_ptr<FTileStack> &TileStack : TileStacks)
-        {
-            if (!TileStack->IsEmpty() && !TileStack->GetTopTileInfo()->IsBuilding())
-            {
-                UnitCount++;
-            }
-        }
-        return UnitCount;
-    }
+//    int FBorough::GetUnitCount() const
+//    {
+//
+//        return static_cast<int>(std::count_if(TileStacks.begin(), TileStacks.end(), [](const auto &TileStack) { return !TileStack->IsEmpty() && !TileStack->GetConstTopTile()->IsBuilding(); }));
+////        int UnitCount = 0;
+////        for (const std::unique_ptr<FTileStack> &TileStack : TileStacks)
+////        {
+////            if (!TileStack->IsEmpty() && !TileStack->GetTopTile()->IsBuilding())
+////            {
+////                UnitCount++;
+////            }
+////        }
+////        return UnitCount;
+//    }
 }

@@ -5,11 +5,12 @@
 // ----------------------------------------------------------------------------
 
 #include <iostream>
-#include <memory>
 #include "game.h"
 #include "helper.h"
-#include "stateview.h"
 #include "gameview.h"
+#include "playerview.h"
+#include "diceview.h"
+#include "cardview.h"
 
 using namespace KingOfNewYork;
 
@@ -23,8 +24,11 @@ using namespace KingOfNewYork;
                   << std::endl;
 
         std::shared_ptr<FGame> Game = std::make_shared<FGame>();
-        FStateView StateView(Game);
-        FGameView GameView(Game);
+
+        FGameView GameView = FGameView(Game);
+        FPlayerView PlayerView = FPlayerView(Game);
+        FDiceView DiceView = FDiceView(Game);
+        FCardView CardView = FCardView(Game);
         Game->StartupPhase();
         Game->StartMainPhase();
 

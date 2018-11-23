@@ -1,32 +1,8 @@
-Id:02
-Name:Diva
-HowToPlay:Keep
-EnergyCost:5
-Effect:The other monsters need 4 VICTORY to take Superstar from you.
-
 Id:03
 Name:Hunter
 HowToPlay:Keep
 EnergyCost:5
 Effect:Heal 1 damage each time you destroy an Infantry.
-
-Id:04
-Name:Central Park
-HowToPlay:Discard
-EnergyCost:5
-Effect:Buy this card for 1 ENERGY_POINT less if you are in MANHATTAN. +2 [VictoryPoint] and heal 2 damage.
-
-Id:05
-Name:Curse
-HowToPlay:Keep
-EnergyCost:4
-Effect:When you deal damage to Monsters, give each a Curse token. Each time a Monster wants to reroll OUCH, he must spend 1 ENERGY_POINT for each Curse token he has. A Monster may use a HEART to Discard a Curse token instead of using it to heal.
-
-Id:06
-Name:Jinx Aura
-HowToPlay:Keep
-EnergyCost:4
-Effect:Other Monsters must always use all their rerolls. (They still get to choose which dice to reroll.)
 
 Id:07
 Name:Towering Titan
@@ -40,26 +16,80 @@ HowToPlay:Keep
 EnergyCost:5
 Effect:If your results are... -- 2 DESTRUCTION, you get an extra ATTACK. -- 4 DESTRUCTION, you get an extra 2 ATTACK. -- 6 DESTRUCTION, you win the game!
 
-Id:09
-Name:The Unisphere
-HowToPlay:Discard
-EnergyCost:5
-Effect:Buy this card for 1 ENERGY_POINT less if you are in QUEENS. +4 [VictoryPoint].
-
-Id:10
-Name:Sharp Shooter
+Id:11
+Name:Stomp
 HowToPlay:Keep
 EnergyCost:4
-Effect:You can destroy Jets that are not in your borough. Gain 1 [VictoryPoint] each time you destroy a Jet.
+Effect:Add 1 DESTRUCTION to your result.
 
-Id:51
-Name:Chameleon
+Id:12
+Name:King of Queens
+HowToPlay:Keep
+EnergyCost:5
+Effect:Gain 1 ENERGY_POINT and heal 1 damage when you start your turn in Queens.
+
+Id:18
+Name:Bullet Proof
 HowToPlay:Keep
 EnergyCost:4
-Effect:You can Discard as many [Celebrity] as you wish. For each [Celebrity] Discarded, you can change the face of one of the dice you haven't resolved.
+Effect:Whenever you take damage because of rolling OUCH, take 1 less damage.
 
-Id:55
-Name:Telsa Canon
-HowToPlay:Discard
+Id:21
+Name:Personal Spotlight
+HowToPlay:Keep
 EnergyCost:5
-Effect:+2 [VictoryPoint]. All Monsters (including you) must Discard one [Keep] card.
+Effect:Gain 1 VICTORY_POINT each turn you rolled at least 1 VICTORY.
+
+Id:22
+Name:Shadow Double
+HowToPlay:Keep
+EnergyCost:12
+Effect:Whenever you attack you deal double damage.
+
+Id:23
+Name:Tesla Antennae
+HowToPlay:Keep
+EnergyCost:4
+Effect:Monsters that have more HEART_POINT than you take 1 extra damage whenever you attack them.
+
+Id:24
+Name:Leveler
+HowToPlay:Keep
+EnergyCost:5
+Effect:Gain 1 VICTORY_POINT each turn that you destroy at least one Building.
+
+Id:28
+Name:Fury
+HowToPlay:Keep
+EnergyCost:4
+Effect:Add 1 DESTRUCTION and 1 ENERGY_POINT to your roll if you are in a borough with at least 3 Units.
+
+Id:29
+Name:Phoenix Blood
+HowToPlay:Keep
+EnergyCost:4
+Effect:Gain 1 ENERGY_POINT each time you take damage.
+
+Id:36
+Name:Ego Trip
+HowToPlay:Keep
+EnergyCost:3
+Effect:Gain 1 ENERGY_POINT when you take Superstar and when you start your turn with it.
+
+Id:39
+Name:Regeneration
+HowToPlay:Keep
+EnergyCost:5
+Effect:Heal 1 damage at the start of your turn.
+
+Id:53
+Name:Trophy Hunter
+HowToPlay:Keep
+EnergyCost:5
+Effect:Gain 1 VICTORY_POINT each time you destroy a Unit.
+
+Id:58
+Name:Chinatown Regular
+HowToPlay:Keep
+EnergyCost:3
+Effect:Heal 2 damage when you enter MANHATTAN.

@@ -16,42 +16,42 @@ namespace KingOfNewYork
     {
         //Use current time as seed for the random generator.
         std::srand(static_cast<unsigned int>(std::time(nullptr)));
-
-        for (int &Face : RollHistory)
-        {
-            Face = 0;
-        }
+        RollHistory = std::vector<int>(FACE_ON_DICE_COUNT, 0);
+//        for (int &Face : RollHistory)
+//        {
+//            Face = 0;
+//        }
     }
 
     std::vector<EDiceFace> FDiceRoller::BeginRolling(const int DiceCount) const
     {
         assert(0 <= DiceCount && DiceCount <= BLACK_DICE_COUNT + GREEN_DICE_COUNT);
 
-        std::vector<EDiceFace> DiceResult;
-        for (int i = 0; i < DiceCount; i++)
-        {
-            DiceResult.push_back(EDiceFace::None);
-        }
+        std::vector<EDiceFace> DiceResult(DiceCount, EDiceFace::None);
+//        for (int i = 0; i < DiceCount; i++)
+//        {
+//            DiceResult.push_back(EDiceFace::None);
+//        }
 
         return DiceResult;
     }
 
     void FDiceRoller::RollDice(const int DiceCount, std::vector<EDiceFace> &OutDiceResult) const
     {
+        std::vector<bool> NewRoll;
         for (int i = 0; i < DiceCount; i++)
         {
-            bool NewRoll = false;
             if (OutDiceResult[i] == EDiceFace::None)
             {
-                NewRoll = true;
+                NewRoll.push_back(true);
                 OutDiceResult[i] = RollSingleDice(FACE_ON_DICE_COUNT);
             }
-            std::cout << (i + 1)
-                      << ": "
-                      << GetDiceFaceString(OutDiceResult[i])
-                      << (NewRoll ? " (new roll)" : "")
-                      << std::endl;
+            else
+            {
+                NewRoll.push_back(false);
+            }
         }
+        Notify(shared_from_this(), std::make_shared<FRolledDiceEvent>(EObserverEvent::RolledDice, "", OutDiceResult, NewRoll));
     }
 
     const EDiceFace FDiceRoller::RollSingleDice(const int FaceNumber) const

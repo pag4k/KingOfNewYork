@@ -1,11 +1,11 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
+// COMP345 Assignment 4
+// Due date: December 2, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
-#ifndef STATEVIEW_H
-#define STATEVIEW_H
+#ifndef CARDVIEW_H
+#define CARDEFFECTVIEW_H
 
 #include "observer.h"
 
@@ -13,14 +13,13 @@ namespace KingOfNewYork
 {
     class FGame;
     class FSubject;
-    class IObserverEvent;
 
-    //A class that observes the game notifications.
-    class FGameView : public IObserver
+    //A class that observes the card notifications.
+    class FCardView : public IObserver
     {
     public:
-        explicit FGameView(std::shared_ptr<FGame> Game);
-        ~FGameView() override;
+        explicit FCardView(std::shared_ptr<FGame> Game);
+        ~FCardView() override;
         void Update(const std::shared_ptr<const FSubject> &Subject, const std::shared_ptr<const IObserverEvent> &Event) override;
     private:
         std::shared_ptr<FGame> Game;

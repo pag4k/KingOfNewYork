@@ -9,22 +9,16 @@
 
 #include "game.h"
 #include "player.h"
-#include "helper.h"
+#include "card.h"
 
 namespace KingOfNewYork
 {
-    FPlayer::FPlayer(std::vector<std::string> &PlayerNames, bool bAvailableMonsters[])
+    FPlayer::FPlayer(EMonsterName MonsterName) : MonsterName(MonsterName)
     {
-        PlayerName = "";
-        EnterPlayerName(PlayerNames);
-        MonsterName = EMonsterName::None;
-        SelectMonster(bAvailableMonsters);
-        SelectStrategy();
         TurnPhase = ETurnPhase ::None;
+
         Borough = nullptr;
         LevelInCenter = 0;
-        DiceRoller = FDiceRoller();
-
 
         for (int i = 0; i < TOKEN_TYPE_COUNT; ++i)
         {
@@ -38,60 +32,62 @@ namespace KingOfNewYork
 
         bCelebrity = false;
         bStatueOfLiberty = false;
+        bVictorious = false;
     }
 
-    FPlayer::~FPlayer()
+    void FPlayer::SetCelebrity(const bool bCelebrity)
     {
-        delete RollDiceStrategy;
-        delete ResolveDiceStrategy;
-        delete MoveStrategy;
-        delete BuyCardsStrategy;
-
-        RollDiceStrategy = nullptr;
-        ResolveDiceStrategy = nullptr;
-        MoveStrategy = nullptr;
-        BuyCardsStrategy = nullptr;
-    }
-
-    const std::string FPlayer::GetPlayerAndMonsterNames()
-    {
-        return GetPlayerName() + "(" + GetMonsterNameString(GetMonsterName()) + ")";
-    }
-
-    void FPlayer::TakeTurn(FMap &Map, FGame &Game)
-    {
-        SetTurnPhase(ETurnPhase::StartTurn);
-        StartPhase();
-
-        SetTurnPhase(ETurnPhase::RollDice);
-        std::vector<EDiceFace> DiceResult = DiceRoller.BeginRolling(BLACK_DICE_COUNT);
-        RollDicePhase(BLACK_DICE_COUNT, MAXIMUM_ROLL, DiceResult);
-
-        SetTurnPhase(ETurnPhase::ResolveDice);
-        ResolveDicePhase(Game, Map, DiceResult);
-
-        Game.CheckDeadPlayer();
-        if (!bAlive)
+        if (!this->bCelebrity && bCelebrity && UseCard(36))
         {
-            return;
+            ChangeEnergyCubes(1);
+        }
+        this->bCelebrity = bCelebrity;
+    }
+
+    void FPlayer::DestroyBuilding(std::unique_ptr<FTileStack> &TileStack)
+    {
+        //Make a copy of the destroyed building for convenience
+        std::unique_ptr<FTile> DestructedBuilding = std::make_unique<FTile>(*(TileStack->GetTopTile()));
+        assert(DestructedBuilding->IsBuilding());
+
+        Notify(shared_from_this(), std::make_shared<FDestroyedTileEvent>(EObserverEvent::DestroyedTile, "", DestructedBuilding));
+
+        EarnMonsterResources(EMonsterResource(static_cast<int>(DestructedBuilding->GetTileType())/2), DestructedBuilding->GetReward());
+
+        if (!bDestroyedBuilding && UseCard(24))
+        {
+            bDestroyedBuilding = true;
+            ChangeVictoryPoints(1);
         }
 
-        SetTurnPhase(ETurnPhase::Move);
-        MovePhase(Map);
+        Borough->GetUnits().push_back(std::move(TileStack->DestructTopTile()));
 
-        SetTurnPhase(ETurnPhase::BuyCards);
-        BuyCardsPhase(Game);
-
-        SetTurnPhase(ETurnPhase::EndTurn);
-        SetTurnPhase(ETurnPhase::None);
+        Notify(shared_from_this(), std::make_shared<FSpawnedUnitEvent>(EObserverEvent::SpawnedUnit, "", Borough->GetUnits().back()));
     }
 
-    std::vector<EDiceFace> FPlayer::RollStartDice(const int DiceCount)
+    void FPlayer::DestroyUnit(std::unique_ptr<FTile> &DestroyedUnit)
     {
-        std::vector<EDiceFace> DiceResult = DiceRoller.BeginRolling(DiceCount);
-        DiceRoller.RollDice(DiceCount, DiceResult);
-        return DiceResult;
+        //Make a copy of the destroyed unit for convenience
+        std::unique_ptr<FTile> DestructedUnit = std::make_unique<FTile>(*(DestroyedUnit));
+        assert(!DestructedUnit->IsBuilding());
 
+        Notify(shared_from_this(), std::make_shared<FDestroyedTileEvent>(EObserverEvent::DestroyedTile, "", DestructedUnit));
+
+        EarnMonsterResources(EMonsterResource(static_cast<int>(DestructedUnit->GetTileType())/2), DestructedUnit->GetReward());
+
+        if (DestructedUnit->GetTileType() == ETileType::Infantry && UseCard(3))
+        {
+            ChangeLifePoints(1);
+        }
+        if (UseCard(53))
+        {
+            ChangeVictoryPoints(1);
+        }
+
+        std::vector<std::unique_ptr<FTile>> &Units = Borough->GetUnits();
+
+        auto newEndIt = std::remove_if(Units.begin(), Units.end(), [&DestroyedUnit](auto &Unit) { return Unit == DestroyedUnit; });
+        Units.resize(static_cast<unsigned  long>(newEndIt - Units.begin()));
     }
 
     void FPlayer::BuyCard(std::unique_ptr<FCard> Card)
@@ -108,162 +104,28 @@ namespace KingOfNewYork
         }
     }
 
-    void FPlayer::StartPhase()
+    bool FPlayer::UseCard(int Id)
     {
-        if (Borough->IsCenter())
+        auto it = std::find_if(Cards.begin(), Cards.end(), [&Id](const std::unique_ptr<FCard> &Card) { return Card->GetId() == Id; });
+        if (it == Cards.end())
         {
-            ChangeVictoryPoints(CENTER_VICTORY_POINT_REWARDS[LevelInCenter]);
-            ChangeEnergyCubes(CENTER_ENERGY_CUBE_REWARDS[LevelInCenter]);
+            return false;
+        }
+        else
+        {
+            (*it)->Use();
+            return true;
         }
     }
 
-    void FPlayer::RollDicePhase(const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
+    void FPlayer::Died(FGame &Game)
     {
-        RollDiceStrategy->Execute(DiceRoller, DiceCount, RollCount, OutDiceResult);
-    }
+        auto &BoroughPlayers = GetMutableBorough()->GetMutablePlayers();
+        auto ThisPlayer = shared_from_this();
+        auto newEndIt = std::remove_if(BoroughPlayers.begin(), BoroughPlayers.end(), [&ThisPlayer](const auto &Player) { return Player == ThisPlayer; });
+        BoroughPlayers.resize(static_cast<unsigned  long>(newEndIt - BoroughPlayers.begin()));
 
-    void FPlayer::ResolveDicePhase(FGame &Game, FMap &Map, std::vector<EDiceFace> &DiceResult)
-    {
-        ResolveDiceStrategy->Execute(Game, Map, shared_from_this(), DiceResult);
-    }
-
-    void FPlayer::MovePhase(FMap &Map)
-    {
-        Move(Map, true, false);
-        //MoveStrategy->Execute(Map, shared_from_this(), true, false);
-    }
-
-    void FPlayer::BuyCardsPhase(FGame &Game)
-    {
-        BuyCardsStrategy->Execute(Game, shared_from_this());
-    }
-
-    void FPlayer::EnterPlayerName(std::vector<std::string> &PlayerNames)
-    {
-        while (PlayerName.empty())
-        {
-            std::cout   << "Player "
-                        << PlayerNames.size() + 1
-                        << ", please enter your name:" << std::endl;
-            std::cout << ">";
-            bool bError = false;
-            const std::string Input = InputString();
-            if (Input.empty())
-            {
-                std::cout << "Invalid input, please try again."
-                          << std::endl
-                          << std::endl;
-                continue;
-            }
-            for (const std::string &Name: PlayerNames)
-            {
-                if (Input == Name)
-                {
-                    std::cout << "Name already taken, please try again."
-                              << std::endl
-                              << std::endl;
-                    bError = true;
-                    break;
-                }
-            }
-            if (!bError)
-            {
-                PlayerName = Input;
-                PlayerNames.push_back(Input);
-            }
-        }
-        std::cout << std::endl;
-    }
-
-    void FPlayer::SelectMonster(bool bAvailableMonsters[])
-    {
-        while (MonsterName == EMonsterName::None)
-        {
-            std::cout   << PlayerName
-                        << ", please select your monster:" << std::endl;
-            for (int i = 0; i < MONSTER_COUNT; ++i)
-            {
-                if (bAvailableMonsters[i])
-                {
-                    std::cout << (i + 1)
-                              << " "
-                              << GetMonsterNameString(
-                                    static_cast<EMonsterName>(i))
-                              << std::endl;
-                }
-            }
-            std::cout << ">";
-            const int Input = InputSingleDigit();
-            if (1 <= Input &&
-                Input <= MONSTER_COUNT &&
-                bAvailableMonsters[Input - 1])
-            {
-                MonsterName = static_cast<EMonsterName>(Input - 1);
-                bAvailableMonsters[Input - 1] = false;
-            }
-            else
-            {
-                std::cout << "Invalid input, please try again."
-                          << std::endl
-                          << std::endl;
-            }
-        }
-        std::cout << std::endl;
-    }
-
-    void FPlayer::SelectStrategy()
-    {
-        while (RollDiceStrategy == nullptr)
-        {
-            std::cout   << GetPlayerAndMonsterNames()
-                        << ", please select your strategy:"
-                        << std::endl
-                        << "1. Human control"
-                        << std::endl
-                        << "2. Aggressive AI"
-                        << std::endl
-                        << "3. Moderate AI"
-                        << std::endl;
-            std::cout << ">";
-            const int Input = InputSingleDigit();
-            if (1 <= Input && Input <= 3)
-            {
-                switch (Input)
-                {
-                    case 1:
-                        RollDiceStrategy = new HumanRollDiceStrategy();
-                        ResolveDiceStrategy = new HumanResolveDiceStrategy;
-                        MoveStrategy = new HumanMoveStrategy;
-                        BuyCardsStrategy = new HumanBuyCardsStrategy;
-                        break;
-                    case 2:
-                        RollDiceStrategy = new AggressiveRollDiceStrategy();
-                        ResolveDiceStrategy = new AggressiveResolveDiceStrategy;
-                        MoveStrategy = new AggressiveMoveStrategy;
-                        BuyCardsStrategy = new AggressiveBuyCardsStrategy;
-                        break;
-                    case 3:
-                        RollDiceStrategy = new ModerateRollDiceStrategy();
-                        ResolveDiceStrategy = new ModerateResolveDiceStrategy;
-                        MoveStrategy = new ModerateMoveStrategy;
-                        BuyCardsStrategy = new ModerateBuyCardsStrategy;
-                        break;
-                }
-            }
-            else
-            {
-                std::cout << "Invalid input, please try again."
-                          << std::endl
-                          << std::endl;
-            }
-        }
-        std::cout << std::endl;
-    }
-
-    void FPlayer::SelectStartingLocation(FMap &Map)
-    {
-        MoveStrategy->Execute(Map, shared_from_this(), false, true);
-        Notify(shared_from_this(), std::make_shared<FChangeBoroughEvent>(EObserverEvent::ChangeBorough, "", nullptr, Borough));
+        std::for_each(Cards.begin(), Cards.end(), [&Game](auto &Card) { Game.GetDiscardDeck().AddCard(Card); } );
     }
 
 
@@ -278,14 +140,22 @@ namespace KingOfNewYork
             bStatueOfLiberty = false;
             bCelebrity = false;
             Notify(shared_from_this(), std::make_shared<FDeadPlayerEvent>(EObserverEvent::DeadPlayer, ""));
+            Died(Game);
+            return;
+
+        }
+        if (UseCard(29))
+        {
+            ChangeEnergyCubes(1);
         }
     }
 
-    void FPlayer::Move(FMap &Map, bool bMovePhase, bool bOnlyStartingLocation)
+    void FPlayer::Move(std::shared_ptr<FBorough> OldBorough, int OldLevelInCenter)
     {
-        std::shared_ptr<FBorough> OldBorough = Borough;
-        int OldLevelInCenter = LevelInCenter;
-        MoveStrategy->Execute(Map, shared_from_this(), bMovePhase, bOnlyStartingLocation);
+        //std::shared_ptr<FBorough> OldBorough = Borough;
+        //int OldLevelInCenter = LevelInCenter;
+        //MoveStrategy->Execute(Map, shared_from_this(), bMovePhase, bOnlyStartingLocation);
+
         if (OldBorough && OldBorough->IsCenter() && Borough->IsCenter())
         {
             Notify(shared_from_this(), std::make_shared<FMoveInManhattanEvent>(EObserverEvent::MoveInManhattan, "", OldLevelInCenter, LevelInCenter));
@@ -293,6 +163,10 @@ namespace KingOfNewYork
         else
         {
             Notify(shared_from_this(), std::make_shared<FChangeBoroughEvent>(EObserverEvent::ChangeBorough, "", OldBorough, Borough));
+            if (OldBorough && !OldBorough->IsCenter() && Borough->IsCenter() && UseCard(58))
+            {
+                ChangeLifePoints(2);
+            }
         }
     }
 
