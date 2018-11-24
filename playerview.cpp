@@ -61,13 +61,7 @@ namespace KingOfNewYork
                     }
 
                     PrintNormal("Number of cards: " + std::to_string(Player->GetCards().size()));
-                    std::for_each(Player->GetCards().begin(), Player->GetCards().end(), [](const auto &Card) { Card->Display(); });
-//                    for (const std::unique_ptr<FCard> &Card : Player->GetCards()) {
-//                        if (Card)
-//                        {
-//                            PrintNormal(Card->GetCardInfo());
-//                        }
-//                    }
+                    for (const auto &Card : Player->GetCards()) Card->Display();
 
                     std::cout << "Tokens:" << std::endl;
                     for (int i = 0; i < TOKEN_TYPE_COUNT; ++i)

@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "player.h"
 #include "diceroller.h"
+#include "helper.h"
 
 namespace KingOfNewYork
 {
@@ -43,8 +44,7 @@ namespace KingOfNewYork
                       << std::endl;
             std::cout << "> ";
 
-            std::string input;
-            std::getline(std::cin, input);
+            std::string input = InputString();
             if (input.empty())
             {
                 break;
@@ -152,7 +152,8 @@ namespace KingOfNewYork
                 OutDiceResult.push_back(EDiceFace::Attack);
                 OutDiceResult.push_back(EDiceFace::Attack);
             }
-            int DestructionCount = static_cast<int>(std::count_if(OutDiceResult.begin(), OutDiceResult.end(), [](const auto &DiceFace) { return DiceFace == EDiceFace::Destruction; } ));
+            int DestructionCount = static_cast<int>(std::count_if(OutDiceResult.begin(), OutDiceResult.end(),
+                                                                  [](const auto &DiceFace) { return DiceFace == EDiceFace::Destruction; } ));
             if (DestructionCount > 0 && DestructionCount % 2 == 0 && Player->UseCard(8))
             {
                 switch (DestructionCount) {
@@ -172,7 +173,7 @@ namespace KingOfNewYork
             {
                 OutDiceResult.push_back(EDiceFace::Destruction);
             }
-            bool bHasCelebrity = std::any_of(OutDiceResult.begin(), OutDiceResult.end(), [](const auto &DiceFace) { return DiceFace == EDiceFace::Celebrity; } );
+            bool bHasCelebrity = std::find(OutDiceResult.begin(), OutDiceResult.end(), EDiceFace::Celebrity) != OutDiceResult.end();
             if (bHasCelebrity && Player->UseCard(21))
             {
                 Player->ChangeVictoryPoints(1);

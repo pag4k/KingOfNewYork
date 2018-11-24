@@ -6,47 +6,36 @@
 
 #include "graph.h"
 
+#include <algorithm>
+
 namespace KingOfNewYork
 {
     template<typename T>
     FGraph<T>::~FGraph<T>()
     {
-        for (FEdge *Edge : EdgeVector)
+        for (FEdge *Edge : EdgeList)
         {
             delete Edge;
         }
-        for (FVertex *Vertex : VertexVector)
+        for (FVertex *Vertex : VertexList)
         {
             delete Vertex;
         }
-        EdgeVector.clear();
-        VertexVector.clear();
+        EdgeList.clear();
+        VertexList.clear();
     }
 
-    template<typename T>
-    const std::string &FGraph<T>::GetName(const int n) const
-    {
-        assert(0 <= n && n < VertexVector.size());
-        return VertexVector[n]->Name;
-    }
+
 
     template<typename T>
-    std::shared_ptr<T> FGraph<T>::GetElement(int n)
+    std::set<std::shared_ptr<T>> FGraph<T>::GetNeighbours(const std::string &Name) const
     {
-        assert(0 <= n && n < VertexVector.size());
-        return VertexVector[n]->Element;
-    }
-
-    template<typename T>
-    std::vector<int> FGraph<T>::GetNeighbours(const int n) const
-    {
-        assert(0 <= n && n < VertexVector.size());
+        assert(0 <= n && n < VertexList.size());
         //Using a set to make sure there are not duplicates.
         std::set<int> NeighbourSet;
-        for (FEdge *Edge : VertexVector[n]->IncidentEdgeVector)
+        for (FEdge *Edge : VertexList[n]->IncidentEdgeVector)
         {
-            NeighbourSet.insert(
-                    GetIndexFromName(Opposite(VertexVector[n], Edge)->Name));
+            NeighbourSet.insert(GetIndexFromName(Opposite(VertexList[n], Edge)->Name));
         }
         std::vector<int> NeighbourVector;
         for (int Index : NeighbourSet)
@@ -60,9 +49,7 @@ namespace KingOfNewYork
     template<typename T>
     bool FGraph<T>::AreAdjacent(const std::string &Name1, const std::string &Name2) const
     {
-        return AreAdjacent(
-                GetVertexWithName(Name1),
-                GetVertexWithName(Name2));
+        return AreAdjacent(GetVertexWithName(Name1), GetVertexWithName(Name2));
     }
 
     template<typename T>
@@ -74,20 +61,18 @@ namespace KingOfNewYork
                       << std::endl;
             return nullptr;
         }
-        for (FVertex *Vertex: VertexVector)
+        if (std::any_of(VertexList.begin(), VertexList.end(),
+                        [&VertexName](const auto &Vertex){ return Vertex->Name == VertexName;}))
         {
-            if (Vertex->Name == VertexName)
-            {
-                std::cout   << "Error: There is already a vertex named: "
-                            << VertexName
-                            << "."
-                            << std::endl;
-                return nullptr;
-            }
+            std::cout   << "Error: There is already a vertex named: "
+                        << VertexName
+                        << "."
+                        << std::endl;
+            return nullptr;
         }
-        auto *NewVertex = new FVertex;
+        auto NewVertex = std::make_shared<FVertex>();
         NewVertex->Name = VertexName;
-        FVertex *InsertedVertex = InsertVertex(NewVertex);
+        std::shared_ptr<FVertex> InsertedVertex = InsertVertex(NewVertex);
         return NewVertex->Element;
     }
 
@@ -120,23 +105,7 @@ namespace KingOfNewYork
     }
 
     template<typename T>
-    int FGraph<T>::GetIndexFromName(const std::string &Name) const
-    {
-        for (int i = 0; i < VertexVector.size(); ++i)
-        {
-            if (VertexVector[i]->Name == Name)
-            {
-                return i;
-            }
-        }
-        std::cout << "Error: Could not find vertex with name: "
-                  << Name
-                  << std::endl;
-        return -1;
-    }
-
-    template<typename T>
-    typename FGraph<T>::FVertex * FGraph<T>::Opposite(FGraph<T>::FVertex const* CurrentVertex, FGraph<T>::FEdge const* CurrentEdge) const
+    std::shared_ptr<FVertex> FGraph<T>::Opposite(std::shared_ptr<FVertex> CurrentVertex, std::shared_ptr<FEdge> CurrentEdge) const
     {
         if (CurrentVertex && CurrentEdge)
         {
@@ -165,18 +134,13 @@ namespace KingOfNewYork
     }
 
     template<typename T>
-    bool FGraph<T>::AreAdjacent(FVertex const* VertexA, FVertex const* VertexB) const
+    bool FGraph<T>::AreAdjacent(std::shared_ptr<FVertex> VertexA, std::shared_ptr<FVertex> VertexB) const
     {
         if (VertexA && VertexB)
         {
-            for (const FEdge *IncidentEdge : VertexA->IncidentEdgeVector)
-            {
-                if (Opposite(VertexA, IncidentEdge) == VertexB)
-                {
-                    return true;
-                }
-            }
-            return false;
+            const auto &IncidentEdgeList = (VertexA->IncidentEdgeList.size() <= VertexB->IncidentEdgeList.size()) ? VertexA->IncidentEdgeList : VertexB->IncidentEdgeList;
+            return std::any_of(IncidentEdgeList.begin(), IncidentEdgeList.end(),
+                                   [](const auto &Edge) { return Opposite(VertexA, Edge) == VertexB; });
         }
         else
         {
@@ -187,12 +151,12 @@ namespace KingOfNewYork
     }
 
     template<typename T>
-    typename FGraph<T>::FVertex *FGraph<T>::InsertVertex(FGraph<T>::FVertex *NewVertex)
+    std::shared_ptr<FVertex> FGraph<T>::InsertVertex(std::shared_ptr<FVertex> NewVertex)
     {
         if (NewVertex)
         {
-            VertexVector.push_back(NewVertex);
-            return VertexVector.back();
+            NewVertex->Position = VertexList.insert(VertexList.end(), NewVertex);
+            return NewVertex;
         }
         std::cout << "Error: Invalid vertex."
                   << std::endl;
@@ -200,17 +164,18 @@ namespace KingOfNewYork
     }
 
     template<typename T>
-    typename FGraph<T>::FEdge *FGraph<T>::InsertEdge(FGraph<T>::FVertex * OriginVertex, FGraph<T>::FVertex * DestinationVertex, FGraph<T>::FEdge * NewEdge)
+    std::shared_ptr<FEdge> FGraph<T>::InsertEdge(std::shared_ptr<FVertex> OriginVertex, std::shared_ptr<FVertex> DestinationVertex, std::shared_ptr<FEdge> NewEdge)
     {
         if (OriginVertex && DestinationVertex && NewEdge)
         {
-            EdgeVector.push_back(NewEdge);
-            FEdge * CreatedEdge = EdgeVector.back();
-            CreatedEdge->Origin = OriginVertex;
-            CreatedEdge->Destination = DestinationVertex;
-            OriginVertex->IncidentEdgeVector.push_back(CreatedEdge);
-            DestinationVertex->IncidentEdgeVector.push_back(CreatedEdge);
-            return CreatedEdge;
+            NewEdge->Position = EdgeList.insert(EdgeList.end(), NewEdge);
+            //EdgeList.push_back(NewEdge);
+            //FEdge * CreatedEdge = EdgeList.back();
+            NewEdge->Origin = OriginVertex;
+            NewEdge->Destination = DestinationVertex;
+            NewEdge->IncidentOrigin = OriginVertex->IncidentEdgeList.insert(OriginVertex->IncidentEdgeList.end(), NewEdge);
+            NewEdge->IncidentDestination = DestinationVertex->IncidentEdgeList.insert(DestinationVertex->IncidentEdgeList.end(), NewEdge);
+            return NewEdge;
         }
         std::cout << "Error: Invalid vertex and/or edge."
                   << std::endl;
@@ -218,65 +183,19 @@ namespace KingOfNewYork
     }
 
     template<typename T>
-    typename FGraph<T>::FVertex *FGraph<T>::RemoveVertex(FGraph<T>::FVertex *VertexToRemove)
+    std::shared_ptr<FVertex> FGraph<T>::RemoveVertex(std::shared_ptr<FVertex> VertexToRemove)
     {
         if (VertexToRemove)
         {
-            //Remove pointers to that vertex in the other IncidentEdgeVector.
-            for (const auto OtherVertex : VertexVector)
-            {
-                if (AreAdjacent(VertexToRemove, OtherVertex))
-                {
-                    for (auto it = OtherVertex->IncidentEdgeVector.begin();
-                         it != OtherVertex->IncidentEdgeVector.end();
-                         ++it)
-                    {
-                        if (Opposite(OtherVertex, *it) == VertexToRemove)
-                        {
-                            OtherVertex->IncidentEdgeVector.erase(it);
-                            break;
-                        }
-                    }
-                }
-            }
+            //NOTE SURE ABOUT THAT
+            auto EdgeListCopy = VertexToRemove->IncidentEdgeList;
+            for (auto Edge : EdgeListCopy) RemoveEdge(Edge);
 
-            //Deleting incident edges and their pointers in the edge list.
-            int RemovedEdgeCount = 0;
-            for (auto it = EdgeVector.begin(); it != EdgeVector.end();)
-            {
-                FEdge *CurrentEdge = *it;
-                if (CurrentEdge->Origin == VertexToRemove ||
-                    CurrentEdge->Destination == VertexToRemove)
-                {
-                    RemovedEdgeCount++;
-                    delete CurrentEdge;
-                    EdgeVector.erase(it);
-                }
-                else
-                {
-                    ++it;
-                }
-            }
+            //TODO: NOT SURE WHAT HAPPENS WITH THE INCIDENT LIST? IS IT DESTROYED BY REMOVING ALL EDGES?
 
-            //Clearing the the incident edge list.
-            assert(VertexToRemove->IncidentEdgeVector.size() ==
-                   RemovedEdgeCount);
-            VertexToRemove->IncidentEdgeVector.clear();
+            VertexList.erase(VertexToRemove->Position);
 
-            //Delete the vertex and its pointer in the vertex list.
-            for (auto it = VertexVector.begin(); it != VertexVector.end(); ++it)
-            {
-                if (*it == VertexToRemove)
-                {
-                    std::cout << "Removing vertex:"
-                              << VertexToRemove->Name
-                              << "."
-                              << std::endl;
-                    delete *it;
-                    VertexVector.erase(it);
-                    return *it;
-                }
-            }
+            return VertexToRemove->Element;
         }
 
         std::cout << "Error: Invalid vertex."
@@ -285,9 +204,9 @@ namespace KingOfNewYork
     }
 
     template<typename T>
-    typename FGraph<T>::FVertex *FGraph<T>::GetVertexWithName(const std::string &Name) const
+    std::shared_ptr<FVertex> FGraph<T>::GetVertexWithName(const std::string &Name) const
     {
-        for (FGraph<T>::FVertex *Vertex : VertexVector)
+        for (auto Vertex : VertexList)
         {
             if (Vertex->Name == Name)
             {
@@ -301,85 +220,61 @@ namespace KingOfNewYork
     }
 
     template <typename T>
-    void FGraph<T>::EndVertices(FEdge const* CurrentEdge, FVertex const* OutOriginVertex, FVertex const* OutDestinationVertex) const
+    std::pair<std::shared_ptr<FVertex>, std::shared_ptr<FVertex>> FGraph<T>::EndVertices(std::shared_ptr<FEdge> CurrentEdge) const
     {
         if (CurrentEdge)
         {
-            OutOriginVertex = CurrentEdge->Origin;
-            OutDestinationVertex = CurrentEdge->Destination;
+            return std::make_pair(CurrentEdge->Origin, CurrentEdge->Destination);
         }
         else
         {
-            OutOriginVertex = nullptr;
-            OutDestinationVertex = nullptr;
+            return nullptr;
+            //return std::make_pair(->Origin, CurrentEdge->Destination);
         }
     }
 
     template <typename T>
-    void FGraph<T>::Replace(FVertex const* OldVertex, FVertex const* NewVertex)
+    void FGraph<T>::Replace(std::shared_ptr<FVertex> OldVertex, std::shared_ptr<FVertex> NewVertex)
     {
         if (OldVertex && NewVertex)
         {
+            //TODO: DON'T I HAVE TO DO MORE HERE?
             OldVertex->Name = NewVertex->Name;
         }
     }
 
     template <typename T>
-    void FGraph<T>::Replace(FEdge const* OldEdge, FEdge const* NewEdge)
+    void FGraph<T>::Replace(std::shared_ptr<FEdge> OldEdge, std::shared_ptr<FEdge> NewEdge)
     {
         if (OldEdge && NewEdge)
         {
+            //TODO: DON'T I HAVE TO DO MORE HERE?
             //OldEdge->Name = NewEdge->Name;
         }
     }
 
     template <typename T>
-    typename FGraph<T>::FEdge *FGraph<T>::RemoveEdge(FEdge *EdgeToRemove)
+    std::shared_ptr<FEdge> FGraph<T>::RemoveEdge(std::shared_ptr<FEdge> EdgeToRemove)
     {
         if (EdgeToRemove)
         {
             //Remove references to origin
             if (EdgeToRemove->Origin)
             {
-                FVertex *Origin = EdgeToRemove->Origin;
-                for (auto it = Origin->IncidentEdgeVector.begin();
-                     it != Origin->IncidentEdgeVector.end();
-                     ++it)
-                {
-                    if (Opposite(Origin, *it))
-                    {
-                        Origin->IncidentEdgeVector.erase(it);
-                        break;
-                    }
-                }
+                EdgeToRemove->Origin->IncidentEdgeList.erase(EdgeToRemove->IncidentOrigin);
+                EdgeToRemove->Origin = nullptr;
             }
 
             //Remove references to destination
             if (EdgeToRemove->Destination)
             {
-                FVertex *Destination = EdgeToRemove->Destination;
-                for (auto it = Destination->IncidentEdgeVector.begin();
-                     it != Destination->IncidentEdgeVector.end();
-                     ++it)
-                {
-                    if (Opposite(Destination, *it))
-                    {
-                        Destination->IncidentEdgeVector.erase(it);
-                        break;
-                    }
-                }
+                EdgeToRemove->Destination->IncidentEdgeList.erase(EdgeToRemove->IncidentDestination);
+                EdgeToRemove->Destination = nullptr;
             }
 
-            //Delete the edge and its pointer in the edge list.
-            for (auto it = EdgeVector.begin(); it != EdgeVector.end(); ++it)
-            {
-                if (*it == EdgeToRemove)
-                {
-                    delete *it;
-                    EdgeVector.erase(it);
-                    return *it;
-                }
-            }
+            //TODO: Should return element, but there is none.
+            EdgeList.erase(EdgeToRemove->Position);
+            return EdgeToRemove;
         }
 
         std::cout << "Error: Invalid edge."

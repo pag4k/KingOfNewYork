@@ -125,11 +125,7 @@ namespace KingOfNewYork
                     for (int i = 0; i < Number; ++i)
                     {
                         //TODO: Not sure if this does a copy or not.
-                        TileStack.push_back(
-                            std::make_unique<FTile>(
-                                TileType,
-                                Durability,
-                                Reward));
+                        TileStack.push_back(std::make_unique<FTile>(TileType, Durability, Reward));
                     }
                     Number = ParseIntFromChar(Text[7]);
                     TileType = ETileType::None;

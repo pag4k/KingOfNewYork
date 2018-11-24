@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <vector>
+#include "unordered_set"
 #include <string>
 
 #include "playercontroller.h"
@@ -29,7 +30,7 @@ namespace KingOfNewYork
     {
 
     public:
-        FPlayerController(std::vector<std::string> &PlayerNames, std::vector<bool> &AvailableMonsters);
+        FPlayerController(std::unordered_set<std::string> &PlayerNames, std::vector<bool> &AvailableMonsters);
         ~FPlayerController();
 
         //Getters and setters
@@ -49,7 +50,7 @@ namespace KingOfNewYork
 
     private:
         //Initialization methods
-        std::string EnterPlayerName(std::vector<std::string> &PlayerNames);
+        std::string EnterPlayerName(std::unordered_set<std::string> &PlayerNames);
         EMonsterName SelectMonster(std::vector<bool> &AvailableMonsters);
         void SelectStrategy();
 

@@ -26,7 +26,7 @@ namespace KingOfNewYork
         }
 
         bAlive = true;
-        EnergyCubes = 0;
+        EnergyCubes = 100;
         LifePoints = MAXIMUM_LIFE_POINTS;
         VictoryPoints = 0;
 
@@ -106,7 +106,8 @@ namespace KingOfNewYork
 
     bool FPlayer::UseCard(int Id)
     {
-        auto it = std::find_if(Cards.begin(), Cards.end(), [&Id](const std::unique_ptr<FCard> &Card) { return Card->GetId() == Id; });
+        auto it = std::find_if(Cards.begin(), Cards.end(),
+                               [&Id](const std::unique_ptr<FCard> &Card) { return Card->GetId() == Id; });
         if (it == Cards.end())
         {
             return false;
@@ -124,10 +125,8 @@ namespace KingOfNewYork
         auto ThisPlayer = shared_from_this();
         auto newEndIt = std::remove_if(BoroughPlayers.begin(), BoroughPlayers.end(), [&ThisPlayer](const auto &Player) { return Player == ThisPlayer; });
         BoroughPlayers.resize(static_cast<unsigned  long>(newEndIt - BoroughPlayers.begin()));
-
-        std::for_each(Cards.begin(), Cards.end(), [&Game](auto &Card) { Game.GetDiscardDeck().AddCard(Card); } );
+        for (auto &Card : Cards) Game.GetDiscardDeck().AddCard(Card);
     }
-
 
     void FPlayer::TakeDamage(FGame &Game, const int Damage)
     {

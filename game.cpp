@@ -75,7 +75,8 @@ namespace KingOfNewYork
             Card = Deck.Draw();
         }
 
-        auto newEndIt = std::remove_if(AvailableCards.begin(), AvailableCards.end(), [](auto &Card) { return Card == nullptr; });
+        auto newEndIt = std::remove(AvailableCards.begin(), AvailableCards.end(), nullptr);
+        //AvailableCards.erase(newEndIt);
         AvailableCards.resize(static_cast<unsigned  long>(newEndIt - AvailableCards.begin()));
         return true;
     }
@@ -94,26 +95,29 @@ namespace KingOfNewYork
             AvailableCards[Index]->Display();
 
         }
-        auto newEndIt = std::remove_if(AvailableCards.begin(), AvailableCards.end(), [](auto &Card) { return Card == nullptr; });
+        auto newEndIt = std::remove(AvailableCards.begin(), AvailableCards.end(), nullptr );
         AvailableCards.resize(static_cast<unsigned  long>(newEndIt - AvailableCards.begin()));
         return Card;
     }
 
     std::unique_ptr<FPlayerController> &FGame::GetPlayerController(const std::shared_ptr<FPlayer> &Player)
     {
-        auto PlayerControllerIt = std::find_if(PlayerControllers.begin(), PlayerControllers.end(), [Player](const auto &PlayerController) { return PlayerController->GetPlayer() == Player; });
+        auto PlayerControllerIt = std::find_if(PlayerControllers.begin(), PlayerControllers.end(),
+                                               [Player](const auto &PlayerController) { return PlayerController->GetPlayer() == Player; });
         assert(PlayerControllerIt != PlayerControllers.end());
         return *PlayerControllerIt;
     }
 
     int FGame::GetPlayerCount() const
     {
-        return static_cast<int>(std::count_if(PlayerControllers.begin(), PlayerControllers.end(), [](const auto &PlayerController) { return PlayerController->GetPlayer() != nullptr; }));
+        return static_cast<int>(std::count_if(PlayerControllers.begin(), PlayerControllers.end(),
+                                              [](const auto &PlayerController) { return PlayerController->GetPlayer() != nullptr; }));
     }
 
     void FGame::ChangeCelebrity(std::shared_ptr<FPlayer> &NewCelebrityPlayer)
     {
-        auto PlayerControllerIt = std::find_if(PlayerControllers.begin(), PlayerControllers.end(), [](const auto &PlayerController) { return PlayerController->GetPlayer() && PlayerController->GetPlayer()->IsCelebrity(); });
+        auto PlayerControllerIt = std::find_if(PlayerControllers.begin(), PlayerControllers.end(),
+                                               [](const auto &PlayerController) { return PlayerController->GetPlayer() && PlayerController->GetPlayer()->IsCelebrity(); });
         if (PlayerControllerIt != PlayerControllers.end()) {
             auto &Player = (*PlayerControllerIt)->GetPlayer();
             if (Player == NewCelebrityPlayer) {
@@ -128,7 +132,8 @@ namespace KingOfNewYork
 
     void FGame::ChangeStatueOfLiberty(std::shared_ptr<FPlayer> &NewStatueOfLibertyPlayer)
     {
-        auto PlayerControllerIt = std::find_if(PlayerControllers.begin(), PlayerControllers.end(), [](auto &PlayerController) { return PlayerController->GetPlayer() && PlayerController->GetPlayer()->IsStatueOfLiberty(); });
+        auto PlayerControllerIt = std::find_if(PlayerControllers.begin(), PlayerControllers.end(),
+                                               [](auto &PlayerController) { return PlayerController->GetPlayer() && PlayerController->GetPlayer()->IsStatueOfLiberty(); });
         if (!(PlayerControllerIt == PlayerControllers.end()))
         {
             auto &Player = (*PlayerControllerIt)->GetPlayer();
@@ -261,8 +266,7 @@ namespace KingOfNewYork
     {
         assert(MINIMUM_PLAYER <= PlayerCount && PlayerCount <= MAXIMUM_PLAYER);
         PlayerControllers.reserve(static_cast<unsigned long>(PlayerCount));
-        std::vector<std::string> PlayerNames;
-        PlayerNames.reserve(static_cast<unsigned long>(PlayerCount));
+        std::unordered_set<std::string> PlayerNames;
         std::vector<bool> AvailableMonsters(MONSTER_COUNT, true);
 
         for (int i = 0; i < PlayerCount; ++i)
@@ -284,8 +288,6 @@ namespace KingOfNewYork
     {
         std::vector<bool> StillRolling(PlayerControllers.size(), true);
 
-        //std::for_each(StillRolling.begin(), StillRolling.end(), [](auto &bStillRolling) { bStillRolling = true; });
-
         std::cout << "In order to see who goes first, each player rolls the 6 black dice and the 2 green dice, and whoever rolls the most Attacks starts the game."
                   << std::endl;
         while (CurrentPlayer == -1)
@@ -297,18 +299,11 @@ namespace KingOfNewYork
                 {
                     std::cout << PlayerControllers[i]->GetMonsterName()
                               << ": Press enter to roll the dice.";
-                    std::string Trash;
-                    std::getline(std::cin, Trash);
+                    InputString();
                     std::vector<EDiceFace> DiceResult = PlayerControllers[i]->RollStartDice(BLACK_DICE_COUNT + GREEN_DICE_COUNT);
 
-                    const auto AttackCount = static_cast<int>(std::count_if(DiceResult.begin(), DiceResult.end(), [](const auto &DiceFace) { return DiceFace == EDiceFace::Attack; }));
-//                    for (EDiceFace DiceFace : DiceResult)
-//                    {
-//                        if (DiceFace == EDiceFace::Attack)
-//                        {
-//                            AttackCount++;
-//                        }
-//                    }
+                    const auto AttackCount = static_cast<int>(std::count_if(DiceResult.begin(), DiceResult.end(),
+                                                                            [](const auto &DiceFace) { return DiceFace == EDiceFace::Attack; }));
 
                     std::cout << "Number of attacks: "
                               << AttackCount
@@ -454,7 +449,8 @@ namespace KingOfNewYork
         }
         else if (PlayerCount == 1)
         {
-            auto PlayerControllerIt = std::find_if(PlayerControllers.begin(), PlayerControllers.end(), [](const auto &PlayerController) { return PlayerController->GetPlayer(); });
+            auto PlayerControllerIt = std::find_if(PlayerControllers.begin(), PlayerControllers.end(),
+                                                   [](const auto &PlayerController) { return PlayerController->GetPlayer(); });
             assert(PlayerControllerIt != PlayerControllers.end());
             std::cout << (*PlayerControllerIt)->GetMonsterName()
                       << " is the only one alive and has won the game!"
@@ -463,7 +459,8 @@ namespace KingOfNewYork
             exit(0);
         }
 
-        auto PlayerControllerIt = std::find_if(PlayerControllers.begin(), PlayerControllers.end(), [](const auto &PlayerController) { return PlayerController->GetPlayer() && PlayerController->GetPlayer()->IsVictorious(); });
+        auto PlayerControllerIt = std::find_if(PlayerControllers.begin(), PlayerControllers.end(),
+                                               [](const auto &PlayerController) { return PlayerController->GetPlayer() && PlayerController->GetPlayer()->IsVictorious(); });
         if (PlayerControllerIt != PlayerControllers.end())
         {
             std::cout << (*PlayerControllerIt)->GetMonsterName()

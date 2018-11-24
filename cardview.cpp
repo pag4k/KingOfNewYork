@@ -15,24 +15,20 @@ namespace KingOfNewYork
 {
     FCardView::FCardView(std::shared_ptr<FGame> Game) : Game(Game)
     {
-        auto &Cards = Game->GetDeck().GetCards();
-        std::for_each(Cards.begin(), Cards.end(), [this](auto &Card) { Card->Attach(this);} );
+        for (const auto &Card: Game->GetDeck().GetCards()) Card->Attach(this);
     }
 
     FCardView::~FCardView()
     {
-        auto &GameCards = Game->GetDeck().GetCards();
-        std::for_each(GameCards.begin(), GameCards.end(), [this](auto &Card) { Card->Detach(this);} );
+        for (const auto &Card: Game->GetDeck().GetCards()) Card->Detach(this);
 
-        auto &DiscardCards = Game->GetDeck().GetCards();
-        std::for_each(DiscardCards.begin(), DiscardCards.end(), [this](auto &Card) { Card->Detach(this);} );
+        for (const auto &Card: Game->GetDiscardDeck().GetCards()) Card->Detach(this);
 
         for (auto& PlayerController : Game->GetPlayerControllers())
         {
             if (PlayerController->GetPlayer())
             {
-                auto &PlayerCards = PlayerController->GetPlayer()->GetCards();
-                std::for_each(PlayerCards.begin(), PlayerCards.end(), [this](auto &Card) { Card->Detach(this);} );
+                for (const auto &Card: PlayerController->GetPlayer()->GetCards()) Card->Detach(this);
             }
         }
     }

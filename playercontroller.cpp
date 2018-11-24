@@ -20,7 +20,7 @@
 
 namespace KingOfNewYork
 {
-    FPlayerController::FPlayerController(std::vector<std::string> &PlayerNames, std::vector<bool> &AvailableMonsters) {
+    FPlayerController::FPlayerController(std::unordered_set<std::string> &PlayerNames, std::vector<bool> &AvailableMonsters) {
         Name = EnterPlayerName(PlayerNames);
         EMonsterName MonsterName = SelectMonster(AvailableMonsters);
         SelectStrategy();
@@ -92,7 +92,7 @@ namespace KingOfNewYork
         Move(Map, false, true);
     }
 
-    std::string FPlayerController::EnterPlayerName(std::vector<std::string> &PlayerNames)
+    std::string FPlayerController::EnterPlayerName(std::unordered_set<std::string> &PlayerNames)
     {
         std::string EnteredName = "";
         while (EnteredName.empty())
@@ -106,7 +106,7 @@ namespace KingOfNewYork
                 PrintNormal("");
                 continue;
             }
-            if (std::any_of(PlayerNames.begin(), PlayerNames.end(), [Input](const auto &ProposedName) { return Input == ProposedName; }))
+            if (PlayerNames.count(Input))
             {
                 PrintNormal("Name already taken, please try again.");
                 PrintNormal("");
@@ -114,7 +114,7 @@ namespace KingOfNewYork
             else
             {
                 EnteredName = Input;
-                PlayerNames.push_back(Input);
+                PlayerNames.insert(Input);
             }
         }
         PrintNormal("");
@@ -166,19 +166,19 @@ namespace KingOfNewYork
             {
                 switch (Input)
                 {
-                    case 0:
+                    case 1:
                         RollDiceStrategy = new HumanRollDiceStrategy();
                         ResolveDiceStrategy = new HumanResolveDiceStrategy;
                         MoveStrategy = new HumanMoveStrategy;
                         BuyCardsStrategy = new HumanBuyCardsStrategy;
                         break;
-                    case 1:
+                    case 2:
                         RollDiceStrategy = new AggressiveRollDiceStrategy();
                         ResolveDiceStrategy = new AggressiveResolveDiceStrategy;
                         MoveStrategy = new AggressiveMoveStrategy;
                         BuyCardsStrategy = new AggressiveBuyCardsStrategy;
                         break;
-                    case 2:
+                    case 3:
                         RollDiceStrategy = new ModerateRollDiceStrategy();
                         ResolveDiceStrategy = new ModerateResolveDiceStrategy;
                         MoveStrategy = new ModerateMoveStrategy;

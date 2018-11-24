@@ -119,7 +119,7 @@ namespace KingOfNewYork
         return true;
     }
 
-    bool FMap::SaveMap(const std::string &FileName)
+  /*  bool FMap::SaveMap(const std::string &FileName)
     {
         std::ofstream OuputStream;
         OuputStream.open(FileName);
@@ -163,12 +163,12 @@ namespace KingOfNewYork
         }
         
         return true;
-    }
+   }*/
 
-    const std::vector<int> FMap::GetNeighbourgs(int n) const
+    /*const std::vector<int> FMap::GetNeighbourgs(int n) const
     {
         return Graph.GetNeighbours(n);
-    }
+    }*/
 
     std::shared_ptr<FBorough> FMap::GetCenterBorough()
     {

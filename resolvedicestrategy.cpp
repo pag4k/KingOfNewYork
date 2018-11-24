@@ -330,6 +330,7 @@ namespace KingOfNewYork
             auto &TileStacks = Borough->GetMutableTileStacks();
             auto &Units = Borough->GetUnits();
             int MinimumDurability = MAXIMUM_TILE_DURABILITY;
+
             for (const auto &TileStack : TileStacks)
             {
                 if (!TileStack->IsEmpty() && TileStack->GetTopTile()->GetDurability() < MinimumDurability)
@@ -337,6 +338,11 @@ namespace KingOfNewYork
                     MinimumDurability = TileStack->GetTopTile()->GetDurability();
                 }
             }
+
+            //const auto &MinUnit = std::min_element(Units.begin(), Units.end(),
+            //                                       [](const auto &A, const auto &B){ return A->GetDurability() < B->GetDurability(); });
+
+
             for (const auto &Unit : Units)
             {
                 if (Unit->GetDurability() < MinimumDurability)
@@ -354,7 +360,8 @@ namespace KingOfNewYork
             auto &Borough = Player->GetMutableBorough();
             auto &TileStacks = Borough->GetMutableTileStacks();
             auto &Units = Borough->GetUnits();
-            int TileStackCount = static_cast<int>(std::count_if(TileStacks.begin(), TileStacks.end(), [](const auto &TileStack) { return !TileStack->IsEmpty(); }));
+            int TileStackCount = static_cast<int>(std::count_if(TileStacks.begin(), TileStacks.end(),
+                                                                [](const auto &TileStack) { return !TileStack->IsEmpty(); }));
 
             if (TileStackCount == 0 && Borough->GetUnitCount() == 0)
             {
@@ -441,7 +448,8 @@ namespace KingOfNewYork
             auto &Borough = Player->GetMutableBorough();
             auto &TileStacks = Borough->GetMutableTileStacks();
             auto &Units = Borough->GetUnits();
-            int TileStackCount = static_cast<int>(std::count_if(TileStacks.begin(), TileStacks.end(), [](const auto &TileStack) { return !TileStack->IsEmpty(); }));
+            int TileStackCount = static_cast<int>(std::count_if(TileStacks.begin(), TileStacks.end(),
+                                                                [](const auto &TileStack) { return !TileStack->IsEmpty(); }));
 
             if (TileStackCount == 0 && Borough->GetUnitCount() == 0)
             {

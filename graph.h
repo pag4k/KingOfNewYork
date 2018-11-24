@@ -8,7 +8,7 @@
 #define GRAPH_H
 
 #include <cassert>
-#include <vector>
+#include <list>
 #include <set>
 #include <string>
 #include <iostream>
@@ -24,43 +24,42 @@ namespace KingOfNewYork
         struct FVertex
         {
             FVertex() : Element(std::make_shared<T>()), Name("") {};
+            typename std::list<std::shared_ptr<FVertex>>::iterator Position;
             std::shared_ptr<T> Element;
             std::string Name;
-            std::vector<FEdge *> IncidentEdgeVector;
+            std::list<std::shared_ptr<FEdge>> IncidentEdgeList;
         };
         struct FEdge
         {
-            FVertex * Origin;
-            FVertex * Destination;
-            FVertex * IncidentOrigin;
-            FVertex * IncidentDestination;
+            typename std::list<std::shared_ptr<FEdge>>::iterator Position;
+            std::shared_ptr<FVertex> Origin;
+            std::shared_ptr<FVertex> Destination;
+            typename std::list<std::shared_ptr<FEdge>>::iterator IncidentOrigin;
+            typename std::list<std::shared_ptr<FEdge>>::iterator IncidentDestination;
         };
 
     public:
         FGraph() = default;
         ~FGraph();
-        unsigned long ElementCount() const { return VertexVector.size(); }
-        std::shared_ptr<T> GetElement(int n);
-        const std::string &GetName(int n) const;
-        std::vector<int> GetNeighbours(int n) const;
+        unsigned long ElementCount() const { return VertexList.size(); }
+        std::set<std::shared_ptr<T>> GetNeighbours(const std::string &Name) const;
         bool AreAdjacent(const std::string &Name1, const std::string &Name2) const;
         std::shared_ptr<T> InsertVertex(const std::string &VertexName);
         void RemoveVertex(const std::string &VertexName);
         void InsertEdge(const std::string &OriginName, const std::string &DestinationName);
-        int GetIndexFromName(const std::string &Name) const;
     private:
-        void EndVertices(FEdge const* CurrentEdge, FVertex const* OutOriginVertex, FVertex const* OutDestinationVertex) const;
-        FVertex * Opposite(FVertex const* CurrentVertex,FEdge const* CurrentEdge) const;
-        bool AreAdjacent(FVertex const* VertexA, FVertex const* VertexB) const;
-        void Replace(FVertex const* OldVertex, FVertex const* NewVertex);
-        void Replace(FEdge const* OldEdge, FEdge const* NewEdge);
-        FVertex *InsertVertex(FVertex *NewVertex);
-        FEdge * InsertEdge(FVertex * OriginVertex, FVertex * DestinationVertex, FEdge * NewEdge);
-        FVertex *RemoveVertex(FVertex *VertexToRemove);
-        FEdge * RemoveEdge(FEdge * EdgeToRemove);
-        FVertex *GetVertexWithName(const std::string &Name) const;
-        std::vector<FVertex *> VertexVector;
-        std::vector<FEdge *> EdgeVector;
+        std::pair<std::shared_ptr<FVertex>,std::shared_ptr<FVertex>> EndVertices(std::shared_ptr<FEdge> CurrentEdge) const;
+        std::shared_ptr<FVertex> Opposite(std::shared_ptr<FVertex> CurrentVertex, std::shared_ptr<FEdge> CurrentEdge) const;
+        bool AreAdjacent(std::shared_ptr<FVertex> VertexA, std::shared_ptr<FVertex> VertexB) const;
+        void Replace(std::shared_ptr<FVertex> OldVertex, std::shared_ptr<FVertex> NewVertex);
+        void Replace(std::shared_ptr<FEdge> OldEdge, std::shared_ptr<FEdge> NewEdge);
+        std::shared_ptr<FVertex> InsertVertex(std::shared_ptr<FVertex> NewVertex);
+        std::shared_ptr<FEdge> InsertEdge(std::shared_ptr<FVertex> OriginVertex, std::shared_ptr<FVertex> DestinationVertex, std::shared_ptr<FEdge> NewEdge);
+        std::shared_ptr<T> RemoveVertex(std::shared_ptr<FVertex> VertexToRemove);
+        std::shared_ptr<T> RemoveEdge(std::shared_ptr<FEdge> EdgeToRemove);
+        std::shared_ptr<FVertex> GetVertexWithName(const std::string &Name) const;
+        std::list<std::shared_ptr<FVertex>> VertexList;
+        std::list<std::shared_ptr<FEdge>> EdgeList;
     };
 }
 #include "graph.cpp"
