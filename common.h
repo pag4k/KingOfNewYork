@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
+// COMP345 Assignment 4
+// Due date: December 2, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -22,8 +22,7 @@ namespace KingOfNewYork
 
     const int MAXIMUM_MONSTERS_IN_CENTER = 1;
     const int LEVEL_IN_CENTER_COUNT = 3;
-    const std::string CENTER_LEVEL_NAMES[LEVEL_IN_CENTER_COUNT+1] =
-            {"INVALID", "Lower", "Midtown", "Upper"};
+    const std::string CENTER_LEVEL_NAMES[LEVEL_IN_CENTER_COUNT+1] = {"INVALID", "Lower", "Midtown", "Upper"};
     const int ENTER_CENTER_VICTORY_POINT_REWARD = 1;
     const int CENTER_VICTORY_POINT_REWARDS[LEVEL_IN_CENTER_COUNT+1] = {0, 1, 2, 2};
     const int CENTER_ENERGY_CUBE_REWARDS[LEVEL_IN_CENTER_COUNT+1] = {0, 1, 1, 2};
@@ -68,7 +67,7 @@ namespace KingOfNewYork
     const int TOKEN_TYPE_COUNT = 4;
 
     enum class ETokenType {
-        //None = -1,
+        None = -1,
         Carapace = 0,
         Jinx = 1,
         Souvenir = 2,
@@ -135,12 +134,6 @@ namespace KingOfNewYork
         ChangeVictoryPoints,
         ChangeEnergyCubes,
         ChangeLifePoints,
-//        Attack = 0,
-//        Celebrity = 1,
-//        Destruction = 2,
-//        Energy = 3,
-//        Heal = 4,
-//        Ouch = 5
         ChangeBorough,
         MoveInManhattan,
         DestroyedTile,
@@ -149,6 +142,7 @@ namespace KingOfNewYork
         DeadPlayer,
         RolledDice,
         RollingDone,
+        BoughtCard,
         DisplayCard,
         UsedCard
     };

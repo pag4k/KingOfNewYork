@@ -1,18 +1,19 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
+// COMP345 Assignment 4
+// Due date: December 2, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
 #include "buycardsstrategy.h"
+#include "gamecontroller.h"
 #include "helper.h"
 #include "game.h"
-#include "player.h"
 
 namespace KingOfNewYork
 {
-    void HumanBuyCardsStrategy::Execute(FGame &Game, std::shared_ptr<FPlayer> Player)
+    void HumanBuyCardsStrategy::Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player)
     {
+        auto &Game = GameController.GetGame();
         int Input;
         do {
             std::vector<std::unique_ptr<FCard>> &AvailableCards = Game.GetAvailableCards();
@@ -31,8 +32,6 @@ namespace KingOfNewYork
             for (int i = 0; i < AvailableCards.size(); ++i)
             {
                 std::cout << (i+1);
-                //PrintNormal(AvailableCards[i]->GetCardInfo());
-
                 AvailableCards[i]->Display();
             }
             std::cout << ">";
@@ -43,7 +42,7 @@ namespace KingOfNewYork
             }
             if (Input == 9 && Player->GetEnergyCubes() >= ENERGY_CUBE_FOR_NEW_CARDS_COUNT)
             {
-                if (Game.DistributeCard())
+                if (GameController.DistributeCard())
                 {
                     Player->ChangeEnergyCubes(-ENERGY_CUBE_FOR_NEW_CARDS_COUNT);
                     std::cout << "You get new card."
@@ -70,8 +69,6 @@ namespace KingOfNewYork
                               << AvailableCards[Input-1]->GetName()
                               << "."
                               << std::endl;
-                    Player->ChangeEnergyCubes(-AvailableCards[Input - 1]->GetEnergyCost());
-
                     Player->BuyCard(Game.GetCard(Input-1));
                 }
                 else
@@ -88,14 +85,39 @@ namespace KingOfNewYork
         } while (Input != 0);
     }
 
-    void AggressiveBuyCardsStrategy::Execute(FGame &Game, std::shared_ptr<FPlayer> Player)
+    void AggressiveBuyCardsStrategy::Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player)
     {
-
+        BuyCardsAI(GameController, Player);
     }
 
-    void ModerateBuyCardsStrategy::Execute(FGame &Game, std::shared_ptr<FPlayer> Player)
+    void ModerateBuyCardsStrategy::Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player)
     {
+        BuyCardsAI(GameController, Player);
+    }
 
+    namespace
+    {
+        void BuyCardsAI(FGameController &GameController, std::shared_ptr<FPlayer> Player)
+        {
+            auto &Game = GameController.GetGame();
+            auto &AvailableCards = Game.GetAvailableCards();
+
+            while (Player->GetEnergyCubes() > 0)
+            {
+                auto CheapestCardIt = std::min_element(AvailableCards.begin(), AvailableCards.end(),
+                                                       [](const auto &CardA, const auto &CardB) { return CardA->GetEnergyCost() < CardB->GetEnergyCost(); });
+                if (CheapestCardIt != AvailableCards.end() && (*CheapestCardIt)->GetEnergyCost() <= Player->GetEnergyCubes())
+                {
+                    auto Index = static_cast<int>(std::distance(AvailableCards.begin(), CheapestCardIt));
+                    assert(0 <= Index && Index <= AvailableCards.size());
+                    Player->BuyCard(Game.GetCard(Index));
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
     }
 
 }

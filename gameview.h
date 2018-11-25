@@ -11,7 +11,7 @@
 
 namespace KingOfNewYork
 {
-    class FGame;
+    class FGameController;
     class FSubject;
     class IObserverEvent;
 
@@ -19,11 +19,11 @@ namespace KingOfNewYork
     class FGameView : public IObserver
     {
     public:
-        explicit FGameView(std::shared_ptr<FGame> Game);
+        explicit FGameView(std::shared_ptr<FGameController> GameController);
         ~FGameView() override;
         void Update(const std::shared_ptr<const FSubject> &Subject, const std::shared_ptr<const IObserverEvent> &Event) override;
     private:
-        std::shared_ptr<FGame> Game;
+        std::shared_ptr<FGameController> GameController;
     };
 }
 

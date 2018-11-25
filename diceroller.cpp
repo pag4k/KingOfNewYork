@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
+// COMP345 Assignment 4
+// Due date: December 2, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -17,22 +17,12 @@ namespace KingOfNewYork
         //Use current time as seed for the random generator.
         std::srand(static_cast<unsigned int>(std::time(nullptr)));
         RollHistory = std::vector<int>(FACE_ON_DICE_COUNT, 0);
-//        for (int &Face : RollHistory)
-//        {
-//            Face = 0;
-//        }
     }
 
     std::vector<EDiceFace> FDiceRoller::BeginRolling(const int DiceCount) const
     {
         assert(0 <= DiceCount && DiceCount <= BLACK_DICE_COUNT + GREEN_DICE_COUNT);
-
         std::vector<EDiceFace> DiceResult(DiceCount, EDiceFace::None);
-//        for (int i = 0; i < DiceCount; i++)
-//        {
-//            DiceResult.push_back(EDiceFace::None);
-//        }
-
         return DiceResult;
     }
 

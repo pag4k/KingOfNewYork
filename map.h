@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
+// COMP345 Assignment 4
+// Due date: December 2, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -20,15 +20,13 @@ namespace KingOfNewYork
         FMap(): bIsValid(false) {}
         explicit FMap(const std::string &FileName);
         bool LoadMap(const std::string &FileName);
-        //bool SaveMap(const std::string &FileName);
-        //const unsigned int BoroughCount() const { return (unsigned int)Graph.ElementCount(); }
-        //std::shared_ptr<FBorough> GetBorough(const int n) { return Graph.GetElement(n); }
-        std::vector<std::shared_ptr<FBorough>>& GetBoroughs() { return Boroughs; }
+        bool SaveMap(const std::string &FileName);
+        const std::vector<std::shared_ptr<FBorough>>& GetConstBoroughs() const { return Boroughs; }
+        std::vector<std::shared_ptr<FBorough>>& GetMutableBoroughs() { return Boroughs; }
         std::shared_ptr<FBorough> GetCenterBorough();
-        //const std::vector<int> GetNeighbourgs(int n) const;
         const bool IsValid() const { return bIsValid; }
     private:
-        FGraph<FBorough> Graph;
+        FGraph<FBorough,int> Graph;
         std::vector<std::shared_ptr<FBorough>> Boroughs;
         bool bIsValid;
     };

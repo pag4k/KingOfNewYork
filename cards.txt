@@ -1,7 +1,7 @@
 Id:03
 Name:Hunter
 HowToPlay:Keep
-EnergyCost:5
+EnergyCost:05
 Effect:Heal 1 damage each time you destroy an Infantry.
 
 Id:07
@@ -13,31 +13,31 @@ Effect:Add 2 ATTACK to your result.
 Id:08
 Name:Painbow
 HowToPlay:Keep
-EnergyCost:5
+EnergyCost:05
 Effect:If your results are... -- 2 DESTRUCTION, you get an extra ATTACK. -- 4 DESTRUCTION, you get an extra 2 ATTACK. -- 6 DESTRUCTION, you win the game!
 
 Id:11
 Name:Stomp
 HowToPlay:Keep
-EnergyCost:4
+EnergyCost:04
 Effect:Add 1 DESTRUCTION to your result.
 
 Id:12
 Name:King of Queens
 HowToPlay:Keep
-EnergyCost:5
+EnergyCost:05
 Effect:Gain 1 ENERGY_POINT and heal 1 damage when you start your turn in Queens.
 
 Id:18
 Name:Bullet Proof
 HowToPlay:Keep
-EnergyCost:4
+EnergyCost:04
 Effect:Whenever you take damage because of rolling OUCH, take 1 less damage.
 
 Id:21
 Name:Personal Spotlight
 HowToPlay:Keep
-EnergyCost:5
+EnergyCost:05
 Effect:Gain 1 VICTORY_POINT each turn you rolled at least 1 VICTORY.
 
 Id:22
@@ -49,47 +49,47 @@ Effect:Whenever you attack you deal double damage.
 Id:23
 Name:Tesla Antennae
 HowToPlay:Keep
-EnergyCost:4
+EnergyCost:04
 Effect:Monsters that have more HEART_POINT than you take 1 extra damage whenever you attack them.
 
 Id:24
 Name:Leveler
 HowToPlay:Keep
-EnergyCost:5
+EnergyCost:05
 Effect:Gain 1 VICTORY_POINT each turn that you destroy at least one Building.
 
 Id:28
 Name:Fury
 HowToPlay:Keep
-EnergyCost:4
+EnergyCost:04
 Effect:Add 1 DESTRUCTION and 1 ENERGY_POINT to your roll if you are in a borough with at least 3 Units.
 
 Id:29
 Name:Phoenix Blood
 HowToPlay:Keep
-EnergyCost:4
+EnergyCost:04
 Effect:Gain 1 ENERGY_POINT each time you take damage.
 
 Id:36
 Name:Ego Trip
 HowToPlay:Keep
-EnergyCost:3
+EnergyCost:03
 Effect:Gain 1 ENERGY_POINT when you take Superstar and when you start your turn with it.
 
 Id:39
 Name:Regeneration
 HowToPlay:Keep
-EnergyCost:5
+EnergyCost:05
 Effect:Heal 1 damage at the start of your turn.
 
 Id:53
 Name:Trophy Hunter
 HowToPlay:Keep
-EnergyCost:5
+EnergyCost:05
 Effect:Gain 1 VICTORY_POINT each time you destroy a Unit.
 
 Id:58
 Name:Chinatown Regular
 HowToPlay:Keep
-EnergyCost:3
+EnergyCost:03
 Effect:Heal 2 damage when you enter MANHATTAN.

@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
+// COMP345 Assignment 4
+// Due date: December 2, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -89,15 +89,10 @@ namespace KingOfNewYork
                         if (Text.find(',') != std::string::npos)
                         {
                             std::size_t Previous = 0;
-                            while (EdgeNames.find(',', Previous) !=
-                                   std::string::npos)
+                            while (EdgeNames.find(',', Previous) != std::string::npos)
                             {
-                                std::size_t Current =
-                                    EdgeNames.find(',', Previous);
-                                std::string DestinationName =
-                                    EdgeNames.substr(
-                                        Previous,
-                                        Current - Previous);
+                                std::size_t Current = EdgeNames.find(',', Previous);
+                                std::string DestinationName = EdgeNames.substr(Previous, Current - Previous);
                                 Graph.InsertEdge(OriginName, DestinationName);
                                 if (EdgeNames.length() > Current)
                                 {
@@ -173,7 +168,7 @@ namespace KingOfNewYork
     std::shared_ptr<FBorough> FMap::GetCenterBorough()
     {
         std::shared_ptr<FBorough> CenterBorough = nullptr;
-        for (const std::shared_ptr<FBorough> &Borough : GetBoroughs()) {
+        for (const std::shared_ptr<FBorough> &Borough : GetMutableBoroughs()) {
             if (Borough->IsCenter()) {
                 if (CenterBorough == nullptr)
                 {

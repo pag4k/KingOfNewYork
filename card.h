@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
+// COMP345 Assignment 4
+// Due date: December 2, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -28,6 +28,7 @@ namespace KingOfNewYork
         EHowToPlay GetHowToPlay() const { return HowToPlay; };
         int GetEnergyCost() const { return EnergyCost; };
         const std::string &GetEffect() const { return Effect; };
+        void Bought() const;
         void Display() const;
         void Use();
     private:

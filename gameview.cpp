@@ -1,28 +1,30 @@
-//
-// Created by oscar on 15/11/18.
-//
+// ----------------------------------------------------------------------------
+// COMP345 Assignment 4
+// Due date: December 2, 2018
+// Written by: Pierre-Andre Gagnon - 40067198
+// ----------------------------------------------------------------------------
 
 #include "gameview.h"
+#include "gamecontroller.h"
 #include "game.h"
-#include "player.h"
 
 namespace KingOfNewYork
 {
-    FGameView::FGameView(std::shared_ptr<FGame> Game) : Game(Game)
+    FGameView::FGameView(std::shared_ptr<FGameController> GameController) : GameController(GameController)
     {
-        Game->Attach(this);
+        GameController->GetGame().Attach(this);
     }
 
     FGameView::~FGameView()
     {
-        Game->Detach(this);
+        GameController->GetGame().Detach(this);
     }
 
     void FGameView::Update(const std::shared_ptr<const FSubject> &Subject, const std::shared_ptr<const IObserverEvent> &Event)
     {
         //TODO: Not sure if it will only observe the game.
-        const auto GameSubject = std::dynamic_pointer_cast<const FGame>(Subject);
-        assert(Game == GameSubject);
+        const auto Game = std::dynamic_pointer_cast<const FGame>(Subject);
+        //assert(Game == GameSubject);
 
         switch (Event->ObserverEvent)
         {
@@ -34,7 +36,7 @@ namespace KingOfNewYork
                 std::cout << "################################################################################" << std::endl;
                 std::cout << "                              Current Game Status                               " << std::endl;
                 std::cout << "################################################################################" << std::endl;
-                for (const std::shared_ptr<FBorough> &Borough : Game->GetMap()->GetBoroughs())
+                for (const std::shared_ptr<FBorough> &Borough : Game->GetConstMap().GetConstBoroughs())
                 {
                     std::cout << Borough->GetName()
                               << ":"

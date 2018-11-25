@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
+// COMP345 Assignment 4
+// Due date: December 2, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -132,6 +132,12 @@ namespace KingOfNewYork
     {
     public:
         FRollingDoneEvent(const EObserverEvent ObserverEvent, const std::string &Message) : IObserverEvent(ObserverEvent, Message) {}
+    };
+
+    class FBoughtCardEvent: public IObserverEvent
+    {
+    public:
+        FBoughtCardEvent(const EObserverEvent ObserverEvent, const std::string &Message) : IObserverEvent(ObserverEvent, Message) {}
     };
 
     class FDisplayCardEvent: public IObserverEvent

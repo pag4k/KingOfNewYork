@@ -1,28 +1,29 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
+// COMP345 Assignment 4
+// Due date: December 2, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
-
 
 #include "resolvedicestrategy.h"
 
 #include <algorithm>
 
+#include "gamecontroller.h"
 #include "helper.h"
 #include "game.h"
 #include "player.h"
 
 namespace KingOfNewYork
 {
-    void HumanResolveDiceStrategy::Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult)
+    void HumanResolveDiceStrategy::Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult)
     {
+        auto &Game = GameController.GetGame();
+        auto &Map = Game.GetMutableMap();
         std::vector<int> DiceSums = GetDiceSums(DiceResult);
 
         bool Done = false;
         do
         {
-            Game.CheckDeadPlayer();
             if (!Player->IsAlive())
             {
                 return;
@@ -54,13 +55,13 @@ namespace KingOfNewYork
                     switch (Input)
                     {
                         case 0:
-                            if (ResolveAttack(Game, Map, Player, DiceSums[Input]))
+                            if (ResolveAttack(GameController, Player, DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
                             break;
                         case 1:
-                            if (ResolveCelebrity(Game, Player, DiceSums[Input]))
+                            if (ResolveCelebrity(GameController, Player, DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
@@ -84,7 +85,7 @@ namespace KingOfNewYork
                             }
                             break;
                         case 5:
-                            if (ResolveOuch(Game, Map, Player, DiceSums[Input]))
+                            if (ResolveOuch(GameController, Player, DiceSums[Input]))
                             {
                                 DiceSums[Input] = 0;
                             }
@@ -115,14 +116,16 @@ namespace KingOfNewYork
         } while (!Done);
     }
 
-    void AggressiveResolveDiceStrategy::Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult)
+    void AggressiveResolveDiceStrategy::Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult)
     {
+        auto &Game = GameController.GetGame();
+        auto &Map = Game.GetMutableMap();
         std::vector<int> DiceSums = GetDiceSums(DiceResult);
 
         //1. Celebrity
         if (DiceSums[1] > 0)
         {
-            ResolveCelebrity(Game, Player, DiceSums[1]);
+            ResolveCelebrity(GameController, Player, DiceSums[1]);
             DiceSums[1] = 0;
         }
 
@@ -136,7 +139,7 @@ namespace KingOfNewYork
         //3. Attack
         if (DiceSums[0] > 0)
         {
-            ResolveAttack(Game, Map, Player, DiceSums[0]);
+            ResolveAttack(GameController, Player, DiceSums[0]);
             DiceSums[0] = 0;
         }
 
@@ -150,7 +153,7 @@ namespace KingOfNewYork
         //5. Ouch
         if (DiceSums[5] > 0)
         {
-            ResolveOuch(Game, Map, Player, DiceSums[5]);
+            ResolveOuch(GameController, Player, DiceSums[5]);
             DiceSums[5] = 0;
         }
 
@@ -167,14 +170,16 @@ namespace KingOfNewYork
         }
     }
 
-    void ModerateResolveDiceStrategy::Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult)
+    void ModerateResolveDiceStrategy::Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult)
     {
+        auto &Game = GameController.GetGame();
+        auto &Map = Game.GetMutableMap();
         std::vector<int> DiceSums = GetDiceSums(DiceResult);
 
         //1. Celebrity
         if (DiceSums[1] > 0)
         {
-            ResolveCelebrity(Game, Player, DiceSums[1]);
+            ResolveCelebrity(GameController, Player, DiceSums[1]);
             DiceSums[1] = 0;
         }
 
@@ -188,7 +193,7 @@ namespace KingOfNewYork
         //3. Attack
         if (DiceSums[0] > 0)
         {
-            ResolveAttack(Game, Map, Player, DiceSums[0]);
+            ResolveAttack(GameController, Player, DiceSums[0]);
             DiceSums[0] = 0;
         }
 
@@ -202,7 +207,7 @@ namespace KingOfNewYork
         //5. Ouch
         if (DiceSums[5] > 0)
         {
-            ResolveOuch(Game, Map, Player, DiceSums[5]);
+            ResolveOuch(GameController, Player, DiceSums[5]);
             DiceSums[5] = 0;
         }
 
@@ -232,9 +237,12 @@ namespace KingOfNewYork
             return  DiceSums;
         }
 
-        const bool ResolveAttack(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, int NumberOfDice)
+        bool ResolveAttack(FGameController &GameController, std::shared_ptr<FPlayer> Player, int NumberOfDice)
         {
+            PrintNormal("### Resolving " + std::to_string(NumberOfDice) + " Attack dice ###");
             assert(Player->GetMutableBorough() != nullptr);
+            auto &Game = GameController.GetGame();
+            auto &Map = Game.GetMutableMap();
             const bool bAttackCenter = !Player->GetMutableBorough()->IsCenter();
             if (Player->UseCard(22))
             {
@@ -245,7 +253,7 @@ namespace KingOfNewYork
             {
                 std::cout << "Since you are not in Manhattan, each Attack inflicts damage to all Monsters in Manhattan:"
                           << std::endl;
-                for (const std::shared_ptr<FBorough> &Borough : Map.GetBoroughs())
+                for (const std::shared_ptr<FBorough> &Borough : Map.GetMutableBoroughs())
                 {
                     if (Borough->IsCenter() && !Borough->GetConstPlayers().empty())
                     {
@@ -267,7 +275,7 @@ namespace KingOfNewYork
                                   << TargetPlayer->GetMonsterName()
                                   <<" was attacked while being in Manhattan, he/she may flee Manhattan."
                                   << std::endl;
-                        auto &TargetPlayerController = Game.GetPlayerController(TargetPlayer);
+                        auto &TargetPlayerController = GameController.GetPlayerController(TargetPlayer);
                         TargetPlayerController->Move(Map, false, false);
                         break;
                     }
@@ -277,7 +285,7 @@ namespace KingOfNewYork
             {
                 std::cout << "Since you are in Manhattan, each Attack inflicts damage to all Monsters outside Manhattan:"
                           << std::endl;
-                for (const std::shared_ptr<FBorough> &Borough : Map.GetBoroughs())
+                for (const std::shared_ptr<FBorough> &Borough : Map.GetMutableBoroughs())
                 {
                     if (!Borough->IsCenter())
                     {
@@ -298,8 +306,9 @@ namespace KingOfNewYork
             return true;
         }
 
-        const bool ResolveCelebrity(FGame &Game, std::shared_ptr<FPlayer> Player, const int NumberOfDice)
+        bool ResolveCelebrity(FGameController &GameController, std::shared_ptr<FPlayer> Player, const int NumberOfDice)
         {
+            PrintNormal("### Resolving " + std::to_string(NumberOfDice) + " Celebrity dice ###");
             int NewVictoryPoints = 0;
             if (Player->IsCelebrity())
             {
@@ -309,7 +318,7 @@ namespace KingOfNewYork
             {
                 if (NumberOfDice >= DICE_FOR_CELEBRITY_COUNT)
                 {
-                    Game.ChangeCelebrity(Player);
+                    GameController.ChangeCelebrity(Player);
                     NewVictoryPoints = NumberOfDice - (DICE_FOR_CELEBRITY_COUNT - 1);
                 }
             }
@@ -354,8 +363,9 @@ namespace KingOfNewYork
         }
 
 
-        const bool HumanResolveDestruction(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
+        bool HumanResolveDestruction(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
         {
+            PrintNormal("### Resolving " + std::to_string(NumberOfDice) + " Destruction dice ###");
             assert(Player->GetMutableBorough());
             auto &Borough = Player->GetMutableBorough();
             auto &TileStacks = Borough->GetMutableTileStacks();
@@ -442,8 +452,9 @@ namespace KingOfNewYork
             return true;
         }
 
-        const bool AIResolveDestruction(std::shared_ptr<FPlayer> Player, int NumberOfDice, bool bPrioritizeUnit)
+        bool AIResolveDestruction(std::shared_ptr<FPlayer> Player, int NumberOfDice, bool bPrioritizeUnit)
         {
+            PrintNormal("### Resolving " + std::to_string(NumberOfDice) + " Destruction dice ###");
             assert(Player->GetMutableBorough());
             auto &Borough = Player->GetMutableBorough();
             auto &TileStacks = Borough->GetMutableTileStacks();
@@ -548,15 +559,17 @@ namespace KingOfNewYork
             return true;
         }
 
-        const bool ResolveEnergy(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
+        bool ResolveEnergy(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
         {
+            PrintNormal("### Resolving " + std::to_string(NumberOfDice) + " Energy dice ###");
             assert(NumberOfDice>0);
             Player->ChangeEnergyCubes(NumberOfDice);
             return true;
         }
 
-        const bool ResolveHeal(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
+        bool ResolveHeal(std::shared_ptr<FPlayer> Player, const int NumberOfDice)
         {
+            PrintNormal("### Resolving " + std::to_string(NumberOfDice) + " Heal dice ###");
             assert(NumberOfDice > 0);
             if (Player->GetMutableBorough()->IsCenter())
             {
@@ -570,9 +583,13 @@ namespace KingOfNewYork
             return true;
         }
 
-        const bool ResolveOuch(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, const int NumberOfDice)
+        bool ResolveOuch(FGameController &GameController, std::shared_ptr<FPlayer> Player, const int NumberOfDice)
         {
+            PrintNormal("### Resolving " + std::to_string(NumberOfDice) + " Ouch dice ###");
             assert(NumberOfDice > 0);
+            auto &Game = GameController.GetGame();
+            auto &Map = Game.GetMutableMap();
+
             switch (NumberOfDice)
             {
                 case 1:
@@ -617,7 +634,7 @@ namespace KingOfNewYork
                 {
                     std::cout << "Since you rolled 3 Ouch or more, all Units in the entire city attack; each Monster suffers 1 damage per Unit tile in his borough."
                               << std::endl;
-                    for (const auto &Borough : Map.GetBoroughs())
+                    for (const auto &Borough : Map.GetMutableBoroughs())
                     {
                         int Damage = Borough->GetUnitCount();
                         auto TargetPlayers = Borough->GetMutablePlayers();
@@ -629,7 +646,7 @@ namespace KingOfNewYork
                             }
                         }
                     }
-                    Game.ChangeStatueOfLiberty(Player);
+                    GameController.ChangeStatueOfLiberty(Player);
                 }
             }
 

@@ -6,6 +6,7 @@
 
 #include "cardview.h"
 #include <algorithm>
+#include "gamecontroller.h"
 #include "game.h"
 #include "playercontroller.h"
 #include "player.h"
@@ -13,18 +14,18 @@
 
 namespace KingOfNewYork
 {
-    FCardView::FCardView(std::shared_ptr<FGame> Game) : Game(Game)
+    FCardView::FCardView(std::shared_ptr<FGameController> GameController) : GameController(GameController)
     {
-        for (const auto &Card: Game->GetDeck().GetCards()) Card->Attach(this);
+        for (const auto &Card: GameController->GetGame().GetDeck().GetCards()) Card->Attach(this);
     }
 
     FCardView::~FCardView()
     {
-        for (const auto &Card: Game->GetDeck().GetCards()) Card->Detach(this);
+        for (const auto &Card: GameController->GetGame().GetDeck().GetCards()) Card->Detach(this);
 
-        for (const auto &Card: Game->GetDiscardDeck().GetCards()) Card->Detach(this);
+        for (const auto &Card: GameController->GetGame().GetDiscardDeck().GetCards()) Card->Detach(this);
 
-        for (auto& PlayerController : Game->GetPlayerControllers())
+        for (auto& PlayerController : GameController->GetPlayerControllers())
         {
             if (PlayerController->GetPlayer())
             {
@@ -41,6 +42,14 @@ namespace KingOfNewYork
 
         switch (Event->ObserverEvent)
         {
+            case EObserverEvent::BoughtCard:
+            {
+                const auto BoughtCardEvent = std::dynamic_pointer_cast<const FBoughtCardEvent>(Event);
+                assert(BoughtCardEvent);
+
+                PrintNormal("Bought card: " + Card->GetName());
+                return;
+            }
             case EObserverEvent::DisplayCard:
             {
                 const auto DisplayCardEvent = std::dynamic_pointer_cast<const FDisplayCardEvent>(Event);

@@ -18,6 +18,7 @@
 
 namespace KingOfNewYork
 {
+    class FGameController;
     class FGame;
     class FMap;
     class FDiceRoller;
@@ -41,7 +42,7 @@ namespace KingOfNewYork
         void RemovePlayer() { Player = nullptr; }
 
         //Turn methods
-        void TakeTurn(FMap &Map, FGame &Game);
+        void TakeTurn(FGameController &GameController);
         std::vector<EDiceFace> RollStartDice(int DiceCount);
         void Move(FMap &Map, bool bMovePhase, bool bOnlyStartingLocation);
 
@@ -57,9 +58,9 @@ namespace KingOfNewYork
         //Turn methods
         void StartPhase();
         void RollDicePhase(int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult);
-        void ResolveDicePhase(FGame &Game, FMap &Map, std::vector<EDiceFace> &DiceResult);
+        void ResolveDicePhase(FGameController &GameController, std::vector<EDiceFace> &DiceResult);
         void MovePhase(FMap &Map);
-        void BuyCardsPhase(FGame &Game);
+        void BuyCardsPhase(FGameController &GameController);
 
         std::string Name;
         std::shared_ptr<FPlayer> Player;

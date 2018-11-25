@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
+// COMP345 Assignment 4
+// Due date: December 2, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -13,6 +13,7 @@
 
 namespace KingOfNewYork
 {
+    class FGameController;
     class FGame;
     class FMap;
     class FPlayer;
@@ -22,38 +23,38 @@ namespace KingOfNewYork
     class IResolveDiceStrategy
     {
     public:
-        virtual void Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) = 0;
+        virtual void Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) = 0;
     };
 
     class HumanResolveDiceStrategy : public IResolveDiceStrategy
     {
     public:
-        void Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) override;
+        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) override;
     };
 
     class AggressiveResolveDiceStrategy : public IResolveDiceStrategy
     {
     public:
-        void Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) override;
+        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) override;
     };
 
     class ModerateResolveDiceStrategy : public IResolveDiceStrategy
     {
     public:
-        void Execute(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) override;
+        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) override;
     };
 
     namespace
     {
         std::vector<int> GetDiceSums(std::vector<EDiceFace> &DiceResult);
-        const bool ResolveAttack(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, int NumberOfDice);
-        const bool ResolveCelebrity(FGame &Game, std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        bool ResolveAttack(FGameController &GameController, std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        bool ResolveCelebrity(FGameController &GameController, std::shared_ptr<FPlayer> Player, int NumberOfDice);
         int GetMinimumDurability(const std::shared_ptr<FBorough> &Borough);
-        const bool HumanResolveDestruction(std::shared_ptr<FPlayer> Player, int NumberOfDice);
-        const bool AIResolveDestruction(std::shared_ptr<FPlayer> Player, int NumberOfDice, bool bPrioritizeUnit);
-        const bool ResolveEnergy(std::shared_ptr<FPlayer> Player, int NumberOfDice);
-        const bool ResolveHeal(std::shared_ptr<FPlayer> Player, int NumberOfDice);
-        const bool ResolveOuch(FGame &Game, FMap &Map, std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        bool HumanResolveDestruction(std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        bool AIResolveDestruction(std::shared_ptr<FPlayer> Player, int NumberOfDice, bool bPrioritizeUnit);
+        bool ResolveEnergy(std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        bool ResolveHeal(std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        bool ResolveOuch(FGameController &GameController, std::shared_ptr<FPlayer> Player, int NumberOfDice);
     }
 
 }

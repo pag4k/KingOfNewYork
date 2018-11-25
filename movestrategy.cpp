@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
+// COMP345 Assignment 4
+// Due date: December 2, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -122,7 +122,7 @@ namespace KingOfNewYork
             std::cout << Player->GetMonsterName()
                       << ", select where you want to go:" << std::endl;
             int CurrentIndex = 1;
-            for (std::shared_ptr<FBorough> const &CurrentBorough : Map.GetBoroughs())
+            for (std::shared_ptr<FBorough> const &CurrentBorough : Map.GetMutableBoroughs())
             {
                 const std::vector<std::shared_ptr<FPlayer>> &CurrentPlayers =
                         CurrentBorough->GetConstPlayers();

@@ -6,11 +6,8 @@
 
 #include "playercontroller.h"
 
-#include <iostream>
-#include <algorithm>
-
+#include "gamecontroller.h"
 #include "game.h"
-#include "player.h"
 #include "helper.h"
 #include "diceroller.h"
 #include "rolldicestrategy.h"
@@ -41,8 +38,10 @@ namespace KingOfNewYork
         BuyCardsStrategy = nullptr;
     }
 
-    void FPlayerController::TakeTurn(FMap &Map, FGame &Game)
+    void FPlayerController::TakeTurn(FGameController &GameController)
     {
+        auto &Game = GameController.GetGame();
+        auto &Map = Game.GetMutableMap();
         Player->SetTurnPhase(ETurnPhase::StartTurn);
         StartPhase();
 
@@ -51,9 +50,8 @@ namespace KingOfNewYork
         RollDicePhase(BLACK_DICE_COUNT, MAXIMUM_ROLL, DiceResult);
 
         Player->SetTurnPhase(ETurnPhase::ResolveDice);
-        ResolveDicePhase(Game, Map, DiceResult);
+        ResolveDicePhase(GameController, DiceResult);
 
-        Game.CheckDeadPlayer();
         if (!Player->IsAlive())
         {
             Player->Died(Game);
@@ -65,7 +63,7 @@ namespace KingOfNewYork
         MovePhase(Map);
 
         Player->SetTurnPhase(ETurnPhase::BuyCards);
-        BuyCardsPhase(Game);
+        BuyCardsPhase(GameController);
 
         Player->SetTurnPhase(ETurnPhase::EndTurn);
         Player->SetTurnPhase(ETurnPhase::None);
@@ -166,24 +164,26 @@ namespace KingOfNewYork
             {
                 switch (Input)
                 {
-                    case 1:
+                    case 0:
                         RollDiceStrategy = new HumanRollDiceStrategy();
                         ResolveDiceStrategy = new HumanResolveDiceStrategy;
                         MoveStrategy = new HumanMoveStrategy;
                         BuyCardsStrategy = new HumanBuyCardsStrategy;
                         break;
-                    case 2:
+                    case 1:
                         RollDiceStrategy = new AggressiveRollDiceStrategy();
                         ResolveDiceStrategy = new AggressiveResolveDiceStrategy;
                         MoveStrategy = new AggressiveMoveStrategy;
                         BuyCardsStrategy = new AggressiveBuyCardsStrategy;
                         break;
-                    case 3:
+                    case 2:
                         RollDiceStrategy = new ModerateRollDiceStrategy();
                         ResolveDiceStrategy = new ModerateResolveDiceStrategy;
                         MoveStrategy = new ModerateMoveStrategy;
                         BuyCardsStrategy = new ModerateBuyCardsStrategy;
                         break;
+                    default:
+                        assert(true);
                 }
             }
             else
@@ -226,9 +226,9 @@ namespace KingOfNewYork
         RollDiceStrategy->Execute(DiceRoller, Player, DiceCount, RollCount, OutDiceResult);
     }
 
-    void FPlayerController::ResolveDicePhase(FGame &Game, FMap &Map, std::vector<EDiceFace> &DiceResult)
+    void FPlayerController::ResolveDicePhase(FGameController &GameController, std::vector<EDiceFace> &DiceResult)
     {
-        ResolveDiceStrategy->Execute(Game, Map, Player, DiceResult);
+        ResolveDiceStrategy->Execute(GameController, Player, DiceResult);
     }
 
     void FPlayerController::MovePhase(FMap &Map)
@@ -236,8 +236,8 @@ namespace KingOfNewYork
         Move(Map, true, false);
     }
 
-    void FPlayerController::BuyCardsPhase(FGame &Game)
+    void FPlayerController::BuyCardsPhase(FGameController &GameController)
     {
-        BuyCardsStrategy->Execute(Game, Player);
+        BuyCardsStrategy->Execute(GameController, Player);
     }
 }

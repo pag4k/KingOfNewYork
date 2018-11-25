@@ -12,18 +12,18 @@
 
 namespace KingOfNewYork
 {
-    class FGame;
+    class FGameController;
     class FSubject;
 
     //A class that observes the dice notifications.
     class FDiceView : public IObserver
     {
     public:
-        explicit FDiceView(std::shared_ptr<FGame> Game);
+        explicit FDiceView(std::shared_ptr<FGameController> GameController);
         ~FDiceView() override;
         void Update(const std::shared_ptr<const FSubject> &Subject, const std::shared_ptr<const IObserverEvent> &Event) override;
     private:
-        std::shared_ptr<FGame> Game;
+        std::shared_ptr<FGameController> GameController;
     };
 }
 

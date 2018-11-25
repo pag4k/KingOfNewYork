@@ -26,7 +26,7 @@ namespace KingOfNewYork
         }
 
         bAlive = true;
-        EnergyCubes = 100;
+        EnergyCubes = 0;
         LifePoints = MAXIMUM_LIFE_POINTS;
         VictoryPoints = 0;
 
@@ -92,6 +92,9 @@ namespace KingOfNewYork
 
     void FPlayer::BuyCard(std::unique_ptr<FCard> Card)
     {
+        assert(Card->GetEnergyCost() <= GetEnergyCubes());
+        Card->Bought();
+        ChangeEnergyCubes(-Card->GetEnergyCost());
         Cards.push_back(std::move(Card));
     }
 

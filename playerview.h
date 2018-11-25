@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
+// COMP345 Assignment 4
+// Due date: December 2, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -12,7 +12,7 @@
 
 namespace KingOfNewYork
 {
-    class FGame;
+    class FGameController;
     class FSubject;
     class IObserverEvent;
 
@@ -20,11 +20,11 @@ namespace KingOfNewYork
     class FPlayerView : public IObserver
     {
     public:
-        explicit FPlayerView(std::shared_ptr<FGame> Game);
+        explicit FPlayerView(std::shared_ptr<FGameController> GameController);
         ~FPlayerView() override;
         void Update(const std::shared_ptr<const FSubject> &Subject, const std::shared_ptr<const IObserverEvent> &Event) override;
     private:
-        std::shared_ptr<FGame> Game;
+        std::shared_ptr<FGameController> GameController;
     };
 }
 

@@ -11,18 +11,18 @@
 
 namespace KingOfNewYork
 {
-    class FGame;
+    class FGameController;
     class FSubject;
 
     //A class that observes the card notifications.
     class FCardView : public IObserver
     {
     public:
-        explicit FCardView(std::shared_ptr<FGame> Game);
+        explicit FCardView(std::shared_ptr<FGameController> GameController);
         ~FCardView() override;
         void Update(const std::shared_ptr<const FSubject> &Subject, const std::shared_ptr<const IObserverEvent> &Event) override;
     private:
-        std::shared_ptr<FGame> Game;
+        std::shared_ptr<FGameController> GameController;
     };
 }
 

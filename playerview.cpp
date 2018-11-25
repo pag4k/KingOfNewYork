@@ -1,11 +1,12 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
+// COMP345 Assignment 4
+// Due date: December 2, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
 #include "playerview.h"
 #include <algorithm>
+#include "gamecontroller.h"
 #include "playercontroller.h"
 #include "game.h"
 #include "player.h"
@@ -13,9 +14,9 @@
 
 namespace KingOfNewYork
 {
-    FPlayerView::FPlayerView(std::shared_ptr<FGame> Game) : Game(Game)
+    FPlayerView::FPlayerView(std::shared_ptr<FGameController> GameController) : GameController(GameController)
     {
-        for (auto& PlayerController : Game->GetPlayerControllers())
+        for (auto& PlayerController : GameController->GetPlayerControllers())
         {
             if (PlayerController->GetPlayer())
             {
@@ -26,7 +27,7 @@ namespace KingOfNewYork
 
     FPlayerView::~FPlayerView()
     {
-        for (auto& PlayerController : Game->GetPlayerControllers())
+        for (auto& PlayerController : GameController->GetPlayerControllers())
         {
             if (PlayerController->GetPlayer())
             {
@@ -62,12 +63,6 @@ namespace KingOfNewYork
 
                     PrintNormal("Number of cards: " + std::to_string(Player->GetCards().size()));
                     for (const auto &Card : Player->GetCards()) Card->Display();
-
-                    std::cout << "Tokens:" << std::endl;
-                    for (int i = 0; i < TOKEN_TYPE_COUNT; ++i)
-                    {
-                        PrintNormal("\t-" + GetTokenTypeString(ETokenType(i)) + ": " + std::to_string(Player->GetTokenInventory()[i]));
-                    }
 
                     PrintNormal("Energy cubes: " + std::to_string(Player->GetEnergyCubes()));
                     PrintNormal("Life points: " + std::to_string(Player->GetLifePoints()));

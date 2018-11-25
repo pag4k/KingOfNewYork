@@ -5,6 +5,7 @@
 // ----------------------------------------------------------------------------
 
 #include "diceview.h"
+#include "gamecontroller.h"
 #include "game.h"
 #include "playercontroller.h"
 #include "player.h"
@@ -12,9 +13,9 @@
 
 namespace KingOfNewYork
 {
-    FDiceView::FDiceView(std::shared_ptr<FGame> Game) : Game(Game)
+    FDiceView::FDiceView(std::shared_ptr<FGameController> GameController) : GameController(GameController)
     {
-        for (auto& PlayerController : Game->GetPlayerControllers())
+        for (auto& PlayerController : GameController->GetPlayerControllers())
         {
             if (PlayerController->GetPlayer())
             {
@@ -25,7 +26,7 @@ namespace KingOfNewYork
 
     FDiceView::~FDiceView()
     {
-        for (auto& PlayerController : Game->GetPlayerControllers())
+        for (auto& PlayerController : GameController->GetPlayerControllers())
         {
             if (PlayerController->GetPlayer())
             {

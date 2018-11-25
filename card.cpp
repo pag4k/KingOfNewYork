@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 3
-// Due date: November 18, 2018
+// COMP345 Assignment 4
+// Due date: December 2, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
@@ -18,6 +18,13 @@ namespace KingOfNewYork
     FDeck::FDeck(const std::string &FileName)
     {
         GenerateFromFile(FileName);
+    }
+
+    void FCard::Bought() const
+    {
+        std::shared_ptr<FCard> ShareCardCopyPointer = std::make_shared<FCard>(*this);
+        ShareCardCopyPointer->ClearObserverListPointer();
+        Notify(ShareCardCopyPointer, std::make_shared<FBoughtCardEvent>(EObserverEvent::BoughtCard, ""));
     }
 
     void FCard::Display() const
@@ -82,20 +89,12 @@ namespace KingOfNewYork
         {
             if (Text.substr(0,3) == "Id:")
             {
-                if (Id != -1 &&
-                    !Name.empty() &&
-                    HowToPlay != EHowToPlay::None &&
-                    EnergyCost != -1 &&
-                    !Effect.empty())
+                if (Id != -1 && !Name.empty() && HowToPlay != EHowToPlay::None && EnergyCost != -1 && !Effect.empty())
                 {
-                    Deck.push_back(
-                        std::make_unique<FCard>(
-                            Id, Name, HowToPlay, EnergyCost, Effect));
-                    if (ParseIntFromChar(Text[3]) >= 0 &&
-                        ParseIntFromChar(Text[4]) >= 0)
+                    Deck.push_back(std::make_unique<FCard>(Id, Name, HowToPlay, EnergyCost, Effect));
+                    if (ParseIntFromChar(Text[3]) >= 0 && ParseIntFromChar(Text[4]) >= 0)
                     {
-                        Id = 10 * ParseIntFromChar(Text[3]) +
-                              1 * ParseIntFromChar(Text[4]);
+                        Id = 10 * ParseIntFromChar(Text[3]) + 1 * ParseIntFromChar(Text[4]);
                     }
                     else
                     {
@@ -108,14 +107,13 @@ namespace KingOfNewYork
                 }
                 else if (Deck.empty())
                 {
-                    Id = 10 * ParseIntFromChar(Text[3]) +
-                          1 * ParseIntFromChar(Text[4]);
+                    Id = 10 * ParseIntFromChar(Text[3]) + 1 * ParseIntFromChar(Text[4]);
                 }
                 else
                 {
                     std::cout << "There was a problem creating card: "
-                            << Name
-                            << std::endl;
+                              << Name
+                              << std::endl;
                     Id = -1;
                     Name = "";
                     EnergyCost = -1;
@@ -145,7 +143,7 @@ namespace KingOfNewYork
             }
             else if (Text.substr(0, 11) == "EnergyCost:")
             {
-                EnergyCost = ParseIntFromChar(Text[11]);
+                EnergyCost = 10 * ParseIntFromChar(Text[11]) + 1 * ParseIntFromChar(Text[12]);
             }
             else if (Text.substr(0, 7) == "Effect:")
             {
@@ -168,15 +166,9 @@ namespace KingOfNewYork
             }
         }
 
-        if (Id != -1 &&
-            !Name.empty() &&
-            HowToPlay != EHowToPlay::None &&
-            EnergyCost != -1 &&
-            !Effect.empty())
+        if (Id != -1 && !Name.empty() && HowToPlay != EHowToPlay::None && EnergyCost != -1 && !Effect.empty())
         {
-            Deck.push_back(
-                std::make_unique<FCard>(
-                    Id, Name, HowToPlay, EnergyCost, Effect));
+            Deck.push_back(std::make_unique<FCard>(Id, Name, HowToPlay, EnergyCost, Effect));
         }
 
         InputStream.close();
