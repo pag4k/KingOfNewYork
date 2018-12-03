@@ -11,7 +11,7 @@
 
 namespace KingOfNewYork
 {
-    void HumanMoveStrategy::Execute(FMap &Map, std::shared_ptr<FPlayer> Player, bool bMovePhase, bool bOnlyStartingLocation)
+    void HumanMoveStrategy::Execute(FMap &Map, std::shared_ptr<FPlayer> &Player, bool bMovePhase, bool bOnlyStartingLocation)
     {
         if (bMovePhase)
         {
@@ -41,7 +41,7 @@ namespace KingOfNewYork
         }
     }
 
-    void AggressiveMoveStrategy::Execute(FMap &Map, std::shared_ptr<FPlayer> Player, bool bMovePhase, bool bOnlyStartingLocation)
+    void AggressiveMoveStrategy::Execute(FMap &Map, std::shared_ptr<FPlayer> &Player, bool bMovePhase, bool bOnlyStartingLocation)
     {
         //Try to stay away from Manhattan
         if (bMovePhase)
@@ -77,7 +77,7 @@ namespace KingOfNewYork
         }
     }
 
-    void ModerateMoveStrategy::Execute(FMap &Map, std::shared_ptr<FPlayer> Player, bool bMovePhase, bool bOnlyStartingLocation)
+    void ModerateMoveStrategy::Execute(FMap &Map, std::shared_ptr<FPlayer> &Player, bool bMovePhase, bool bOnlyStartingLocation)
     {
         //Try to stay in Manhattan
         if (bMovePhase)
@@ -116,7 +116,7 @@ namespace KingOfNewYork
 
     namespace
     {
-        std::vector<std::shared_ptr<FBorough>> GetValidBorough(FMap &Map, std::shared_ptr<FPlayer> Player, bool bOnlyStartingLocation)
+        std::vector<std::shared_ptr<FBorough>> GetValidBorough(FMap &Map, std::shared_ptr<FPlayer> &Player, bool bOnlyStartingLocation)
         {
             std::vector<std::shared_ptr<FBorough>> ValidBorough;
             std::cout << Player->GetMonsterName()
@@ -151,7 +151,7 @@ namespace KingOfNewYork
         }
 
 
-        void HumanSelectBorough(FMap &Map, std::shared_ptr<FPlayer> Player, bool bOnlyStartingLocation)
+        void HumanSelectBorough(FMap &Map, std::shared_ptr<FPlayer> &Player, bool bOnlyStartingLocation)
         {
             int bDone = false;
             while (!bDone)
@@ -176,7 +176,7 @@ namespace KingOfNewYork
             }
         }
 
-        void AISelectBorough(FMap &Map, std::shared_ptr<FPlayer> Player, bool bOnlyStartingLocation, bool bPreferManhattan)
+        void AISelectBorough(FMap &Map, std::shared_ptr<FPlayer> &Player, bool bOnlyStartingLocation, bool bPreferManhattan)
         {
             std::vector<std::shared_ptr<FBorough>> ValidBorough = GetValidBorough(Map, Player, bOnlyStartingLocation);
             std::shared_ptr<FBorough> CenterBorough = Map.GetCenterBorough();
@@ -184,7 +184,7 @@ namespace KingOfNewYork
             {
                 if (Player->GetMutableBorough() == nullptr)
                 {
-                    for (const std::shared_ptr<FBorough> &Borough : ValidBorough)
+                    for (std::shared_ptr<FBorough> &Borough : ValidBorough)
                     {
                         if (Borough != CenterBorough)
                         {
@@ -199,7 +199,7 @@ namespace KingOfNewYork
                 }
                 else
                 {
-                    for (const std::shared_ptr<FBorough> &Borough : ValidBorough)
+                    for (std::shared_ptr<FBorough> &Borough : ValidBorough)
                     {
                         if (Borough == CenterBorough && Borough->GetPlayerCount() < MAXIMUM_MONSTERS_IN_CENTER)
                         {
@@ -213,7 +213,7 @@ namespace KingOfNewYork
             {
                 if (Player->GetMutableBorough() == nullptr)
                 {
-                    for (const std::shared_ptr<FBorough> &Borough : ValidBorough)
+                    for (std::shared_ptr<FBorough> &Borough : ValidBorough)
                     {
                         if (Borough != CenterBorough)
                         {
@@ -224,7 +224,7 @@ namespace KingOfNewYork
                 }
                 else if (Player->GetMutableBorough() == CenterBorough)
                 {
-                    for (const std::shared_ptr<FBorough> &Borough : ValidBorough)
+                    for (std::shared_ptr<FBorough> &Borough : ValidBorough)
                     {
                         if (Borough != CenterBorough)
                         {
@@ -240,7 +240,7 @@ namespace KingOfNewYork
             }
         }
 
-        void MoveTo(std::shared_ptr<FPlayer> Player, std::shared_ptr<FBorough> NewBorough)
+        void MoveTo(std::shared_ptr<FPlayer> &Player, std::shared_ptr<FBorough> NewBorough)
         {
             assert(NewBorough);
             if (Player->GetMutableBorough() == NewBorough)
@@ -248,7 +248,7 @@ namespace KingOfNewYork
                 return;
             }
 
-            std::shared_ptr<FBorough> OldBorough = Player->GetMutableBorough();
+            std::shared_ptr<FBorough> &OldBorough = Player->GetMutableBorough();
 
             //Removing player from previous borough list.
             if (Player->GetMutableBorough())
@@ -274,7 +274,7 @@ namespace KingOfNewYork
 
         }
 
-        void ForceMoveToCenter(FMap &Map, std::shared_ptr<FPlayer> Player)
+        void ForceMoveToCenter(FMap &Map, std::shared_ptr<FPlayer> &Player)
         {
             std::string OldBorough = Player->GetMutableBorough()->GetName();
             std::cout << "Since there are less than "
@@ -289,7 +289,7 @@ namespace KingOfNewYork
             Player->SetLevelInCenter(1);
         }
 
-        void ForceProgressInCenter(FMap &Map, std::shared_ptr<FPlayer> Player)
+        void ForceProgressInCenter(FMap &Map, std::shared_ptr<FPlayer> &Player)
         {
             if (Player->GetLevelInCenter() < LEVEL_IN_CENTER_COUNT){
                 std::cout << "Since "

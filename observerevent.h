@@ -7,9 +7,7 @@
 #ifndef OBSERVEREVENT_H
 #define OBSERVEREVENT_H
 
-//#include <string>
-#include <vector>
-#include <memory>
+#include "precompiledheader.h"
 #include "common.h"
 
 namespace KingOfNewYork
@@ -27,7 +25,7 @@ namespace KingOfNewYork
                 : ObserverEvent(ObserverEvent), Message(Message) {}
         virtual ~IObserverEvent() = default;
         const EObserverEvent ObserverEvent;
-        const std::string &Message;
+        const std::string Message;
     };
 
     class FStartTurnPhaseEvent: public IObserverEvent

@@ -5,14 +5,13 @@
 // ----------------------------------------------------------------------------
 
 #include "rolldicestrategy.h"
-#include <algorithm>
 #include "player.h"
 #include "diceroller.h"
 #include "helper.h"
 
 namespace KingOfNewYork
 {
-    void HumanRollDiceStrategy::Execute(std::shared_ptr<FDiceRoller> DiceRoller, std::shared_ptr<FPlayer> Player, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
+    void HumanRollDiceStrategy::Execute(std::shared_ptr<FDiceRoller> &DiceRoller, std::shared_ptr<FPlayer> &Player, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
     {
         int CurrentRollCount = 0;
 
@@ -61,7 +60,7 @@ namespace KingOfNewYork
         PostRolling(Player, OutDiceResult);
     }
 
-    void AggressiveRollDiceStrategy::Execute(std::shared_ptr<FDiceRoller> DiceRoller, std::shared_ptr<FPlayer> Player, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
+    void AggressiveRollDiceStrategy::Execute(std::shared_ptr<FDiceRoller> &DiceRoller, std::shared_ptr<FPlayer> &Player, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
     {
         //focuses on attack or destruction during the role dice step
         int CurrentRollCount = 0;
@@ -102,7 +101,7 @@ namespace KingOfNewYork
         PostRolling(Player, OutDiceResult);
     }
 
-    void ModerateRollDiceStrategy::Execute(std::shared_ptr<FDiceRoller> DiceRoller, std::shared_ptr<FPlayer> Player, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
+    void ModerateRollDiceStrategy::Execute(std::shared_ptr<FDiceRoller> &DiceRoller, std::shared_ptr<FPlayer> &Player, const int DiceCount, const int RollCount, std::vector<EDiceFace> &OutDiceResult)
     {
         //focus on balancing the health, grabbing power-ups or storming Manhattan which quickly builds rewards
         int CurrentRollCount = 0;
@@ -144,15 +143,14 @@ namespace KingOfNewYork
 
     namespace
     {
-        void PostRolling(std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &OutDiceResult)
+        void PostRolling(std::shared_ptr<FPlayer> &Player, std::vector<EDiceFace> &OutDiceResult)
         {
-            bool bChanged = false;
             if (Player->UseCard(7))
             {
                 OutDiceResult.push_back(EDiceFace::Attack);
                 OutDiceResult.push_back(EDiceFace::Attack);
             }
-            int DestructionCount = static_cast<int>(std::count_if(OutDiceResult.begin(), OutDiceResult.end(),
+            auto DestructionCount = static_cast<int>(std::count_if(OutDiceResult.begin(), OutDiceResult.end(),
                                                                   [](const auto &DiceFace) { return DiceFace == EDiceFace::Destruction; } ));
             if (DestructionCount > 0 && DestructionCount % 2 == 0 && Player->UseCard(8))
             {

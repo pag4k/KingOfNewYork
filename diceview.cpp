@@ -6,9 +6,6 @@
 
 #include "diceview.h"
 #include "gamecontroller.h"
-#include "game.h"
-#include "playercontroller.h"
-#include "player.h"
 #include "diceroller.h"
 
 namespace KingOfNewYork

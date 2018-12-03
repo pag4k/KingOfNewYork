@@ -7,10 +7,7 @@
 #ifndef CARD_H
 #define CARD_H
 
-#include <string>
-#include <utility>
-#include <vector>
-#include <memory>
+#include "precompiledheader.h"
 #include "common.h"
 #include "subject.h"
 

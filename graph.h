@@ -7,12 +7,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include <cassert>
-#include <list>
-#include <set>
-#include <string>
-#include <iostream>
-#include <memory>
+#include "precompiledheader.h"
 
 namespace KingOfNewYork
 {

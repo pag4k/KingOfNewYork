@@ -7,8 +7,7 @@
 #ifndef ROLLDICESTRATEGY_H
 #define ROLLDICESTRATEGY_H
 
-#include <memory>
-#include <vector>
+#include "precompiledheader.h"
 #include "common.h"
 
 namespace KingOfNewYork
@@ -20,30 +19,30 @@ namespace KingOfNewYork
     class IRollDiceStrategy
     {
     public:
-        virtual void Execute(std::shared_ptr<FDiceRoller> DiceRoller, std::shared_ptr<FPlayer> Player, int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult) = 0;
+        virtual void Execute(std::shared_ptr<FDiceRoller> &DiceRoller, std::shared_ptr<FPlayer> &Player, int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult) = 0;
     };
 
     class HumanRollDiceStrategy : public IRollDiceStrategy
     {
     public:
-        void Execute(std::shared_ptr<FDiceRoller> DiceRoller, std::shared_ptr<FPlayer> Player, int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult) override;
+        void Execute(std::shared_ptr<FDiceRoller> &DiceRoller, std::shared_ptr<FPlayer> &Player, int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult) override;
     };
 
     class AggressiveRollDiceStrategy : public IRollDiceStrategy
     {
     public:
-        void Execute(std::shared_ptr<FDiceRoller> DiceRoller, std::shared_ptr<FPlayer> Player, int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult) override;
+        void Execute(std::shared_ptr<FDiceRoller> &DiceRoller, std::shared_ptr<FPlayer> &Player, int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult) override;
     };
 
     class ModerateRollDiceStrategy : public IRollDiceStrategy
     {
     public:
-        void Execute(std::shared_ptr<FDiceRoller> DiceRoller, std::shared_ptr<FPlayer> Player, int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult) override;
+        void Execute(std::shared_ptr<FDiceRoller> &DiceRoller, std::shared_ptr<FPlayer> &Player, int DiceCount, int RollCount, std::vector<EDiceFace> &OutDiceResult) override;
     };
 
     namespace
     {
-        void PostRolling(std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &OutDiceResult);
+        void PostRolling(std::shared_ptr<FPlayer> &Player, std::vector<EDiceFace> &OutDiceResult);
     }
 
 }

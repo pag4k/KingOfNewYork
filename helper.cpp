@@ -4,9 +4,7 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
-#include <iostream>
-#include <filesystem>
-#include <cmath>
+
 #include "helper.h"
 
 namespace KingOfNewYork

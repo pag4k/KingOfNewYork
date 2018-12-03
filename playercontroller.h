@@ -7,11 +7,7 @@
 #ifndef PLAYERCONTROLLER_H
 #define PLAYERCONTROLLER_H
 
-#include <memory>
-#include <vector>
-#include "unordered_set"
-#include <string>
-
+#include "precompiledheader.h"
 #include "playercontroller.h"
 #include "player.h"
 #include "common.h"

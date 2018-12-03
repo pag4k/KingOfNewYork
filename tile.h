@@ -1,15 +1,13 @@
 // ----------------------------------------------------------------------------
-// COMP345 Assignment 4
-// Due date: December 2, 2018
+// COMP345 Assignment 3
+// Due date: November 18, 2018
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
 #ifndef TILE_H
 #define TILE_H
 
-#include <vector>
-#include <string>
-#include <memory>
+#include "precompiledheader.h"
 #include "common.h"
 
 namespace KingOfNewYork

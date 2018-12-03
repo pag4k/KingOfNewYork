@@ -6,7 +6,6 @@
 
 #include "gameview.h"
 #include "gamecontroller.h"
-#include "game.h"
 
 namespace KingOfNewYork
 {
@@ -22,9 +21,7 @@ namespace KingOfNewYork
 
     void FGameView::Update(const std::shared_ptr<const FSubject> &Subject, const std::shared_ptr<const IObserverEvent> &Event)
     {
-        //TODO: Not sure if it will only observe the game.
         const auto Game = std::dynamic_pointer_cast<const FGame>(Subject);
-        //assert(Game == GameSubject);
 
         switch (Event->ObserverEvent)
         {

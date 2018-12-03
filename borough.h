@@ -7,7 +7,7 @@
 #ifndef BOROUGH_H
 #define BOROUGH_H
 
-#include <memory>
+#include "precompiledheader.h"
 #include "tile.h"
 
 namespace KingOfNewYork

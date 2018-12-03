@@ -4,3 +4,4 @@ kingofnewyork
 .vscode/settings.json
 .vscode/tasks.json
 .idea/*
+*.o

@@ -4,29 +4,25 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
-#include <iostream>
-#include <cassert>
-#include <ctime>
-
 #include "diceroller.h"
 
 namespace KingOfNewYork
 {
-    FDiceRoller::FDiceRoller()
+    FDiceRoller::FDiceRoller(int FaceNumber) :
+            MersenneTwisterEngine(std::mt19937(std::random_device()())),
+            UniformeDistribution(std::uniform_int_distribution(0, FaceNumber-1))
     {
-        //Use current time as seed for the random generator.
-        std::srand(static_cast<unsigned int>(std::time(nullptr)));
-        RollHistory = std::vector<int>(FACE_ON_DICE_COUNT, 0);
+        RollHistory = std::vector<int>(FaceNumber, 0);
     }
 
-    std::vector<EDiceFace> FDiceRoller::BeginRolling(const int DiceCount) const
+    std::vector<EDiceFace> FDiceRoller::BeginRolling(int DiceCount) const
     {
         assert(0 <= DiceCount && DiceCount <= BLACK_DICE_COUNT + GREEN_DICE_COUNT);
-        std::vector<EDiceFace> DiceResult(DiceCount, EDiceFace::None);
+        std::vector<EDiceFace> DiceResult(static_cast<unsigned long>(DiceCount), EDiceFace::None);
         return DiceResult;
     }
 
-    void FDiceRoller::RollDice(const int DiceCount, std::vector<EDiceFace> &OutDiceResult) const
+    void FDiceRoller::RollDice(const int DiceCount, std::vector<EDiceFace> &OutDiceResult)
     {
         std::vector<bool> NewRoll;
         for (int i = 0; i < DiceCount; i++)
@@ -34,7 +30,7 @@ namespace KingOfNewYork
             if (OutDiceResult[i] == EDiceFace::None)
             {
                 NewRoll.push_back(true);
-                OutDiceResult[i] = RollSingleDice(FACE_ON_DICE_COUNT);
+                OutDiceResult[i] = RollSingleDice();
             }
             else
             {
@@ -44,11 +40,10 @@ namespace KingOfNewYork
         Notify(shared_from_this(), std::make_shared<FRolledDiceEvent>(EObserverEvent::RolledDice, "", OutDiceResult, NewRoll));
     }
 
-    const EDiceFace FDiceRoller::RollSingleDice(const int FaceNumber) const
+    const EDiceFace FDiceRoller::RollSingleDice()
     {
-        assert(1 <= FaceNumber && FaceNumber <= FACE_ON_DICE_COUNT);
-        int Roll = std::rand() / ((RAND_MAX + 1u) / FaceNumber);
-        assert(0 <= Roll && Roll <= FaceNumber - 1);
+        int Roll = UniformeDistribution(MersenneTwisterEngine);
+        assert(0 <= Roll && Roll <= FACE_ON_DICE_COUNT - 1);
         RollHistory[Roll]++;
         return EDiceFace(Roll);
     }

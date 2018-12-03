@@ -7,8 +7,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <memory>
-#include <string>
+#include "precompiledheader.h"
 
 namespace KingOfNewYork
 {
@@ -100,7 +99,6 @@ namespace KingOfNewYork
     };
     const std::string GetTileTypeString(ETileType TileType);
 
-    int const MAXIMUM_ENERGY_CUBES = 40; //TODO: Get the right amount.
     int const MAXIMUM_LIFE_POINTS = 10;
     int const VICTORY_POINTS_TO_WIN_COUNT = 20;
     int const STATUS_OF_LIBERTY_VICTORY_POINTS = 3;

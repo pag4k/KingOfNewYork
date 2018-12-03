@@ -4,8 +4,6 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
-#include <cassert>
-#include <algorithm>
 #include "game.h"
 
 namespace KingOfNewYork

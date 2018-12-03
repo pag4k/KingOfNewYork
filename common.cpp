@@ -4,7 +4,6 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
-#include <cassert>
 #include "common.h"
 
 namespace KingOfNewYork

@@ -8,7 +8,7 @@
 #ifndef BUYCARDSSTRATEGY_H
 #define BUYCARDSSTRATEGY_H
 
-#include <memory>
+#include "precompiledheader.h"
 
 namespace KingOfNewYork
 {
@@ -20,30 +20,30 @@ namespace KingOfNewYork
     class IBuyCardsStrategy
     {
     public:
-        virtual void Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player) = 0;
+        virtual void Execute(FGameController &GameController, std::shared_ptr<FPlayer> &Player) = 0;
     };
 
     class HumanBuyCardsStrategy : public IBuyCardsStrategy
     {
     public:
-        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player) override;
+        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> &Player) override;
     };
 
     class AggressiveBuyCardsStrategy : public IBuyCardsStrategy
     {
     public:
-        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player) override;
+        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> &Player) override;
     };
 
     class ModerateBuyCardsStrategy : public IBuyCardsStrategy
     {
     public:
-        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player) override;
+        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> &Player) override;
     };
 
     namespace
     {
-        void BuyCardsAI(FGameController &GameController, std::shared_ptr<FPlayer> Player);
+        void BuyCardsAI(FGameController &GameController, std::shared_ptr<FPlayer> &Player);
     }
 
 }

@@ -1,7 +1,7 @@
-COMP345 Assignment 3
+COMP345 Assignment 4
 ====================
 
-Due date: November 18, 2018
+Due date: December 3, 2018
 --------------------------
 
 Written by: Pierre-Andre Gagnon - 40067198
@@ -9,7 +9,7 @@ Written by: Pierre-Andre Gagnon - 40067198
 
 **Design**
 
-The design of this project is partially based on the strategy pattern and the observer pattern. This implies that most player behavior is handled with the former and that most of the "view" is handled by the latter.
+The design of this project is partially based on the strategy pattern, the observer pattern, and MVC pattern.
 
 Strategy pattern:
 - Four player actions are handled by this patter:
@@ -30,14 +30,32 @@ Observer pattern:
     - observerevent.h: This file contains the interface IObserverEvent and specific implementations for various events.
 - The player as a subject:
     - The player notifies its observers every something important happens, most importantly the beginning of its phases and their outcomes.
-    - There is only one observer that outputs to the console the notifications from the players.
-- The gameview observer:
-    - gameview.h/cpp: These files implement IObserver and are only used for notifications from players.
+- The playerview observer:
+    - playerview.h/cpp: These files implement IObserver and are only used for notifications from players.
 - The game as a subject:
     - The game notifies its observer at the beginning of each turn.
-    - There is only one observer that outputs to the console the current state of the game.
-- The stateview observer:
-    - stateview.h/cpp: These files implement Observer and are only used for notification from the game to output the game state.
+- The gameview observer:
+    - stateview.h/cpp: These files implement Observer and are only used for notification from the game.
+- The cards as subject:
+    - The cards notify their observer when they are used.
+- The cardview observer:
+    - cardview.h/cpp: These files implement IObserver and are only used for notifications from cards.
+- The diceroller as subject:
+    - The dicerollers notify their observer when they are used.
+- The diceview observer:
+    - diceview.h/cpp: These files implement IObserver and are only used for notifications from dicerollers.
+
+MVC pattern:
+- While it is not implemented for all the projects, some classes have been separated in model and controller. This separate the behavior from the data and makes the code more modular.
+- game.h/cpp and gamecontroller.h/cpp
+    - The former only includes the game data while the latter take cares of the game setup and the game loop.
+- player.h/cpp and playercontroller.h/cpp
+    - The former only includes the player data while the latter take cares of player turns.
+    - In a sense, the player is actually the monster been played and the player controller is the the actuel player.
+
+Precompiler heard:
+- This project uses a precompiler header, precompiledheader.h, to speed up compilation.
+- It includes all references to the standard library since they are not expected to change often.
 
 Other files:
 - Driver file:
@@ -48,9 +66,7 @@ Other files:
     - borough.h contains FBorough class that is used as template parameter for the graph.
     - card.h/cpp contains the FCard and FDeck classes.
     - diceroller.h/cpp contains the FDice and FDiceRoller classes.
-    - game.h/cpp contains the FGame class.
     - map.h/cpp contains the FMap class.
-    - player.h/cpp contains the FPlayer class.
     - tile.h/cpp contains the FTile and FTileStack classes.
 - Other files:
     - common.h/cpp contains various constants and enums that are used in many classes.
@@ -68,12 +84,10 @@ The project only uses the C++ Standard Library. It should, however, be noted tha
 
 The command I use to build the project on my machine is:
 
-    g++ main.cpp diceroller.cpp player.cpp game.cpp helper.cpp common.cpp card.cpp tile.cpp map.cpp borough.cpp rolldicestrategy.cpp resolvedicestrategy.cpp movestrategy.cpp buycardsstrategy.cpp subject.cpp gameview.cpp stateview.cpp -I. -g -std=c++17 -lstdc++fs -o kingofnewyork
+    make all
+    
+Details:
 
-The flags are:
-
-- -I. : To tell the compiler to search the directory which was current when the compiler was invoked for #include "file".
-- -g : To enable debugging. 
 - -o kingofnewyork : To indicate the output file of the compilation.
 - -std=c++17: To include c++17.
 - -lstdc++fs: To include the fs (filesystem) library of the standard library.

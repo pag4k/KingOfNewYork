@@ -7,7 +7,7 @@
 #ifndef GAMEVIEW_H
 #define GAMEVIEW_H
 
-#include <memory>
+#include "precompiledheader.h"
 #include "observer.h"
 
 namespace KingOfNewYork

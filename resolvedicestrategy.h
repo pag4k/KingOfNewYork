@@ -7,8 +7,7 @@
 #ifndef RESOLVEDICESTRATEGY_H
 #define RESOLVEDICESTRATEGY_H
 
-#include <vector>
-#include <memory>
+#include "precompiledheader.h"
 #include "common.h"
 
 namespace KingOfNewYork
@@ -23,38 +22,38 @@ namespace KingOfNewYork
     class IResolveDiceStrategy
     {
     public:
-        virtual void Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) = 0;
+        virtual void Execute(FGameController &GameController, std::shared_ptr<FPlayer> &Player, std::vector<EDiceFace> &DiceResult) = 0;
     };
 
     class HumanResolveDiceStrategy : public IResolveDiceStrategy
     {
     public:
-        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) override;
+        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> &Player, std::vector<EDiceFace> &DiceResult) override;
     };
 
     class AggressiveResolveDiceStrategy : public IResolveDiceStrategy
     {
     public:
-        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) override;
+        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> &Player, std::vector<EDiceFace> &DiceResult) override;
     };
 
     class ModerateResolveDiceStrategy : public IResolveDiceStrategy
     {
     public:
-        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player, std::vector<EDiceFace> &DiceResult) override;
+        void Execute(FGameController &GameController, std::shared_ptr<FPlayer> &Player, std::vector<EDiceFace> &DiceResult) override;
     };
 
     namespace
     {
         std::vector<int> GetDiceSums(std::vector<EDiceFace> &DiceResult);
-        bool ResolveAttack(FGameController &GameController, std::shared_ptr<FPlayer> Player, int NumberOfDice);
-        bool ResolveCelebrity(FGameController &GameController, std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        bool ResolveAttack(FGameController &GameController, std::shared_ptr<FPlayer> &Player, int NumberOfDice);
+        bool ResolveCelebrity(FGameController &GameController, std::shared_ptr<FPlayer> &Player, int NumberOfDice);
         int GetMinimumDurability(const std::shared_ptr<FBorough> &Borough);
-        bool HumanResolveDestruction(std::shared_ptr<FPlayer> Player, int NumberOfDice);
-        bool AIResolveDestruction(std::shared_ptr<FPlayer> Player, int NumberOfDice, bool bPrioritizeUnit);
-        bool ResolveEnergy(std::shared_ptr<FPlayer> Player, int NumberOfDice);
-        bool ResolveHeal(std::shared_ptr<FPlayer> Player, int NumberOfDice);
-        bool ResolveOuch(FGameController &GameController, std::shared_ptr<FPlayer> Player, int NumberOfDice);
+        bool HumanResolveDestruction(std::shared_ptr<FPlayer> &Player, int NumberOfDice);
+        bool AIResolveDestruction(std::shared_ptr<FPlayer> &Player, int NumberOfDice, bool bPrioritizeUnit);
+        bool ResolveEnergy(std::shared_ptr<FPlayer> &Player, int NumberOfDice);
+        bool ResolveHeal(std::shared_ptr<FPlayer> &Player, int NumberOfDice);
+        bool ResolveOuch(FGameController &GameController, std::shared_ptr<FPlayer> &Player, int NumberOfDice);
     }
 
 }

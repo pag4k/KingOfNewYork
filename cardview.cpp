@@ -5,11 +5,7 @@
 // ----------------------------------------------------------------------------
 
 #include "cardview.h"
-#include <algorithm>
 #include "gamecontroller.h"
-#include "game.h"
-#include "playercontroller.h"
-#include "player.h"
 #include "helper.h"
 
 namespace KingOfNewYork
@@ -36,7 +32,6 @@ namespace KingOfNewYork
 
     void FCardView::Update(const std::shared_ptr<const FSubject> &Subject, const std::shared_ptr<const IObserverEvent> &Event)
     {
-        //TODO: Not sure if it will only observe players.
         const auto Card = std::dynamic_pointer_cast<const FCard>(Subject);
         assert(Card);
 

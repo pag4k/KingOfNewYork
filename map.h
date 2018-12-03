@@ -7,7 +7,7 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <string>
+#include "precompiledheader.h"
 #include "graph.h"
 #include "borough.h"
 
@@ -20,9 +20,8 @@ namespace KingOfNewYork
         FMap(): bIsValid(false) {}
         explicit FMap(const std::string &FileName);
         bool LoadMap(const std::string &FileName);
-        bool SaveMap(const std::string &FileName);
-        const std::vector<std::shared_ptr<FBorough>>& GetConstBoroughs() const { return Boroughs; }
-        std::vector<std::shared_ptr<FBorough>>& GetMutableBoroughs() { return Boroughs; }
+        const std::vector<std::shared_ptr<FBorough>> &GetConstBoroughs() const { return Boroughs; }
+        std::vector<std::shared_ptr<FBorough>> &GetMutableBoroughs() { return Boroughs; }
         std::shared_ptr<FBorough> GetCenterBorough();
         const bool IsValid() const { return bIsValid; }
     private:

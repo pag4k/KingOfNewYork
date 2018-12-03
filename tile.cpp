@@ -4,12 +4,6 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
-#include <cassert>
-#include <algorithm>
-#include <fstream>
-#include <iostream>
-#include <random>
-#include <chrono>
 #include "tile.h"
 #include "helper.h"
 
@@ -124,7 +118,6 @@ namespace KingOfNewYork
                 {
                     for (int i = 0; i < Number; ++i)
                     {
-                        //TODO: Not sure if this does a copy or not.
                         TileStack.push_back(std::make_unique<FTile>(TileType, Durability, Reward));
                     }
                     Number = ParseIntFromChar(Text[7]);

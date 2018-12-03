@@ -5,7 +5,6 @@
 // ----------------------------------------------------------------------------
 
 #include "borough.h"
-#include <algorithm>
 
 namespace KingOfNewYork
 {

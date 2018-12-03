@@ -5,11 +5,7 @@
 // ----------------------------------------------------------------------------
 
 #include "playerview.h"
-#include <algorithm>
 #include "gamecontroller.h"
-#include "playercontroller.h"
-#include "game.h"
-#include "player.h"
 #include "helper.h"
 
 namespace KingOfNewYork
@@ -38,7 +34,6 @@ namespace KingOfNewYork
 
     void FPlayerView::Update(const std::shared_ptr<const FSubject> &Subject, const std::shared_ptr<const IObserverEvent> &Event)
     {
-        //TODO: Not sure if it will only observe players.
         const auto Player = std::dynamic_pointer_cast<const FPlayer>(Subject);
         assert(Player);
 
@@ -64,7 +59,7 @@ namespace KingOfNewYork
                     PrintNormal("Number of cards: " + std::to_string(Player->GetCards().size()));
                     for (const auto &Card : Player->GetCards()) Card->Display();
 
-                    PrintNormal("Energy cubes: " + std::to_string(Player->GetEnergyCubes()));
+                      PrintNormal("Energy cubes: " + std::to_string(Player->GetEnergyCubes()));
                     PrintNormal("Life points: " + std::to_string(Player->GetLifePoints()));
                     PrintNormal("Victory points: " + std::to_string(Player->GetVictoryPoints()));
 

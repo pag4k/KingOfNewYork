@@ -4,9 +4,6 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
-#include <fstream>
-#include <iostream>
-
 #include "map.h"
 
 namespace KingOfNewYork
@@ -114,79 +111,18 @@ namespace KingOfNewYork
         return true;
     }
 
-  /*  bool FMap::SaveMap(const std::string &FileName)
-    {
-        std::ofstream OuputStream;
-        OuputStream.open(FileName);
-
-        if (OuputStream.fail())
-        {
-            std::cout << "Error: Could not open file: "
-                      << FileName
-                      << std::endl;
-            return false;
-        }
-
-        OuputStream << "VERTEX" << std::endl;
-
-        for (int i = 0; i < BoroughCount(); ++i)
-        {
-            std::shared_ptr<FBorough> CurrentBorough = GetBorough(i);
-            OuputStream << CurrentBorough->GetName()
-                        << ","
-                        << (CurrentBorough->IsStartingLocation() ? "StartingLocation" : " ")
-                        << ","
-                        << (CurrentBorough->IsCenter() ? "Center" : " ")
-                        << ","
-                        << std::endl;
-        }
-
-        OuputStream << std::endl;
-        OuputStream << "EDGE" << std::endl;
-
-        for (int i = 0; i < BoroughCount(); ++i)
-        {
-            std::vector<int> Neighbourgs = GetNeighbourgs(i);
-            OuputStream << GetBorough(i)->GetName()
-                        << ":";
-            for (int j = 0; j < Neighbourgs.size(); ++j)
-            {
-                OuputStream << GetBorough(j)->GetName()
-                            << ",";
-            }
-            OuputStream << std::endl;
-        }
-        
-        return true;
-   }*/
-
-    /*const std::vector<int> FMap::GetNeighbourgs(int n) const
-    {
-        return Graph.GetNeighbours(n);
-    }*/
-
     std::shared_ptr<FBorough> FMap::GetCenterBorough()
     {
-        std::shared_ptr<FBorough> CenterBorough = nullptr;
-        for (const std::shared_ptr<FBorough> &Borough : GetMutableBoroughs()) {
-            if (Borough->IsCenter()) {
-                if (CenterBorough == nullptr)
-                {
-                    CenterBorough = Borough;
-                }
-                else
-                {
-                    //There should not be more than one Center Borough.
-                    assert(true);
-                }
-            }
-        }
-        if (CenterBorough == nullptr)
+        auto BoroughIt = std::find_if(GetMutableBoroughs().begin(), GetMutableBoroughs().end(),
+                                   [](const auto &Borough){ return Borough->IsCenter(); });
+        if (BoroughIt == GetMutableBoroughs().end())
         {
-            //There should be exactly one Center Borough.
-            assert(true);
+            return nullptr;
+        }
+        else
+        {
+            return *BoroughIt;
         }
 
-        return CenterBorough;
     }
 }

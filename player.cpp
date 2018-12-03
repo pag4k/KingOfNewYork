@@ -4,12 +4,8 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
-#include <iostream>
-#include <algorithm>
-
 #include "game.h"
 #include "player.h"
-#include "card.h"
 
 namespace KingOfNewYork
 {
@@ -35,7 +31,7 @@ namespace KingOfNewYork
         bVictorious = false;
     }
 
-    void FPlayer::SetCelebrity(const bool bCelebrity)
+    void FPlayer::SetCelebrity(bool bCelebrity)
     {
         if (!this->bCelebrity && bCelebrity && UseCard(36))
         {
@@ -152,7 +148,7 @@ namespace KingOfNewYork
         }
     }
 
-    void FPlayer::Move(std::shared_ptr<FBorough> OldBorough, int OldLevelInCenter)
+    void FPlayer::Move(std::shared_ptr<FBorough> &OldBorough, int OldLevelInCenter)
     {
         //std::shared_ptr<FBorough> OldBorough = Borough;
         //int OldLevelInCenter = LevelInCenter;

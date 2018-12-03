@@ -7,7 +7,7 @@
 #ifndef DICEVIEW_H
 #define DICEVIEW_H
 
-#include <memory>
+#include "precompiledheader.h"
 #include "observer.h"
 
 namespace KingOfNewYork

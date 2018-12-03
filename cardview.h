@@ -5,8 +5,9 @@
 // ----------------------------------------------------------------------------
 
 #ifndef CARDVIEW_H
-#define CARDEFFECTVIEW_H
+#define CARDVIEW_H
 
+#include "precompiledheader.h"
 #include "observer.h"
 
 namespace KingOfNewYork

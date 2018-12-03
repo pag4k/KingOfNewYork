@@ -7,8 +7,7 @@
 #ifndef HELPER_H
 #define HELPER_H
 
-#include <vector>
-#include <string>
+#include "precompiledheader.h"
 
 namespace KingOfNewYork
 {

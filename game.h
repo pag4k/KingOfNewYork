@@ -7,12 +7,9 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <vector>
-#include <memory>
-
+#include "precompiledheader.h"
 #include "map.h"
 #include "card.h"
-
 #include "subject.h"
 
 namespace KingOfNewYork
@@ -23,7 +20,7 @@ namespace KingOfNewYork
     class FGame: public FSubject, public std::enable_shared_from_this<FGame>
     {
     public:
-        FGame(std::unique_ptr<FMap> Map);
+        explicit FGame(std::unique_ptr<FMap> Map);
         std::unique_ptr<FCard> GetCard(int Index);
         std::vector<std::unique_ptr<FCard>> &GetAvailableCards() { return AvailableCards; }
         const FMap &GetConstMap() const { return *Map; }

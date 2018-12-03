@@ -7,7 +7,6 @@
 #include "playercontroller.h"
 
 #include "gamecontroller.h"
-#include "game.h"
 #include "helper.h"
 #include "diceroller.h"
 #include "rolldicestrategy.h"
@@ -21,7 +20,7 @@ namespace KingOfNewYork
         Name = EnterPlayerName(PlayerNames);
         EMonsterName MonsterName = SelectMonster(AvailableMonsters);
         SelectStrategy();
-        DiceRoller = std::make_shared<FDiceRoller>();
+        DiceRoller = std::make_shared<FDiceRoller>(FACE_ON_DICE_COUNT);
         Player = std::make_shared<FPlayer>(MonsterName);
     }
 
@@ -79,7 +78,7 @@ namespace KingOfNewYork
 
     void FPlayerController::Move(FMap &Map, bool bMovePhase, bool bOnlyStartingLocation)
     {
-        const auto OldBorough = Player->GetBorough();
+        auto OldBorough = Player->GetMutableBorough();
         const int OldLevelInCenter = Player->GetLevelInCenter();
         MoveStrategy->Execute(Map, Player, bMovePhase, bOnlyStartingLocation);
         Player->Move(OldBorough, OldLevelInCenter);
@@ -92,7 +91,7 @@ namespace KingOfNewYork
 
     std::string FPlayerController::EnterPlayerName(std::unordered_set<std::string> &PlayerNames)
     {
-        std::string EnteredName = "";
+        std::string EnteredName;
         while (EnteredName.empty())
         {
             PrintNormal("Player " + std::to_string(PlayerNames.size() + 1) + ", please enter your name:");

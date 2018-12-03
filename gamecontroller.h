@@ -7,9 +7,7 @@
 #ifndef GAMECONTROLLER_H
 #define GAMECONTROLLER_H
 
-#include <memory>
-#include <vector>
-#include <optional>
+#include "precompiledheader.h"
 #include "playercontroller.h"
 #include "game.h"
 

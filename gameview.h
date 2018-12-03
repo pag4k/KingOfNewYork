@@ -7,6 +7,7 @@
 #ifndef STATEVIEW_H
 #define STATEVIEW_H
 
+#include "precompiledheader.h"
 #include "observer.h"
 
 namespace KingOfNewYork

@@ -5,9 +5,7 @@
 // ----------------------------------------------------------------------------
 
 #include "subject.h"
-#include <cassert>
 #include "observer.h"
-#include <iostream>
 
 namespace KingOfNewYork
 {
@@ -19,9 +17,7 @@ namespace KingOfNewYork
 
     FSubject::~FSubject()
     {
-        if (Observers){
-            delete Observers;
-        }
+        delete Observers;
     }
 
     void FSubject::Attach(IObserver* Observer)

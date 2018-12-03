@@ -6,8 +6,6 @@
 
 #include "graph.h"
 
-#include <algorithm>
-
 namespace KingOfNewYork
 {
     //PUBLIC METHODS

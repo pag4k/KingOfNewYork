@@ -7,9 +7,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <string>
-#include <vector>
-#include <memory>
+#include "precompiledheader.h"
 #include "common.h"
 #include "borough.h"
 #include "map.h"
@@ -29,7 +27,7 @@ namespace KingOfNewYork
         //Getters and Setters
         const std::string GetMonsterName() const { return GetMonsterNameString(MonsterName); }
         const std::shared_ptr<FBorough> &GetBorough() const { return Borough; }
-        const std::shared_ptr<FBorough> &GetMutableBorough() { return Borough; }
+        std::shared_ptr<FBorough> &GetMutableBorough() { return Borough; }
         void SetBorough(const std::shared_ptr<FBorough> &Borough) { this->Borough = Borough; }
         const std::vector<std::unique_ptr<FCard>>& GetCards() const { return Cards; }
         const std::vector<int>& GetTokenInventory() const { return TokenInventory; }
@@ -37,7 +35,7 @@ namespace KingOfNewYork
         const bool IsVictorious() const { return bVictorious || VictoryPoints >= VICTORY_POINTS_TO_WIN_COUNT; }
         void SetVictorious() { bVictorious = true; }
         const bool IsCelebrity() const { return bCelebrity; }
-        void SetCelebrity(const bool bCelebrity);
+        void SetCelebrity(bool bCelebrity);
         const bool IsStatueOfLiberty() const { return bStatueOfLiberty; }
         void SetStatueOfLiberty(const bool bStatueOfLiberty) { this->bStatueOfLiberty = bStatueOfLiberty; }
         const int GetLifePoints() const { return LifePoints; }
@@ -51,7 +49,7 @@ namespace KingOfNewYork
         //Turn methods
         void SetTurnPhase(ETurnPhase NewTurnPhase);
         void TakeDamage(FGame &Game, int Damage);
-        void Move(std::shared_ptr<FBorough> OldBorough, int OldLevelInCenter);
+        void Move(std::shared_ptr<FBorough> &OldBorough, int OldLevelInCenter);
         void EarnMonsterResources(EMonsterResource MonsterResource, int Number);
         void ChangeEnergyCubes(int Number);
         void ChangeLifePoints(int Number);

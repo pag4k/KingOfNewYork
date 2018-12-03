@@ -5,7 +5,6 @@
 // ----------------------------------------------------------------------------
 
 #include "gamecontroller.h"
-
 #include "helper.h"
 
 namespace KingOfNewYork
@@ -117,7 +116,7 @@ namespace KingOfNewYork
 
     bool FGameController::InitializationPhase()
     {
-        Game = std::make_shared<FGame>(std::move(SelectMap()));
+        Game = std::make_shared<FGame>(SelectMap());
         if (!Game->GetConstMap().IsValid())
         {
             return false;

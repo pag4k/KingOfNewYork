@@ -4,12 +4,7 @@
 // Written by: Pierre-Andre Gagnon - 40067198
 // ----------------------------------------------------------------------------
 
-#include <fstream>
-#include <iostream>
-#include <cassert>
-#include <algorithm>
-#include <random>
-#include <chrono>
+
 #include "card.h"
 #include "helper.h"
 

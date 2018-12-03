@@ -7,8 +7,7 @@
 #ifndef SUBJECT_H
 #define SUBJECT_H
 
-#include <list>
-#include <memory>
+#include "precompiledheader.h"
 #include "observerevent.h"
 
 namespace KingOfNewYork

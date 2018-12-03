@@ -7,9 +7,7 @@
 #ifndef DICEROLLER_H
 #define DICEROLLER_H
 
-#include <memory>
-#include <vector>
-#include <string>
+#include "precompiledheader.h"
 #include "subject.h"
 #include "common.h"
 
@@ -19,12 +17,14 @@ namespace KingOfNewYork
     class FDiceRoller : public FSubject, public std::enable_shared_from_this<FDiceRoller>
     {
     public :
-        FDiceRoller();
+        explicit FDiceRoller(int FACE_ON_DICE_COUNT);
         std::vector<EDiceFace> BeginRolling(int DiceCount) const;
-        void RollDice(int DiceCount, std::vector<EDiceFace> &OutDiceResult) const;
+        void RollDice(int DiceCount, std::vector<EDiceFace> &OutDiceResult);
     private :
-        const EDiceFace RollSingleDice(int FaceNumber) const;
+        const EDiceFace RollSingleDice();
         mutable std::vector<int> RollHistory;
+        std::mt19937 MersenneTwisterEngine;
+        std::uniform_int_distribution<> UniformeDistribution;
     };
 }
 

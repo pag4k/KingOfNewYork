@@ -7,11 +7,10 @@
 #include "buycardsstrategy.h"
 #include "gamecontroller.h"
 #include "helper.h"
-#include "game.h"
 
 namespace KingOfNewYork
 {
-    void HumanBuyCardsStrategy::Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player)
+    void HumanBuyCardsStrategy::Execute(FGameController &GameController, std::shared_ptr<FPlayer> &Player)
     {
         auto &Game = GameController.GetGame();
         int Input;
@@ -85,19 +84,19 @@ namespace KingOfNewYork
         } while (Input != 0);
     }
 
-    void AggressiveBuyCardsStrategy::Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player)
+    void AggressiveBuyCardsStrategy::Execute(FGameController &GameController, std::shared_ptr<FPlayer> &Player)
     {
         BuyCardsAI(GameController, Player);
     }
 
-    void ModerateBuyCardsStrategy::Execute(FGameController &GameController, std::shared_ptr<FPlayer> Player)
+    void ModerateBuyCardsStrategy::Execute(FGameController &GameController, std::shared_ptr<FPlayer> &Player)
     {
         BuyCardsAI(GameController, Player);
     }
 
     namespace
     {
-        void BuyCardsAI(FGameController &GameController, std::shared_ptr<FPlayer> Player)
+        void BuyCardsAI(FGameController &GameController, std::shared_ptr<FPlayer> &Player)
         {
             auto &Game = GameController.GetGame();
             auto &AvailableCards = Game.GetAvailableCards();
